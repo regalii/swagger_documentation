@@ -1,0 +1,227 @@
+swagger: '2.0'
+
+info:
+  version: "3.2"
+  title: Regalii API Documentation
+  description: "Welcome to the Regalii API! You can use our API documentation to access Regalii API endpoints, which can get you information on various billers, bills, and transactions. \n\n Language bindings we have language bindings in multiple languages!."
+
+tags:
+  - name: Introduction
+    description: Introductory information to our API
+  - name: Authentication
+    description: Directions to connect with our API
+  - name: Webhooks
+    description: Detailed information about our Webhooks
+  - name: Common
+    description: Common endpoints
+  - name: xData
+    description: Access to xData documentation
+  - name: xPay
+    description: Access to xPay documentation
+  - name: xChange
+    description: Access to xChange documentation
+  - name: Error codes
+    description: List of the errors codes supported by regalii
+
+host: apix.casiregalii.com
+
+schemes:
+- "https"
+
+produces:
+- application/json
+
+paths:
+ /bills:
+    post:
+      tags:
+      - "xData"
+      description: "This endpoint creates a bill for billers with credentials bill identifier. When you send credentials to create a bill, the bill object is created and we then attempt to fetch the bill from the biller. Thus no matter what happens (MFA, wrong credentials, biller down, etc), the bill object is created. The request may take up to 59 seconds to return. If an error or MFA is returned, update the bill to resolve the issue. \n\n You may create multiple, discrete bill objects with identical credentials."
+
+      operationId: "createBill"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+        - in: header
+          name: biller_id
+          type: integer
+          required: true
+          description: The ID of the biller.
+        - in: header
+          name: login
+          type: string
+          required: true
+          description: The account login.
+        - in: header
+          name: password
+          type: string
+          required: true
+          description: The account password
+      responses:
+        200:
+          description: A User object
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+              id:
+                type: integer
+              uuid:
+                type: string
+              biller_id:
+                type: integer
+              biller_uuid:
+                type: string
+              account_number:
+                type: string
+              name_on_account:
+                type: string
+              due_date:
+                type: string
+              balance:
+                type: number
+              balance_currency:
+                type: string
+              balance_updated_at:
+                type: string
+              error_code:
+                type: string
+              error_message:
+                type: string
+              status:
+                type: string
+              mfa_challenges:
+                type: string
+ /bills/{id}:
+    get:
+      tags:
+      - "xData"
+      description: "his endpoint retrieves a specific bill’s cached data. To pull fresh data from a biller see <refresh bill>. Retrieves a specific bill’s cached data. \n\n The bill status description is following: \n\n **updating**	Bill is being linked or balance is currently being fetched. \n\n **updated**	Bill was successfully linked and balance has been updated. \n\n **waiting**	Waiting for you to solve the challenge - check mfa_challenges field. \n\n **failed**	Problem while updating your bill. Check error_code and error_message for further details."
+
+      operationId: "billDetails"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of bill to return"
+        required: true
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: A User object
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+              id:
+                type: integer
+              uuid:
+                type: string
+              biller_id:
+                type: integer
+              biller_uuid:
+                type: string
+              account_number:
+                type: string
+              name_on_account:
+                type: string
+              due_date:
+                type: string
+              balance:
+                type: number
+              balance_currency:
+                type: string
+              balance_updated_at:
+                type: string
+              error_code:
+                type: string
+              error_message:
+                type: string
+              status:
+                type: string
+              mfa_challenges:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                    id:
+                      type: integer
+                    prompt:
+                      type: string
+                    expires_at:
+                      type: string
+
+
+    patch:
+      tags:
+      - "xData"
+      description: "his endpoint retrieves a specific bill’s cached data. To pull fresh data from a biller see <refresh bill>. Retrieves a specific bill’s cached data. \n\n The bill status description is following: \n\n **updating**	Bill is being linked or balance is currently being fetched. \n\n **updated**	Bill was successfully linked and balance has been updated. \n\n **waiting**	Waiting for you to solve the challenge - check mfa_challenges field. \n\n **failed**	Problem while updating your bill. Check error_code and error_message for further details."
+      operationId: "billDetailss"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of bill to return"
+        required: true
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: A User object
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+              id:
+                type: integer
+              uuid:
+                type: string
+              biller_id:
+                type: integer
+              biller_uuid:
+                type: string
+              account_number:
+                type: string
+              name_on_account:
+                type: string
+              due_date:
+                type: string
+              balance:
+                type: number
+              balance_currency:
+                type: string
+              balance_updated_at:
+                type: string
+              error_code:
+                type: string
+              error_message:
+                type: string
+              status:
+                type: string
+              mfa_challenges:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                    id:
+                      type: integer
+                    prompt:
+                      type: string
+                    expires_at:
+                      type: string
