@@ -26,11 +26,78 @@ schemes:
 produces:
 - application/json
 paths:
- /bills:
+  
+  /account:
+    get:
+      tags:
+      - "Common"
+      description: "This endpoint returns the properties of your Regalii account. This includes the name of your company, the current balance you owe, and the maximum amount of credit allowed to your account in the currency specified."
+      operationId: "getAccount"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: successful response
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              balance:
+                type: number
+              minimum_balance:
+                type: number
+              currency:
+                type: string
+            example:
+              name: "ACME Company"
+              balance: 537.5
+              minimum_balance: -30000.0
+              currency: "USD"
+  
+  /billers/credentials:
+    get:
+      tags:
+      - "Common"
+      description: "Provides the current list of billers and their associated properties. \n\n To ensure that your customers are able to leverage the enhancements that we make over time, you are required to cache the full list of billers and update it on a weekly basis."
+      operationId: "getBillers"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: header
+        name: biller_id
+        type: integer
+        required: true
+        description: The ID of the biller.
+      responses:
+        200:
+          description: successful response
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              balance:
+                type: number
+              minimum_balance:
+                type: number
+              currency:
+                type: string
+            example:
+              name: "ACME Company"
+              balance: 537.5
+              minimum_balance: -30000.0
+              currency: "USD"
+              
+  /bills:
     post:
       tags:
       - "xData"
-      description: "This endpoint creates a bill for billers with credentials bill identifier. When you send credentials to create a bill, the bill object is created and we then attempt to fetch the bill from the biller. Thus no matter what happens (MFA, wrong credentials, biller down, etc), the bill object is created. The request may take up to 59 seconds to return. If an error or MFA is returned, update the bill to resolve the issue. \n\n You may create multiple, discrete bill objects with identical credentials."
+      description: "This endpoint creates a bill for billers with credentials bill identifier. When you send credentials to create a bill, the bill object is created and we then attempt to fetch the bill from the biller. Thus no matter what happens (MFA, wrong credentials, biller down, etc), the bill object is created. The request may take up to 59 seconds to return. \n\n If an error or MFA is returned, <update the bill> to resolve the issue. \n\n You may create multiple, discrete bill objects with identical credentials."
       operationId: "createBill"
       consumes:
       - "application/json"
@@ -54,7 +121,7 @@ paths:
           description: The account password
       responses:
         200:
-          description: A User object
+          description: successful response
           schema:
             type: object
             properties:
@@ -87,37 +154,77 @@ paths:
               status:
                 type: string
               mfa_challenges:
-                type: string
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                    id:
+                      type: integer
+                    prompt:
+                      type: string
+                    expires_at:
+                      type: string
+            example:
+              type: "bill"
+              id: 1512
+              uuid: "c5482bbe-0f46-4e30-b660-3b1bb0ea773f"
+              biller_id: 6510
+              biller_uuid: "b44f5c1c-a6b7-4688-8311-080512ca4f1e"
+              account_number: "4222422244"
+              name_on_account: "Jose Bautista"
+              due_date: "2016-11-30"
+              balance: 56.43
+              balance_currency: "USD"
+              balance_updated_at: "2017-01-16T20:12:58Z"
+              error_code: null
+              error_message: null
+              status: "updated"
+              mfa_challenges: []
     get:
       tags:
       - "xData"
-      description: "This endpoint creates a bill for billers with credentials bill identifier. When you send credentials to create a bill, the bill object is created and we then attempt to fetch the bill from the biller. Thus no matter what happens (MFA, wrong credentials, biller down, etc), the bill object is created. The request may take up to 59 seconds to return. If an error or MFA is returned, update the bill to resolve the issue. \n\n You may create multiple, discrete bill objects with identical credentials."
+      description: "This endpoint retrieves all the bills."
       operationId: "getBills"
       consumes:
       - "application/json"
       produces:
       - "application/json"
       parameters:
-        - in: header
-          name: biller_id
+        - in: query
+          name: page
           type: integer
-          required: true
-          description: The ID of the biller.
-        - in: header
-          name: login
-          type: string
-          required: true
-          description: The account login.
-        - in: header
-          name: password
-          type: string
-          required: true
-          description: The account password
+          required: false
+          description: If set, it allows you to display any page of bills.
+        - in: query
+          name: q[created_at_gteq]
+          type: array
+          items:
+            type: string
+          required: false
+          description: If set, it’ll return results after the specified timestamp.
+        - in: query
+          name: q[created_at_lteq]
+          type: array
+          items:
+            type: string
+          required: false
+          description: If set, it’ll return results before the specified timestamp.
+        - in: query
+          name: q[id_in]
+          type: array
+          items:
+            type: integer
+          required: false
+          description: If set, it’ll return the bills for the specified bill ids.
       responses:
         200:
-          description: A User object
+          description: successful response
           schema:
-            type: object
+            type: array
+            items:
+              type: object
             properties:
               type:
                 type: string
@@ -147,13 +254,50 @@ paths:
                 type: string
               status:
                 type: string
-              mfa_challenges:
+              migrated_at:
                 type: string
- /bills/{id}:
+              mfa_challenges:
+                type: array
+            example:
+              bills:
+              - type: "bill"
+                id: 674124
+                uuid: "c5482bbe-0f46-4e30-b660-3b1bb0ea773f"
+                biller_id: 6510
+                biller_uuid: "b44f5c1c-a6b7-4688-8311-080512ca4f1e"
+                account_number: 87249256"
+                name_on_account: "Rita Sporer"
+                due_date: "2017-01-29T05:00:00Z"
+                balance: 62.38
+                balance_currency: "USD"
+                balance_updated_at: "2017-01-17T19:57:56Z"
+                error_code: null
+                error_message: null
+                status: "linked"
+                migrated_at: null
+                mfa_challenges: []
+              - type: "bill"
+                id: 674125
+                uuid: "c5482bbe-0f46-4e30-b660-3b1bb0ea773f"
+                biller_id: 1
+                biller_uuid: "b44f5c1c-a6b7-4688-8311-080512ca4f1e"
+                account_number: "1234567"
+                name_on_account: "Jose Bautista"
+                due_date": null
+                balance": 400.0
+                balance_currency: "RD"
+                balance_updated_at: "2017-01-17T21:47:19Z"
+                error_code: null
+                error_message: null
+                status: "linked"
+                migrated_at: null
+                mfa_challenges: []
+              
+  /bills/{id}:
     get:
       tags:
       - "xData"
-      description: "his endpoint retrieves a specific bill’s cached data. To pull fresh data from a biller see <refresh bill>. Retrieves a specific bill’s cached data. \n\n The bill status description is following: \n\n **updating**  Bill is being linked or balance is currently being fetched. \n\n **updated**  Bill was successfully linked and balance has been updated. \n\n **waiting**  Waiting for you to solve the challenge - check mfa_challenges field. \n\n **failed**  Problem while updating your bill. Check error_code and error_message for further details."
+      description: "This endpoint retrieves a specific bill’s cached data. To pull fresh data from a biller see <refresh bill>."
       operationId: "detailsBill"
       consumes:
       - "application/json"
@@ -168,7 +312,7 @@ paths:
         format: "int32"
       responses:
         200:
-          description: A User object
+          description: successful response
           schema:
             type: object
             properties:
@@ -213,10 +357,26 @@ paths:
                       type: string
                     expires_at:
                       type: string
+            example:
+              type: "bill"
+              id: 674117
+              uuid: "c5482bbe-0f46-4e30-b660-3b1bb0ea773f"
+              biller_id: 6510
+              biller_uuid: "b44f5c1c-a6b7-4688-8311-080512ca4f1e"
+              account_number: "4222422244"
+              name_on_account: "Jose Bautista"
+              due_date: "2016-11-30"
+              balance: 56.43
+              balance_currency: "USD"
+              balance_updated_at: "2017-01-16T20:12:58Z"
+              error_code: null
+              error_message: null
+              status: "linked"
+              mfa_challenges: []
     patch:
       tags:
       - "xData"
-      description: "his endpoint update the value.... (to edit)"
+      description: "his endpoint update the value of.... (to edit)"
       operationId: "updateBill"
       consumes:
       - "application/json"
@@ -231,7 +391,7 @@ paths:
         format: "int32"
       responses:
         200:
-          description: A User object
+          description: successful response
           schema:
             type: object
             properties:
@@ -276,11 +436,27 @@ paths:
                       type: string
                     expires_at:
                       type: string
+            example:
+              type: "bill"
+              id: 674117
+              uuid: "c5482bbe-0f46-4e30-b660-3b1bb0ea773f"
+              biller_id: 6510
+              biller_uuid: "b44f5c1c-a6b7-4688-8311-080512ca4f1e"
+              account_number: "4222422244"
+              name_on_account: "Jose Bautista"
+              due_date: "2016-11-30"
+              balance: 56.43
+              balance_currency: "USD"
+              balance_updated_at: "2017-01-16T20:12:58Z"
+              error_code: null
+              error_message: null
+              status: "linked"
+              mfa_challenges: []
+                      
     delete:
       tags:
       - "xData"
-      description: "his endpoint retrieves a specific bill’s cached data. To pull fresh data from a biller see <refresh bill>. Retrieves a specific bill’s cached data. \n\n The bill status description is following: \n\n **updating**  Bill is being linked or balance is currently being fetched. \n\n **updated**  Bill was successfully linked and balance has been updated. \n\n **waiting**  Waiting for you to solve the challenge - check mfa_challenges field. \n\n **failed**  Problem while updating your bill. Check error_code and error_message for further details."
-
+      description: "This endpoint deletes a specific bill."
       operationId: "deleteBill"
       consumes:
       - "application/json"
@@ -295,7 +471,7 @@ paths:
         format: "int32"
       responses:
         200:
-          description: A User object
+          description: successful response
           schema:
             type: object
             properties:
@@ -331,7 +507,24 @@ paths:
                 type: array
                 items:
                   type: object
- /bills/{id}/refresh:
+            example:
+              type: "bill"
+              id: 674117
+              uuid: "c5482bbe-0f46-4e30-b660-3b1bb0ea773f"
+              biller_id: 6510
+              biller_uuid: "b44f5c1c-a6b7-4688-8311-080512ca4f1e"
+              account_number: "4222422244"
+              name_on_account: "Jose Bautista"
+              due_date: "2016-11-30"
+              balance: 56.43
+              balance_currency: "USD"
+              balance_updated_at: "2017-01-16T20:12:58Z"
+              error_code: null
+              error_message: null
+              status: "linked"
+              mfa_challenges: []  
+                  
+  /bills/{id}/refresh:
    post:
      tags:
      - "xData"
@@ -350,10 +543,10 @@ paths:
        format: "int32"
      responses:
        200:
-         description: A User object
+         description: successful response
          schema:
-           type: object
-           properties:
+          type: object
+          properties:
              type:
                type: string
              id:
@@ -386,59 +579,48 @@ paths:
                type: array
                items:
                  type: object
-
- /bills/bulk_refresh:
-   post:
-     tags:
-     - "xData"
-     description: "TThis endpoint receives an array of bill ids as a parameter and refreshes them. Updated bills can be eventually pulled by passing id_in to the <list bills> endpoint."
-     operationId: "bulk_refreshBill"
-     consumes:
-     - "application/json"
-     produces:
-     - "application/json"
-     parameters:
-     - name: "id"
-       in: "path"
-       description: "ID of bill to return"
-       required: true
-       type: "integer"
-       format: "int32"
-     responses:
-       200:
-         description: A User object
-         schema:
-           type: object
-           properties:
-             type:
-               type: string
-             id:
-               type: integer
-             uuid:
-               type: string
-             biller_id:
-               type: integer
-             biller_uuid:
-               type: string
-             account_number:
-               type: string
-             name_on_account:
-               type: string
-             due_date:
-               type: string
-             balance:
-               type: number
-             balance_currency:
-               type: string
-             balance_updated_at:
-               type: string
-             error_code:
-               type: string
-             error_message:
-               type: string
-             status:
-               type: string
-             mfa_challenges:
-               type: array
-               items:
-                 type: object
+          example:
+            type: "bill"
+            id: 674117
+            uuid: "c5482bbe-0f46-4e30-b660-3b1bb0ea773f"
+            biller_id: 6510
+            biller_uuid: "b44f5c1c-a6b7-4688-8311-080512ca4f1e"
+            account_number: "4222422244"
+            name_on_account: "Jose Bautista"
+            due_date: "2016-11-30"
+            balance: 56.43
+            balance_currency: "USD"
+            balance_updated_at: "2017-01-16T20:12:58Z"
+            error_code: null
+            error_message: null
+            status: "linked"
+            mfa_challenges: []
+                 
+  /bills/bulk_refresh:
+    post:
+      tags:
+      - "xData"
+      description: "This endpoint receives an array of bill ids as a parameter and refreshes them. Updated bills can be eventually pulled by passing id_in to the <list bills> endpoint."
+      operationId: "bulk_refreshBill"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of bill to return"
+          required: true
+          type: "integer"
+          format: "int32"
+      responses:
+        200:
+          description: successful response 
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+            example:
+              message: "Refresh in progress for 3 bills" 
+          
