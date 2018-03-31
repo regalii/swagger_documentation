@@ -645,6 +645,105 @@ paths:
                 type: string
             example:
               message: Refresh in progress for 3 bills
+              
+  /rpps_billers:
+    get:
+      tags:
+        - xPay
+      description: >-
+        Get RPPS billers.
+      operationId: getRppsBillers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful response
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+            example:
+              message: Refresh in progress for 3 bills
+        
+  /transactions:
+    post:
+      tags:
+        - xPay
+      description: >-
+        Get RPPS billers.
+      operationId: postTransactions
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful response
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+            example:
+              message: Refresh in progress for 3 bills
+    get:
+      tags:
+        - xPay
+      description: >-
+        Returns a list of bill payments that Regalii has processed for you,  in a page of 100 results. You may provide various search criteria, including id and timestamp.
+      operationId: getTransactions
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: page
+          type: integer
+          required: false
+          description: 'If set, it allows you to display any page of bills'
+        - in: query
+          name: 'q[created_at_gteq]'
+          type: array
+          items:
+            type: string
+          required: false
+          description: 'If set, it’ll return results after the specified timestamp.'
+        - in: query
+          name: 'q[created_at_lteq]'
+          type: array
+          items:
+            type: string
+          required: false
+          description: 'If set, it’ll return results before the specified timestamp.'
+        - in: query
+          name: 'q[id_eq]'
+          type: array
+          items:
+            type: integer
+          required: false
+          description: 'Query transactions using the id'
+        - in: query
+          name: 'q[external_id_eq]'
+          type: array
+          items:
+            type: integer
+          required: false
+          description: 'Query transactions using the external_id you supplied'
+      responses:
+        '200':
+          description: successful response
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+            example:
+              message: Refresh in progress for 3 bills
+              
   /migrations:
     post:
       tags:
