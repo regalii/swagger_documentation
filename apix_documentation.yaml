@@ -673,22 +673,65 @@ paths:
       tags:
         - xPay
       description: >-
-        Get RPPS billers.
+        Create transaction (Pays a bill).
       operationId: postTransactions
       consumes:
         - application/json
       produces:
         - application/json
+      parameters:
+        - in: query
+          name: id
+          type: integer
+          required: true
+          description: 'The ID of the bill'
+        - in: query
+          name: amount
+          type: number
+          required: true
+          description: 'Amount to pay'  
+        - in: query
+          name: currency
+          type: string
+          required: true
+          description: 'Amount currency'  
       responses:
         '200':
           description: successful response
           schema:
             type: object
             properties:
-              message:
+              type: 
+                type: string
+              id: 
+                type: integer
+              amount: 
+                type: number
+              amount_currency:
+                type: string
+              fx_rate:
+                type: number
+              amount_usd: 
+                type: number
+              transaction_fee:
+                type: number
+              total_usd:
+                type: number
+              hours_to_fulfill:
+                type: integer
+              status:
                 type: string
             example:
-              message: Refresh in progress for 3 bills
+              type: "transaction"
+              id: 59335549
+              amount: 5568.00
+              amount_currency: "MXN"
+              fx_rate: 18.2569
+              amount_usd: 304.98
+              transaction_fee: 3.0
+              total_usd: 307.98
+              hours_to_fulfill: 48
+              status: "fulfilled"
     get:
       tags:
         - xPay
