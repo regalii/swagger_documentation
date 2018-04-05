@@ -5,17 +5,35 @@ servers:
   - url: https://apix.regalii.com
     description: Production, Real Credentials; Real Data
 info:
-  description: >-
-    Welcome to the Regalii API! You can use our API documentation to access
-    Regalii API endpoints, which can get you information on various billers,
-    bills, and transactions.
   version: '3.2'
   title: Regalii API Documentation
   contact:
     email: support@regalii.com
+  description: |
+    # Introduction
+
+    Welcome to Regalii API! You can use our documentation to access the
+    different API endpoints, which can get you information on various billers,
+    bills, and transactions.
+
+    ---
+
+    __Language bindings__
+
+    Bullet list:
+
+      * [Ruby](https://github.com/regalii/regaliator).
+      * [Java](https://github.com/regalii/regaliator_java)
+      * [Node.JS](https://github.com/regalii/regaliator_node)
+      * [Python](https://github.com/regalii/regaliator_python)
+      * [PHP](https://github.com/regalii/regaliator_php)
+
+    ---
+
+    __Tools for Testing__
+      * [Paw](https://paw.cloud/).
+      * [Postman Chrome](https://www.getpostman.com/)
 tags:
-  - name: Introduction
-    description: Introductory information to our API
   - name: Authentication
     description: Directions to connect with our API
   - name: Webhooks
