@@ -332,25 +332,27 @@ paths:
       operationId: createBills
       description: |
         This endpoint creates a bill for billers with credentials bill identifier. When you send credentials to create a bill, the bill object is created and we then attempt to fetch the bill from the biller. Thus no matter what happens (MFA, wrong credentials, biller down, etc), the bill object is created. The request may take up to 59 seconds to return. If an error or MFA is returned, update the bill to resolve the issue.
-      parameters:
-        - in: header
-          name: biller_id
-          required: true
-          description: The ID of the biller.
-          schema:
-            type: integer
-        - in: header
-          name: login
-          required: true
-          description: The account login.
-          schema:
-            type: string
-        - in: header
-          name: password
-          required: true
-          description: The account password
-          schema:
-            type: string
+      requestBody:
+        description: Within the request body the parameters sent are a biller_id, login and password
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                biller_id:
+                  type: integer
+                  description: The ID of the biller.
+                login:
+                  type: string
+                  description: The account login.
+                password:
+                  type: string
+                  description: The account password
+              required:
+                - biller_id
+                - login
+                - password
       responses:
         '200':
           description: successful response
