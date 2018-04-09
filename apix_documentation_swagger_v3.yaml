@@ -1,25 +1,20 @@
 openapi: 3.0.0
-servers:
-  - url: https://apix.casiregalii.com
-    description: Sandbox, Mocked Credentials; Mocked Data
-  - url: https://apix.regalii.com
-    description: Production, Real Credentials; Real Data
+
 info:
   version: '3.2'
   title: Regalii API Documentation
-  contact:
-    email: support@regalii.com
   description: |
     # Introduction
 
-    Welcome to Regalii API! You can use our documentation to access the
-    different API endpoints, which can get you information on various billers,
+    Welcome to the Regalii API! You can use our API documentation to access
+    Regalii API endpoints, which can get you information on various billers,
     bills, and transactions.
 
     ---
 
     __Language bindings__
 
+    We have language bindings in multiple languages!
     Bullet list:
 
       * [Ruby](https://github.com/regalii/regaliator).
@@ -31,8 +26,135 @@ info:
     ---
 
     __Tools for Testing__
-      * [Paw](https://paw.cloud/).
+
+    Below is a list of tools that you can use to test different endpoints and
+    their responses before you start coding against them. It is recommended that
+    you test a couple of endpoints first to get an idea how to properly construct
+    requests in your application.
+
+      * [Paw](https://paw.cloud/)
       * [Postman Chrome](https://www.getpostman.com/)
+
+    # Environments
+
+    Separate keys for each environment and `https` protocol must be used
+
+
+    - __Note:__ For security reasons, the APIx doesn't support the TLS V1.0 anymore, we recommend you to use TLS v1.2 for a better security.
+
+    ---
+
+    __Sandbox__
+
+    Regalii maintains a Sandbox which allows developers to test the API using mocked data.
+
+    ---
+
+    __Billers__
+
+    The list of billers is not in sync with the billers in production.
+
+    ---
+
+    __Credentials__
+
+    The Sandbox accepts any credentials. You can use the following special credentials when you create a Bill to force a certain response.
+
+    - __Note:__ Do not send real credentials to the Sandbox.
+
+
+      | __Login__ | __Password__ | __Status__   | __Error Code__ |
+      | ---                      | ---      | ---      | ---        |
+      |email@fetching.ii         | secret   | updating |            |
+      |email@mfa_code.ii         | secret   | waiting  |            |
+      |email@mfa_question.ii     | secret   | waiting  |            |
+      |email@mfa_choice.ii       | secret   | waiting  |            |
+      |email@mfa_image.ii        | secret   | waiting  |            |
+      |email@mfa_image_choice.ii | secret   | waiting  |            |
+      |email@successful.ii       | secret   | updated  |            |
+      |email@unavailable.ii      | secret   |          | R122       |
+      |email@input.ii            | secret   |          | R121       |
+      |email@credentials.ii      | secret   |          | R120       |
+      |email@exception.ii        | secret   |          | R121       |
+      |email@timeout.ii          | secret   |          | R121       |
+
+    Just the @{state}.ii is the required part, email and password can be anything.
+
+    ---
+
+    __Multi-Factor Question__
+
+    The questions must be answered in up to 30 seconds.
+
+    ---
+
+    __Production__
+
+    Once you complete your integration contact us to receive your production keys
+    and endpoint.
+
+    # Authentication
+
+    Regalii uses an api-key and a secret-key for authentication that we generate and will provide to you.
+
+    Regalii expects for the api-key to be included in all API requests to the server
+    in the ‘Authorization’ header combined with a checksum which we will described later on:
+
+    __Authorization:__ `APIAuth <your-api-key>:<checksum>`
+
+    - __Note:__ You must replace <your-api-key>:<checksum> with your personal API
+    key and the calculated checksum.
+
+    ---
+
+    __Calculating the Checksum__
+
+    - __Note:__ All of our official libraries calculate the checksum automatically.
+
+    __Step 1__
+
+      A checksum string needs to be created first by using your HTTP headers containing the `Content-Type`, `Content-MD5`, `Endpoint` and today’s `Timestamp`.
+
+      The checksum string is computed as follows:
+
+      checksum_string = `content-type`,`content-md5`,`endpoint`,`timestamp`
+
+      - __Note:__ The ‘Endpoint’ is simply the URL you are sending the request to. Keep in mind that
+      this value has to be exactly the same as the URL you are trying to reach. For instance, if you
+      want to create a new bill by requesting a post to https://apix.casiregalii.com/bills, your
+      checksum string should look like this (please also notice the timestamp format).
+
+      `application/json,,/bills,Wed, 10 Jan 2017 16:53:15 GMT`
+
+    __Step 2__
+
+      The checksum string is then used to create the checksum which is a Base64 SHA1 HMAC string
+      encoded using your private secret key.
+
+    __Step 3__
+
+      For testing, verify that if you pass “application/json,,/account,Wed, 02 Nov 2016 17:26:52 GMT” to your checksum function and use “verify-secret” as secret key, it should return “nLet/JEZG9CRXHScwaQ/na4vsKQ=”
+
+      Checksum verification [example](https://gist.github.com/dagosi/c2e7db228a9c15e2f5bcdccd7a056183).
+
+      How to create a checksum in [Bash](https://gist.github.com/dagosi/d85979e364af745750a9dff8c8c5a949)
+
+    ---
+
+    __How to use the Checksum__
+
+      Now that you have a checksum, you can add it to your headers using the `Authorization` header as we previously mentioned. As an example, let’s assume that your api-key is `f0253d2a6a76ed12499e7878d7803ffb` and that your checksum is `nLet/JEZG9CRXHScwaQ/na4vsKQ=`. Now, you can add this header to your request.
+
+      -H “Authorization: APIAuth f0253d2a6a76ed12499e7878d7803ffb:nLet/JEZG9CRXHScwaQ/na4vsKQ=”
+
+      You will see that we will use this format in our Authorization header through this documentation.
+
+servers:
+  - url: https://apix.casiregalii.com
+    description: Sandbox, Mocked Credentials; Mocked Data
+  - url: https://apix.regalii.com
+    description: Production, Real Credentials; Real Data
+
 tags:
   - name: Authentication
     description: Directions to connect with our API
@@ -56,10 +178,10 @@ paths:
       summary: Returns the properties of your Regalii account.
       operationId: getAccount
       description: >-
-        This endpoint returns the properties of your Regalii account. This
-        includes the name of your company, the current balance you owe, and the
-        maximum amount of credit allowed to your account in the currency
-        specified.
+        Returns the properties of your Regalii account. This includes the name of your company,
+        the current balance you owe, and the maximum amount of credit allowed to your account
+        in the currency specified.
+
       responses:
         '200':
           description: successful response
