@@ -12,19 +12,6 @@ info:
 
     ---
 
-    __Language bindings__
-
-    We have language bindings in multiple languages!
-    Bullet list:
-
-      * [Ruby](https://github.com/regalii/regaliator).
-      * [Java](https://github.com/regalii/regaliator_java)
-      * [Node.JS](https://github.com/regalii/regaliator_node)
-      * [Python](https://github.com/regalii/regaliator_python)
-      * [PHP](https://github.com/regalii/regaliator_php)
-
-    ---
-
     __Tools for Testing__
 
     Below is a list of tools that you can use to test different endpoints and
@@ -38,7 +25,6 @@ info:
     # Environments
 
     Separate keys for each environment and `https` protocol must be used
-
 
     - __Note:__ For security reasons, the APIx doesn't support the TLS V1.0 anymore, we recommend you to use TLS v1.2 for a better security.
 
@@ -62,21 +48,87 @@ info:
 
     - __Note:__ Do not send real credentials to the Sandbox.
 
+    <table>
+       <tr>
+        <td><strong>Login</strong></td>
+        <td><strong>Password</strong></td>
+        <td><strong>Status</strong></td>
+        <td><strong>Error Code</strong></td>
+      </tr>
+       <tr>
+        <td>email@fetching.ii</td>
+        <td>secret</td>
+        <td>updating</td>
+        <td></td>
+      </tr>
+       <tr>
+        <td>email@mfa_code.ii</td>
+        <td>secret</td>
+        <td>waiting</td>
+        <td></td>
+      </tr>
+       <tr>
+        <td>email@mfa_question.ii</td>
+        <td>secret</td>
+        <td>waiting</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>email@mfa_choice.ii</td>
+        <td>secret</td>
+        <td>waiting</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>email@mfa_image.ii</td>
+        <td>secret</td>
+        <td>waiting</td>
+        <td></td>
+      </tr>
+       <tr>
+        <td>email@mfa_image_choice.ii</td>
+        <td>secret</td>
+        <td>waiting</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>email@successful.ii</td>
+        <td>secret</td>
+        <td>updated</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>email@unavailable.ii</td>
+        <td>secret</td>
+        <td></td>
+        <td>R122</td>
+      </tr>
+      <tr>
+        <td>email@input.ii</td>
+        <td>secret</td>
+        <td></td>
+        <td>R121</td>
+      </tr>
+      <tr>
+        <td>email@credentials.ii</td>
+        <td>secret</td>
+        <td></td>
+        <td>R120</td>
+      </tr>
+      <tr>
+        <td>email@exception.ii</td>
+        <td>secret</td>
+        <td></td>
+        <td>R121</td>
+      </tr>
+       <tr>
+        <td>email@timeout.ii</td>
+        <td>secret</td>
+        <td></td>
+        <td>R121</td>
+      </tr>
+    </table>
 
-      | __Login__ | __Password__ | __Status__   | __Error Code__ |
-      | ---                      | ---      | ---      | ---        |
-      |email@fetching.ii         | secret   | updating |            |
-      |email@mfa_code.ii         | secret   | waiting  |            |
-      |email@mfa_question.ii     | secret   | waiting  |            |
-      |email@mfa_choice.ii       | secret   | waiting  |            |
-      |email@mfa_image.ii        | secret   | waiting  |            |
-      |email@mfa_image_choice.ii | secret   | waiting  |            |
-      |email@successful.ii       | secret   | updated  |            |
-      |email@unavailable.ii      | secret   |          | R122       |
-      |email@input.ii            | secret   |          | R121       |
-      |email@credentials.ii      | secret   |          | R120       |
-      |email@exception.ii        | secret   |          | R121       |
-      |email@timeout.ii          | secret   |          | R121       |
 
     Just the @{state}.ii is the required part, email and password can be anything.
 
@@ -156,8 +208,6 @@ servers:
     description: Production, Real Credentials; Real Data
 
 tags:
-  - name: Authentication
-    description: Directions to connect with our API
   - name: Webhooks
     description: Detailed information about our Webhooks
   - name: Common
@@ -203,18 +253,18 @@ paths:
                   balance: 537.5
                   minimum_balance: -30000
                   currency: USD
-  /billers/credentials:
+  /billers:
     get:
       tags:
         - Common
       summary: Provides the current list of billers and their associated properties.
       operationId: getBillersCredentials
       description: >-
-        To ensure that your customers are able to leverage the enhancements that we
-        make over time, you are required to cache the full list of billers and update
-        it on a weekly basis.
+        Provides the current list of billers and their associated properties.
+        To ensure that your customers are able to leverage the enhancements that we make
+        over time, you are required to cache the full list of billers and update it on a weekly basis.
       parameters:
-        - in: header
+        - in: path
           name: biller_id
           required: true
           description: The ID of the biller.
@@ -226,21 +276,53 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                type: array
+                title: "billers"
                 properties:
+                  type:
+                    type: string
+                  id:
+                    type: integer
+                  uuid:
+                    type: string
                   name:
                     type: string
-                  balance:
-                    type: number
-                  minimum_balance:
-                    type: number
+                  country:
+                    type: string
                   currency:
                     type: string
+                  biller_type:
+                    type: string
+                  bill_type:
+                    type: string
+                  required_parameters:
+                    type: array
+                    items:
+                      type: string
+                  returned_parameters:
+                    type: array
+                    items:
+                      type: string
+                  can_migrate:
+                    type: boolean
+                  charge_user:
+                    type: boolean
+                  has_xdata:
+                    type: boolean
                 example:
-                  name: ACME Company
-                  balance: 537.5
-                  minimum_balance: -30000
-                  currency: USD
+                  type: "biller"
+                  id: 6510
+                  uuid: "3bc572a9-cb55-4aea-80aa-40b058d26673"
+                  name: "Con Edison"
+                  country: "US"
+                  currency: "USD"
+                  biller_type: "Electricity"
+                  bill_type: "credentials"
+                  required_parameters: ["login","password"]
+                  returned_parameters: ["balance","due_date","account_number","name_on_account","xdata"]
+                  can_migrate: false
+                  charge_user: true
+                  has_xdata: false
   /bills:
     post:
       tags:
@@ -249,13 +331,7 @@ paths:
         identifier
       operationId: createBills
       description: |
-        This endpoint creates a bill for billers with credentials bill
-        identifier. When you send credentials to create a bill, the bill object
-        is created and we then attempt to fetch the bill from the biller. Thus
-        no matter what happens (MFA, wrong credentials, biller down, etc), the
-        bill object is created. The request may take up to 59 seconds to
-        return. If an error or MFA is returned, <update the bill> to resolve the issue.
-         You may create multiple, discrete bill objects with identical credentials.
+        This endpoint creates a bill for billers with credentials bill identifier. When you send credentials to create a bill, the bill object is created and we then attempt to fetch the bill from the biller. Thus no matter what happens (MFA, wrong credentials, biller down, etc), the bill object is created. The request may take up to 59 seconds to return. If an error or MFA is returned, update the bill to resolve the issue.
       parameters:
         - in: header
           name: biller_id
