@@ -268,6 +268,7 @@ paths:
           description: If set, it allows you to display any page of billers
           schema:
             type: integer
+        - $ref: '#/components/parameters/DateParam'
       responses:
         '200':
           description: successful response
@@ -543,22 +544,13 @@ paths:
         This endpoint retrieves a specific bill’s cached data. To pull fresh
         data from a biller see <refresh bill>.
       parameters:
-
         - name: id
           in: path
           description: "ID of bill to return"
           required: true
           schema:
             type: integer
-
-        - name: accept
-          in: header
-          required: true
-          description: "application/vnd.regalii.v3.2+json"
-          schema:
-            type: string
-            format: string
-            default: "application/vnd.regalii.v3.2+json"
+        - $ref: '#/parameters/accept'
         - name: content-MD5
           in: header
           required: true
@@ -1137,3 +1129,13 @@ paths:
                     type: string
                 example:
                   message: Refresh in progress for 3 bills
+
+components:
+  parameters:
+    DateParam:
+      name: Date
+      in: header
+      description: Today's date
+      required: true
+      schema:
+        type: string
