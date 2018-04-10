@@ -197,7 +197,7 @@ info:
 
       Now that you have a checksum, you can add it to your headers using the `Authorization` header as we previously mentioned. As an example, let’s assume that your api-key is `f0253d2a6a76ed12499e7878d7803ffb` and that your checksum is `nLet/JEZG9CRXHScwaQ/na4vsKQ=`. Now, you can add this header to your request.
 
-      -H “Authorization: APIAuth f0253d2a6a76ed12499e7878d7803ffb:nLet/JEZG9CRXHScwaQ/na4vsKQ=”
+      `-H Authorization: APIAuth f0253d2a6a76ed12499e7878d7803ffb:nLet/JEZG9CRXHScwaQ/na4vsKQ=`
 
       You will see that we will use this format in our Authorization header through this documentation.
 
@@ -218,8 +218,7 @@ tags:
     description: Access to xPay documentation
   - name: xChange
     description: Access to xChange documentation
-  - name: Error codes
-    description: List of the errors codes supported by regalii
+
 paths:
   /account:
     get:
@@ -259,17 +258,16 @@ paths:
         - Common
       summary: Provides the current list of billers and their associated properties.
       operationId: getBillersCredentials
-      description: >-
+      description: |
         Provides the current list of billers and their associated properties.
         To ensure that your customers are able to leverage the enhancements that we make
         over time, you are required to cache the full list of billers and update it on a weekly basis.
       parameters:
-        - in: path
-          name: biller_id
-          required: true
-          description: The ID of the biller.
+        - in: query
+          name: page
+          description: If set, it allows you to display any page of billers
           schema:
-            type: string
+            type: integer
       responses:
         '200':
           description: successful response
@@ -545,12 +543,46 @@ paths:
         This endpoint retrieves a specific bill’s cached data. To pull fresh
         data from a biller see <refresh bill>.
       parameters:
+
         - name: id
           in: path
-          description: ID of bill to return
+          description: "ID of bill to return"
           required: true
           schema:
             type: integer
+
+        - name: accept
+          in: header
+          required: true
+          description: "application/vnd.regalii.v3.2+json"
+          schema:
+            type: string
+            format: string
+            default: "application/vnd.regalii.v3.2+json"
+        - name: content-MD5
+          in: header
+          required: true
+          description: this value goes in blank
+          schema:
+            type: string
+            format: string
+            default: " "
+        - name: date
+          in: header
+          required: true
+          description: API key
+          schema:
+            type: string
+            format: string
+            default: "2018-04-10T17:57:03.755Z"
+        - name: Authorization
+          in: header
+          required: true
+          description: API key
+          schema:
+            type: string
+            format: string
+            default: "2018-04-10T17:57:03.755Z"
       responses:
         '200':
           description: successful response
