@@ -670,6 +670,30 @@ paths:
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
 
+      requestBody:
+        description: Within the request body the parameters sent are a login, password and
+        mfa_challenges[id] and mfa_challenges[response]
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+                  description: The username/email address/identifier credential
+                password:
+                  type: string
+                  description: The password credential
+                mfa_challenges[id]:
+                  type: array
+                  description: The id of the challenge that is being answered
+                mfa_challenges[response]:
+                  type: array
+                  describe: The response to the challenge
+              required:
+                  - login
+                  - password
       responses:
         '200':
           description: successful response
