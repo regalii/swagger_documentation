@@ -297,6 +297,7 @@ paths:
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
 
+
       responses:
         '200':
           description: successful response
@@ -465,9 +466,10 @@ paths:
         - in: query
           name: 'q[created_at_gteq]'
           schema:
-            type: array
+            type: string
             items:
               type: string
+              format: date-time
           required: false
           description: 'If set, it’ll return results after the specified timestamp.'
         - in: query
@@ -478,16 +480,17 @@ paths:
             type: string
             items:
               type: string
+              format: date-time
         - in: query
-          name: 'q[id_in]'
+          name: 'q[id_in][]'
           required: false
           description: 'If set, it’ll return the bills for the specified bill ids.'
           schema:
-            type: string
+            type: array
             items:
               type: string
               items:
-                type: integer
+                type: string
 
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
@@ -672,7 +675,7 @@ paths:
 
       requestBody:
         description: Within the request body the parameters sent are a login, password and
-        mfa_challenges[id] and mfa_challenges[response]
+          an array of mfa_challenges objects
         required: true
         content:
           application/json:
@@ -685,12 +688,18 @@ paths:
                 password:
                   type: string
                   description: The password credential
-                mfa_challenges[id]:
+                mfa_challenges:
                   type: array
-                  description: The id of the challenge that is being answered
-                mfa_challenges[response]:
-                  type: array
-                  describe: The response to the challenge
+                  description: Challenge information
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        description: The id of the challenge that is being answered
+                      response:
+                        type: string
+                        description: The response to the challenge
               required:
                   - login
                   - password
@@ -1132,6 +1141,15 @@ paths:
                 address:
                   type: object
                   description: Address of the person who makes the payment. This parameter should be a hash that contains the `street`, `zip_code`, `city` and `state`
+                  properties:
+                    street:
+                      type: string
+                    zip_code:
+                      type: string
+                    city:
+                      type: string
+                    state:
+                      type: string
               required:
                 - account_number
                 - amount
@@ -1200,35 +1218,30 @@ paths:
           required: false
           description: 'Returns those transactions that were created after the timestamp provided'
           schema:
-            type: array
-            items:
-              type: string
+            type: string
+            format: date-time
 
         - in: query
           name: 'q[created_at_lteq]'
           required: false
           description: 'Returns those transactions that were created before the timestamp provided'
           schema:
-            type: array
-            items:
-              type: string
+            type: string
+            format: date-time
 
         - in: query
           name: 'q[biller_id_eq]'
           required: false
           description: 'Returns the transactions of a specific biller'
           schema:
-            type: array
-            items:
-              type: string
+            type: string
         - in: query
           name: 'q[bill_id_eq]'
           required: false
           description: 'Query transactions using the external_id you supplied'
           schema:
-            type: array
-            items:
-              type: string
+            type: string
+
         - in: query
           name: 'q[biller_id_in][]'
           required: false
@@ -1236,7 +1249,7 @@ paths:
           schema:
             type: array
             items:
-              type: integer
+              type: string
         - in: query
           name: 'q[bill_id_in][]'
           required: false
@@ -1244,7 +1257,7 @@ paths:
           schema:
             type: array
             items:
-              type: integer
+              type: string
 
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
@@ -1308,6 +1321,8 @@ paths:
           description: Id of the transaction
           schema:
             type: integer
+        - $ref: '#/components/parameters/DateParam'
+        - $ref: '#/components/parameters/ContentMD5Param'
       responses:
         '200':
           description: successful response
@@ -1364,6 +1379,8 @@ paths:
           description: Id of the transaction
           schema:
             type: integer
+        - $ref: '#/components/parameters/DateParam'
+        - $ref: '#/components/parameters/ContentMD5Param'
       responses:
         '200':
           description: successful response
@@ -1557,7 +1574,7 @@ paths:
                       status: updating
                       requested_at: 2018-04-06T18:16:00.033Z
                       migrated_at: null
-  /migrations/id:
+  /migrations/{id}:
     get:
       tags:
         - xChange
@@ -1619,7 +1636,6 @@ paths:
 
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
-
       requestBody:
         description: Within the request body the parameters sent are a biller_id, login and password
         required: true
@@ -1634,15 +1650,22 @@ paths:
                 password:
                   type: string
                   description: The password credential
-                mfa_challenges[id]:
+                mfa_challenges:
                   type: array
-                  description: The id of the challenge that is being answered
-                mfa_challenges[response]:
-                  type: array
-                  description: The response to the challenge
+                  description: Challenge information
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        description: The id of the challenge that is being answered
+                      response:
+                        type: string
+                        description: The response to the challenge
               required:
                 - login
                 - password
+
       responses:
         '200':
           description: successful response
