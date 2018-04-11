@@ -239,22 +239,28 @@ tags:
     description: Access to xChange documentation
 
 paths:
+
   /account:
     get:
       tags:
         - Common
       summary: Returns the properties of your Regalii account.
       operationId: getAccount
-      description: |
+      description: >-
         Returns the properties of your Regalii account. This includes the name of your company,
         the current balance you owe, and the maximum amount of credit allowed to your account
         in the currency specified.
+
+      parameters:
+        - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
 
       responses:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
@@ -277,58 +283,53 @@ paths:
         - Common
       summary: Provides the current list of billers and their associated properties.
       operationId: getBillersCredentials
-      description: |
+      description: >-
         Provides the current list of billers and their associated properties.
         To ensure that your customers are able to leverage the enhancements that we make
         over time, you are required to cache the full list of billers and update it on a weekly basis.
       parameters:
-        - in: query
+        - in: path
           name: page
-          description: If set, it allows you to display any page of billers
+          required: true
+          description: Page index for returned information.
           schema:
             type: integer
+
         - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       responses:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: array
                 title: "billers"
                 properties:
                   type:
                     type: string
-                    description: A value of "biller
                   id:
                     type: integer
-                    description: Unique identifier of the biller in the Regalii system
                   uuid:
                     type: string
-                    description: Unique identifier of the biller in the Regalii system
                   name:
                     type: string
-                    description: Utility Biller’s name
                   country:
                     type: string
-                    description: Utility Biller’s ISO 2 digit country code
                   currency:
                     type: string
-                    description: The 3 digit ISO currency code of the utility biller’s country.
                   biller_type:
                     type: string
-                    description: Specifies the utility type of the bill being paid. For example Electricity, Landline, or Cell.
                   bill_type:
                     type: string
-                    description: Specifies the bill identifier that is used to perform consults and payments.
                   required_parameters:
                     type: array
-                    description: List of parameters required to add a bill with this biller
                     items:
                       type: string
                   returned_parameters:
                     type: array
-                    description: List of returned parameters by this biller
                     items:
                       type: string
                   can_migrate:
@@ -355,17 +356,12 @@ paths:
     post:
       tags:
         - xData
-      summary: creates a bill for billers with credentials bill identifier
+      summary: creates a bill for billers with credentials bill
         identifier
       operationId: createBills
       description: |
-        This endpoint creates a bill for billers with credentials bill identifier. When you send
-        credentials to create a bill, the bill object is created and we then attempt to fetch the bill
-        from the biller. Thus no matter what happens (MFA, wrong credentials, biller down, etc), the bill
-        object is created. The request may take up to 59 seconds to return. If an error or MFA is
-        returned, update the bill to resolve the issue.
+        This endpoint creates a bill for billers with credentials bill identifier. When you send credentials to create a bill, the bill object is created and we then attempt to fetch the bill from the biller. Thus no matter what happens (MFA, wrong credentials, biller down, etc), the bill object is created. The request may take up to 59 seconds to return. If an error or MFA is returned, update the bill to resolve the issue.
 
-        You may create multiple, discrete bill objects with identical credentials.
       requestBody:
         description: Within the request body the parameters sent are a biller_id, login and password
         required: true
@@ -387,58 +383,47 @@ paths:
                 - biller_id
                 - login
                 - password
+      parameters:
+        - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
       responses:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
                   type:
                     type: string
-                    description: pending explain...
                   id:
                     type: integer
-                    description: pending explain...
                   uuid:
                     type: string
-                    description: pending explain...
                   biller_id:
                     type: integer
-                    description: pending explain...
                   biller_uuid:
                     type: string
-                    description: pending explain...
                   account_number:
                     type: string
-                    description: pending explain...
                   name_on_account:
                     type: string
-                    description: pending explain...
                   due_date:
                     type: string
-                    description: pending explain...
                   balance:
                     type: number
-                    description: pending explain...
                   balance_currency:
                     type: string
-                    description: pending explain...
                   balance_updated_at:
                     type: string
-                    description: pending explain...
                   error_code:
                     type: string
-                    description: pending explain...
                   error_message:
                     type: string
-                    description: pending explain...
                   status:
                     type: string
-                    description: pending explain...
                   mfa_challenges:
-                    description: pending explain...
                     type: array
                     items:
                       type: object
@@ -477,89 +462,85 @@ paths:
       parameters:
         - in: query
           name: page
-          description: It allows you to display any page of bills.
+          required: false
+          description: 'If set, it allows you to display any page of bills.'
           schema:
             type: integer
+
         - in: query
           name: 'q[created_at_gteq]'
           schema:
             type: array
             items:
               type: string
-          description: It'll return results __after__ the specified timestamp.
+          required: false
+          description: 'If set, it’ll return results after the specified timestamp.'
+
         - in: query
           name: 'q[created_at_lteq]'
-          description: It'll return results __before__ the specified timestamp
+          required: false
+          description: 'If set, it’ll return results before the specified timestamp.'
           schema:
             type: string
             items:
               type: string
+
         - in: query
           name: 'q[id_in]'
-          description: It'll return the bills for the specified bill ids
+          required: false
+          description: 'If set, it’ll return the bills for the specified bill ids.'
           schema:
             type: string
             items:
               type: string
               items:
                 type: integer
+
+        - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       responses:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: array
                 items:
                   type: object
                 properties:
                   type:
-                    description: pending explain...
                     type: string
                   id:
-                    description: pending explain...
                     type: integer
                   uuid:
-                    description: Unique identifier of the biller in the Regalii system
                     type: string
                   biller_id:
-                    description: pending explain...
                     type: integer
                   biller_uuid:
-                    description: pending explain...
                     type: string
                   account_number:
-                    description: pending explain...
                     type: string
                   name_on_account:
-                    description: pending explain...
                     type: string
                   due_date:
-                    description: pending explain...
                     type: string
                   balance:
-                    description: pending explain...
                     type: number
                   balance_currency:
-                    description: pending explain...
                     type: string
                   balance_updated_at:
-                    description: pending explain...
                     type: string
                   error_code:
-                    description: pending explain...
                     type: string
                   error_message:
-                    description: pending explain...
                     type: string
                   status:
-                    description: pending explain...
                     type: string
                   migrated_at:
-                    description: pending explain...
                     type: string
                   mfa_challenges:
-                    description: pending explain...
                     type: array
                 example:
                   bills:
@@ -602,67 +583,57 @@ paths:
       summary: retrieves a specific bill’s cached data.
       operationId: getBill
       description: |
-        This endpoint retrieves a specific bill’s cached data. To pull fresh data from a biller see <a href='#/bills/{id}/refresh:'>refresh bill.</a>
+        This endpoint retrieves a specific bill’s cached data. To pull fresh
+        data from a biller see <refresh bill>.
       parameters:
         - name: id
           in: path
-          description: ID of the bill
+          description: ID of bill to return
           required: true
           schema:
             type: integer
+
         - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       responses:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
                   type:
-                    description: bill value
                     type: string
                   id:
-                    description: The id of the Bill
                     type: integer
                   uuid:
-                    description: Unique identifier of the biller in the Regalii system
                     type: string
                   biller_id:
-                    description: The id of the Biller
                     type: integer
                   biller_uuid:
-                    description: Unique identifier of the biller
                     type: string
                   account_number:
-                    description: Your account in the Biller's site
                     type: string
                   name_on_account:
-                    description: The name of your account
                     type: string
                   due_date:
-                    description: The payment due date
                     type: string
                   balance:
-                    description: The balance in your account
                     type: number
                   balance_currency:
-                    description: The currency used in your account
                     type: string
                   balance_updated_at:
-                    description: The date when your balance was updated
                     type: string
                   error_code:
-                    description: If your bill has an error, a [code] (#errors) is going to be displayed
                     type: string
                   error_message:
-                    description: The description of the error
                     type: string
                   status:
-                    description: The status of your bill, it can be `updating`, `failed`, `waiting`, `updated`.
                     type: string
                   mfa_challenges:
-                    description: Challenges requested by the Biller. Refero to [handing MFA] (#handling-multi-factor-authentication)
                     type: array
                     items:
                       type: object
@@ -675,118 +646,6 @@ paths:
                           type: string
                         expires_at:
                           type: string
-                  address:
-                    type: object
-                    items:
-                      type: object
-                      properties:
-                        street:
-                          type: string
-                          description: Name of the street
-                        city:
-                          type: integer
-                          description: Name of the city
-                        state:
-                          type: string
-                          description: Name of the state
-                        zip:
-                          type: string
-                          description: ZipCode
-                        country:
-                          type: string
-                          description: Name of the Country
-                  payment_method:
-                    type: object
-                    items:
-                      type: object
-                      properties:
-                        type:
-                          type: string
-                          description: Type of the payment, it can be `Credit`
-                        identifier:
-                          type: integer
-                          description: Issuer bank - last 4 digits of the card
-                        autopay:
-                          type: boolean
-                          description: If the bill if pay automatically
-                  statements:
-                    type: object
-                    items:
-                      type: object
-                      properties:
-                        amount:
-                          type: number
-                          description: Amount of the statement
-                        period_start_date:
-                          type: string
-                          description: Start date of the period
-                        period_end_date:
-                          type: string
-                          description: End date of the period
-                  payments:
-                    type: object
-                    items:
-                      type: object
-                      properties:
-                        amount:
-                          type: number
-                          description: Amount of the payment
-                        confirmation:
-                          type: string
-                          description: Confirmation number
-                        date:
-                          type: string
-                          description: Date of the payment
-                        method:
-                          type: string
-                          description: Payment method used
-                        source:
-                          type: string
-                          description: Card used
-                  subordinates:
-                    description: Extradata depending on the Biller
-                    type: object
-                    items:
-                      type: object
-                      properties:
-                        number:
-                          type: number
-                        name:
-                          type: string
-                        device:
-                          type: object
-                          items:
-                            type: object
-                            properties:
-                              contract_start_date:
-                                type: string
-                              contract_end_date:
-                                type: string
-                  plan:
-                    type: object
-                    items:
-                      type: object
-                      properties:
-                        amount:
-                          type: number
-                  usage:
-                    description: Extradata depending on the Biller
-                    type: object
-                    items:
-                      type: object
-                      properties:
-                        data_available:
-                          type: integer
-                        data_used:
-                          type: integer
-                        minutes_available:
-                          type: integer
-                        minutes_used:
-                          type: integer
-                        sms_available:
-                          type: integer
-                        sms_used:
-                          type: integer
                 example:
                   type: bill
                   id: 674117
@@ -803,62 +662,12 @@ paths:
                   error_message: null
                   status: linked
                   mfa_challenges: []
-                  address:  {
-                    street: "2651 Some St West, Unit 1A",
-                    city: "New York",
-                    state: "NY",
-                    zip: "10001",
-                    country: "US"
-                  }
-                  payment_method: {
-                    type: "Credit",
-                    identifier: "Visa - 1234",
-                    autopay: true
-                  }
-                  statements: [
-                    {
-                      "amount": 228.82,
-                      "period_start_date": "2016-08-07",
-                      "period_end_date": "2016-09-06"
-                    }
-                  ]
-                  payments: [
-                    {
-                    amount: 1.11,
-                    confirmation: "ABCD12345",
-                    date: "2016-09-29",
-                    method: "CreditCard",
-                    source: "Visa - 1234"
-                    }
-                  ]
-                  subordinates: [
-                    {
-                      number: "1112223333",
-                      name: "John Doe",
-                      device: {
-                        name: "Nexus 5",
-                        contract_start_date: "2015-01-01",
-                        contract_end_date: "2017-01-01"
-                    },
-                    plan: {
-                      name: "Plan60"
-                    },
-                    usage: {
-                      data_available: 6000,
-                      data_used: 560,
-                      minutes_available: -1,
-                      minutes_used: 107,
-                      sms_available: -1,
-                      sms_used: 202
-                    }
-                  }
-                ]
     patch:
       tags:
         - xData
-      description: Updates a specific bill, either to answer an MFA challenge or to correct an error.
+      description: his endpoint update the value of.... (to edit)
       operationId: updateBill
-      summary: Updates a specific bill, either to answer an MFA challenge or to correct an error.
+      summary: his endpoint update the value of.... (to edit)
       parameters:
         - name: id
           in: path
@@ -866,81 +675,48 @@ paths:
           required: true
           schema:
             type: integer
-      requestBody:
-        description: Within the request body, the parameters to send are the `login`, `password`, `mfa_challenges[id]` and `mfa_challenges[response]`.
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                login:
-                  type: string
-                  description: The account login.
-                password:
-                  type: string
-                  description: The account password
-                mfa_challenges[id]:
-                  type: string
-                  description: The id of the challenge that is being answered
-                mfa_challenges[response]:
-                  type: string
-                  description: The response to the challenge
-              required:
-                - login
-                - password
+
+        - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       responses:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
                   type:
-                    description: bill value
                     type: string
                   id:
-                    description: The id of the Bill
                     type: integer
                   uuid:
-                    description: Unique identifier of the biller in the Regalii system
                     type: string
                   biller_id:
-                    description: The id of the Biller
                     type: integer
                   biller_uuid:
-                    description: Unique identifier of the biller
                     type: string
                   account_number:
-                    description: Your account in the Biller's site
                     type: string
                   name_on_account:
-                    description: The name of your account
                     type: string
                   due_date:
-                    description: The payment due date
                     type: string
                   balance:
-                    description: The balance in your account
                     type: number
                   balance_currency:
-                    description: The currency used in your account
                     type: string
                   balance_updated_at:
-                    description: The date when your balance was updated
                     type: string
                   error_code:
-                    description: If your bill has an error, a [code] (#errors) is going to be displayed
                     type: string
                   error_message:
-                    description: The description of the error
                     type: string
                   status:
-                    description: The status of your bill, it can be `updating`, `failed`, `waiting`, `updated`.
                     type: string
                   mfa_challenges:
-                    description: Challenges requested by the Biller. Refero to [handing MFA] (#handling-multi-factor-authentication)
                     type: array
                     items:
                       type: object
@@ -981,58 +757,48 @@ paths:
           required: true
           schema:
             type: integer
+
+        - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       responses:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
                   type:
-                    description: bill value
                     type: string
                   id:
-                    description: The id of the Bill
                     type: integer
                   uuid:
-                    description: Unique identifier of the biller in the Regalii system
                     type: string
                   biller_id:
-                    description: The id of the Biller
                     type: integer
                   biller_uuid:
-                    description: Unique identifier of the biller
                     type: string
                   account_number:
-                    description: Your account in the Biller's site
                     type: string
                   name_on_account:
-                    description: The name of your account
                     type: string
                   due_date:
-                    description: The payment due date
                     type: string
                   balance:
-                    description: The balance in your account
                     type: number
                   balance_currency:
-                    description: The currency used in your account
                     type: string
                   balance_updated_at:
-                    description: The date when your balance was updated
                     type: string
                   error_code:
-                    description: If your bill has an error, a [code] (#errors) is going to be displayed
                     type: string
                   error_message:
-                    description: The description of the error
                     type: string
                   status:
-                    description: The status of your bill, it can be `updating`, `failed`, `waiting`, `updated`.
                     type: string
                   mfa_challenges:
-                    description: Challenges requested by the Biller. Refero to [handing MFA] (#handling-multi-factor-authentication)
                     type: array
                     items:
                       type: object
@@ -1056,72 +822,62 @@ paths:
     post:
       tags:
         - xData
-      description: |
+      description: >-
         This endpoint refreshes a specific bill by polling the biller. It
-        responds with the same structure as <a href='#/bills/{id}/refresh:'>create bill</a>.
+        responds with the same structure as <create bill>.
       operationId: refreshBill
       parameters:
         - name: id
           in: path
-          description: The ID of the bill
+          description: ID of bill to return
           required: true
           schema:
             type: integer
+
+        - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       responses:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
                   type:
-                    description: bill value
                     type: string
                   id:
-                    description: The id of the Bill
                     type: integer
                   uuid:
-                    description: Unique identifier of the biller in the Regalii system
                     type: string
                   biller_id:
-                    description: The id of the Biller
                     type: integer
                   biller_uuid:
-                    description: Unique identifier of the biller
                     type: string
                   account_number:
-                    description: Your account in the Biller's site
                     type: string
                   name_on_account:
-                    description: The name of your account
                     type: string
                   due_date:
-                    description: The payment due date
                     type: string
                   balance:
-                    description: The balance in your account
                     type: number
                   balance_currency:
-                    description: The currency used in your account
                     type: string
                   balance_updated_at:
-                    description: The date when your balance was updated
                     type: string
                   error_code:
-                    description: If your bill has an error, a [code] (#errors) is going to be displayed
                     type: string
                   error_message:
-                    description: The description of the error
                     type: string
                   status:
-                    description: The status of your bill, it can be `updating`, `failed`, `waiting`, `updated`.
                     type: string
                   migrated_at:
                     description: The date time of migration.
                     type: string
                   mfa_challenges:
-                    description: Challenges requested by the Biller. Refero to [handing MFA] (#handling-multi-factor-authentication)
                     type: array
                     items:
                       type: object
@@ -1146,9 +902,17 @@ paths:
     post:
       tags:
         - xData
-      description: |
-        This endpoint receives an array of bill ids as a parameter and refreshes them. Updated bills can be eventually pulled by passing id_in to the <a href='#/bills/{id}/refresh:'>list bills</a> endpoint.
+      description: >-
+        This endpoint receives an array of bill ids as a parameter and refreshes
+        them. Updated bills can be eventually pulled by passing id_in to the
+        <list bills> endpoint.
       operationId: bulk_refreshBill
+
+      parameters:
+        - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       requestBody:
         description: Within the request body the parameters sent are a biller_id, login and password
         required: true
@@ -1164,11 +928,12 @@ paths:
                     type: string
               required:
                 - bill_ids
+
       responses:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
@@ -1184,6 +949,10 @@ paths:
         This endpoint provides the list of RPPS billers
       operationId: getRppsBillers
       parameters:
+        - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
         - name: q[biller_type_eq]
           in: query
           required: false
@@ -1206,7 +975,7 @@ paths:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
@@ -1310,6 +1079,12 @@ paths:
         transaction. After that time, the transaction’s status will be updated. You can always check the
         transaction status by making a request to the Get transaction endpoint.
       operationId: postTransactions
+
+      parameters:
+        - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       requestBody:
         description: Within the request body the parameters sent are an `account_number`, `amount`, `currency`, `rpps_biller_id`, `phone_number`, `client_number`, `payer_born_on`, `first_name`, `last_name`.
         required: true
@@ -1362,7 +1137,7 @@ paths:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
@@ -1410,6 +1185,7 @@ paths:
           description: 'Allows you to obtain a specific page of the transactions’ list'
           schema:
             type: integer
+
         - in: query
           name: 'q[created_at_gteq]'
           required: false
@@ -1418,6 +1194,7 @@ paths:
             type: array
             items:
               type: string
+
         - in: query
           name: 'q[created_at_lteq]'
           required: false
@@ -1426,6 +1203,7 @@ paths:
             type: array
             items:
               type: string
+
         - in: query
           name: 'q[biller_id_eq]'
           required: false
@@ -1458,11 +1236,16 @@ paths:
             type: array
             items:
               type: integer
+
+        - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       responses:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
@@ -1619,6 +1402,12 @@ paths:
       description: >-
         This endpoint... to be edited.
       operationId: postMigrations
+
+      parameters:
+        - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       requestBody:
         description: Within the request body the parameters sent are a $$$$$
         required: true
@@ -1697,7 +1486,7 @@ paths:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
@@ -1723,11 +1512,16 @@ paths:
           required: false
           schema:
             type: integer
+
+        - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       responses:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
@@ -1771,11 +1565,16 @@ paths:
           required: true
           schema:
             type: integer
+
+        - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       responses:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
@@ -1804,6 +1603,19 @@ paths:
       description: >-
         pending to write
       operationId: updateMigration
+
+      parameters:
+        - name: id
+          in: path
+          description: ID of bill to return
+          required: true
+          schema:
+            type: integer
+
+        - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       requestBody:
         description: Within the request body the parameters sent are a biller_id, login and password
         required: true
@@ -1831,7 +1643,7 @@ paths:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
@@ -1860,7 +1672,25 @@ components:
     DateParam:
       name: Date
       in: header
-      description: Today's date
+      description: Today's date (e.g. Wed, 11 Apr 2018 17:34:23 GMT)
       required: true
       schema:
         type: string
+        format: date-time
+    ContentMD5Param:
+      name: Content-MD5
+      in: header
+      description: Content-MD5
+      required: false
+      schema:
+        type: string
+
+  schemas:
+    Date:
+      description: stdRecordStamp_PutData
+      properties:
+        WhenAdd:
+          format: date-time
+          description: WhenAdd
+          pattern: '\d{4}-\d{1,2}-\d{1,2} \d{1,2}:\d{1,2}:\d{1,2}'
+          type: string
