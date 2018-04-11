@@ -253,7 +253,6 @@ paths:
 
       parameters:
         - $ref: '#/components/parameters/DateParam'
-
         - $ref: '#/components/parameters/ContentMD5Param'
 
       responses:
@@ -296,7 +295,6 @@ paths:
             type: integer
 
         - $ref: '#/components/parameters/DateParam'
-
         - $ref: '#/components/parameters/ContentMD5Param'
 
       responses:
@@ -361,7 +359,6 @@ paths:
       operationId: createBills
       description: |
         This endpoint creates a bill for billers with credentials bill identifier. When you send credentials to create a bill, the bill object is created and we then attempt to fetch the bill from the biller. Thus no matter what happens (MFA, wrong credentials, biller down, etc), the bill object is created. The request may take up to 59 seconds to return. If an error or MFA is returned, update the bill to resolve the issue.
-
       requestBody:
         description: Within the request body the parameters sent are a biller_id, login and password
         required: true
@@ -385,7 +382,6 @@ paths:
                 - password
       parameters:
         - $ref: '#/components/parameters/DateParam'
-
         - $ref: '#/components/parameters/ContentMD5Param'
       responses:
         '200':
@@ -466,7 +462,6 @@ paths:
           description: 'If set, it allows you to display any page of bills.'
           schema:
             type: integer
-
         - in: query
           name: 'q[created_at_gteq]'
           schema:
@@ -475,7 +470,6 @@ paths:
               type: string
           required: false
           description: 'If set, it’ll return results after the specified timestamp.'
-
         - in: query
           name: 'q[created_at_lteq]'
           required: false
@@ -484,7 +478,6 @@ paths:
             type: string
             items:
               type: string
-
         - in: query
           name: 'q[id_in]'
           required: false
@@ -497,7 +490,6 @@ paths:
                 type: integer
 
         - $ref: '#/components/parameters/DateParam'
-
         - $ref: '#/components/parameters/ContentMD5Param'
 
       responses:
@@ -594,7 +586,6 @@ paths:
             type: integer
 
         - $ref: '#/components/parameters/DateParam'
-
         - $ref: '#/components/parameters/ContentMD5Param'
 
       responses:
@@ -677,7 +668,6 @@ paths:
             type: integer
 
         - $ref: '#/components/parameters/DateParam'
-
         - $ref: '#/components/parameters/ContentMD5Param'
 
       responses:
@@ -759,7 +749,6 @@ paths:
             type: integer
 
         - $ref: '#/components/parameters/DateParam'
-
         - $ref: '#/components/parameters/ContentMD5Param'
 
       responses:
@@ -835,7 +824,6 @@ paths:
             type: integer
 
         - $ref: '#/components/parameters/DateParam'
-
         - $ref: '#/components/parameters/ContentMD5Param'
 
       responses:
@@ -910,7 +898,6 @@ paths:
 
       parameters:
         - $ref: '#/components/parameters/DateParam'
-
         - $ref: '#/components/parameters/ContentMD5Param'
 
       requestBody:
@@ -950,7 +937,6 @@ paths:
       operationId: getRppsBillers
       parameters:
         - $ref: '#/components/parameters/DateParam'
-
         - $ref: '#/components/parameters/ContentMD5Param'
 
         - name: q[biller_type_eq]
@@ -1082,7 +1068,6 @@ paths:
 
       parameters:
         - $ref: '#/components/parameters/DateParam'
-
         - $ref: '#/components/parameters/ContentMD5Param'
 
       requestBody:
@@ -1238,7 +1223,6 @@ paths:
               type: integer
 
         - $ref: '#/components/parameters/DateParam'
-
         - $ref: '#/components/parameters/ContentMD5Param'
 
       responses:
@@ -1405,7 +1389,6 @@ paths:
 
       parameters:
         - $ref: '#/components/parameters/DateParam'
-
         - $ref: '#/components/parameters/ContentMD5Param'
 
       requestBody:
@@ -1514,7 +1497,6 @@ paths:
             type: integer
 
         - $ref: '#/components/parameters/DateParam'
-
         - $ref: '#/components/parameters/ContentMD5Param'
 
       responses:
@@ -1567,7 +1549,6 @@ paths:
             type: integer
 
         - $ref: '#/components/parameters/DateParam'
-
         - $ref: '#/components/parameters/ContentMD5Param'
 
       responses:
@@ -1613,7 +1594,6 @@ paths:
             type: integer
 
         - $ref: '#/components/parameters/DateParam'
-
         - $ref: '#/components/parameters/ContentMD5Param'
 
       requestBody:
@@ -1684,13 +1664,3 @@ components:
       required: false
       schema:
         type: string
-
-  schemas:
-    Date:
-      description: stdRecordStamp_PutData
-      properties:
-        WhenAdd:
-          format: date-time
-          description: WhenAdd
-          pattern: '\d{4}-\d{1,2}-\d{1,2} \d{1,2}:\d{1,2}:\d{1,2}'
-          type: string
