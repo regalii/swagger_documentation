@@ -42,6 +42,25 @@ info:
 
     ---
 
+
+    Separate keys for each environment and `https` protocol must be used
+
+    - __Note:__ For security reasons, the APIx doesn't support the TLS V1.0 anymore, we recommend you to use TLS v1.2 for a better security.
+
+    ---
+
+    __Sandbox__
+
+    Regalii maintains a Sandbox which allows developers to test the API using mocked data.
+
+    ---
+
+    __Billers__
+
+    The list of billers is not in sync with the billers in production.
+
+    ---
+
     __Credentials__
 
     The Sandbox accepts any credentials. You can use the following special credentials when you create a Bill to force a certain response.
@@ -1835,6 +1854,7 @@ paths:
                   status: failed
                   requested_at: '2018-04-10T17:57:03.755Z'
                   migrated_at: '2018-04-10T17:57:28.361Z'
+                  message: Refresh in progress for 3 bills
 components:
   parameters:
     DateParam:
