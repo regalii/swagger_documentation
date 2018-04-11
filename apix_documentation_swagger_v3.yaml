@@ -220,6 +220,7 @@ tags:
     description: Access to xChange documentation
 
 paths:
+
   /account:
     get:
       tags:
@@ -240,7 +241,7 @@ paths:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
@@ -341,6 +342,7 @@ paths:
       operationId: createBills
       description: |
         This endpoint creates a bill for billers with credentials bill identifier. When you send credentials to create a bill, the bill object is created and we then attempt to fetch the bill from the biller. Thus no matter what happens (MFA, wrong credentials, biller down, etc), the bill object is created. The request may take up to 59 seconds to return. If an error or MFA is returned, update the bill to resolve the issue.
+
       requestBody:
         description: Within the request body the parameters sent are a biller_id, login and password
         required: true
@@ -370,7 +372,7 @@ paths:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
@@ -483,7 +485,7 @@ paths:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: array
                 items:
@@ -572,24 +574,6 @@ paths:
           schema:
             type: integer
 
-        - name: Content-Type
-          schema:
-            type: string
-            format: string
-            enum: [ "application/json" ]
-          in: header
-          required: true
-          description: API key
-
-        - name: Authorization
-          schema:
-            type: string
-            format: string
-            enum: [ $ref: '#/components/schemas/Authorization' ]
-          in: header
-          required: true
-          description: API key
-
         - $ref: '#/components/parameters/DateParam'
 
         - $ref: '#/components/parameters/ContentMD5Param'
@@ -598,7 +582,7 @@ paths:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
@@ -681,7 +665,7 @@ paths:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
@@ -763,7 +747,7 @@ paths:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
@@ -839,7 +823,7 @@ paths:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
@@ -916,7 +900,7 @@ paths:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
@@ -940,7 +924,7 @@ paths:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
@@ -985,7 +969,7 @@ paths:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
@@ -1078,7 +1062,7 @@ paths:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
@@ -1109,7 +1093,7 @@ paths:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
@@ -1139,7 +1123,7 @@ paths:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
@@ -1171,7 +1155,7 @@ paths:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
@@ -1201,7 +1185,7 @@ paths:
         '200':
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 type: object
                 properties:
@@ -1227,6 +1211,7 @@ components:
       required: false
       schema:
         type: string
+
   schemas:
     Date:
       description: stdRecordStamp_PutData
@@ -1236,10 +1221,3 @@ components:
           description: WhenAdd
           pattern: '\d{4}-\d{1,2}-\d{1,2} \d{1,2}:\d{1,2}:\d{1,2}'
           type: string
-
-    Authorization:
-      description: put AUTH
-      properties:
-        WhenAdd:
-          type: string
-          default: okasss
