@@ -234,6 +234,8 @@ paths:
       parameters:
         - $ref: '#/components/parameters/DateParam'
 
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       responses:
         '200':
           description: successful response
@@ -272,7 +274,11 @@ paths:
           description: Page index for returned information.
           schema:
             type: integer
+
         - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       responses:
         '200':
           description: successful response
@@ -358,6 +364,8 @@ paths:
                 - password
       parameters:
         - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
       responses:
         '200':
           description: successful response
@@ -437,6 +445,7 @@ paths:
           description: 'If set, it allows you to display any page of bills.'
           schema:
             type: integer
+
         - in: query
           name: 'q[created_at_gteq]'
           schema:
@@ -445,6 +454,7 @@ paths:
               type: string
           required: false
           description: 'If set, it’ll return results after the specified timestamp.'
+
         - in: query
           name: 'q[created_at_lteq]'
           required: false
@@ -453,6 +463,7 @@ paths:
             type: string
             items:
               type: string
+
         - in: query
           name: 'q[id_in]'
           required: false
@@ -463,7 +474,10 @@ paths:
               type: string
               items:
                 type: integer
+
         - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
 
       responses:
         '200':
@@ -567,15 +581,6 @@ paths:
           required: true
           description: API key
 
-        - name: Content-MD5
-          schema:
-            type: string
-            format: string
-            enum: [ '' ]
-          in: header
-          required: true
-          description: API key
-
         - name: Authorization
           schema:
             type: string
@@ -586,6 +591,8 @@ paths:
           description: API key
 
         - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
 
       responses:
         '200':
@@ -667,6 +674,9 @@ paths:
             type: integer
 
         - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       responses:
         '200':
           description: successful response
@@ -744,7 +754,11 @@ paths:
           required: true
           schema:
             type: integer
+
         - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       responses:
         '200':
           description: successful response
@@ -816,7 +830,11 @@ paths:
           required: true
           schema:
             type: integer
+
         - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       responses:
         '200':
           description: successful response
@@ -889,7 +907,11 @@ paths:
           required: true
           schema:
             type: integer
+
         - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       responses:
         '200':
           description: successful response
@@ -911,6 +933,9 @@ paths:
       operationId: getRppsBillers
       parameters:
         - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       responses:
         '200':
           description: successful response
@@ -937,19 +962,25 @@ paths:
           description: 'The ID of the bill'
           schema:
             type: integer
+
         - in: query
           name: amount
           required: true
           description: 'Amount to pay'
           schema:
             type: number
+
         - in: query
           name: currency
           required: true
           description: 'Amount currency'
           schema:
             type: string
+
         - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       responses:
         '200':
           description: successful response
@@ -1002,6 +1033,7 @@ paths:
           description: 'If set, it allows you to display any page of bills'
           schema:
             type: integer
+
         - in: query
           name: 'q[created_at_gteq]'
           required: false
@@ -1010,6 +1042,7 @@ paths:
             type: array
             items:
               type: string
+
         - in: query
           name: 'q[created_at_lteq]'
           required: false
@@ -1018,6 +1051,7 @@ paths:
             type: array
             items:
               type: string
+
         - in: query
           name: 'q[id_eq]'
           required: false
@@ -1026,6 +1060,7 @@ paths:
             type: array
             items:
               type: integer
+
         - in: query
           name: 'q[external_id_eq]'
           required: false
@@ -1034,7 +1069,11 @@ paths:
             type: array
             items:
               type: integer
+
         - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       responses:
         '200':
           description: successful response
@@ -1061,7 +1100,11 @@ paths:
           required: true
           schema:
             type: integer
+
         - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       responses:
         '200':
           description: successful response
@@ -1087,7 +1130,11 @@ paths:
           required: true
           schema:
             type: integer
+
         - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       responses:
         '200':
           description: successful response
@@ -1115,7 +1162,11 @@ paths:
           required: true
           schema:
             type: integer
+
         - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       responses:
         '200':
           description: successful response
@@ -1141,7 +1192,11 @@ paths:
           required: true
           schema:
             type: integer
+
         - $ref: '#/components/parameters/DateParam'
+
+        - $ref: '#/components/parameters/ContentMD5Param'
+
       responses:
         '200':
           description: successful response
@@ -1165,6 +1220,13 @@ components:
       schema:
         type: string
         format: date-time
+    ContentMD5Param:
+      name: Content-MD5
+      in: header
+      description: Content-MD5
+      required: false
+      schema:
+        type: string
   schemas:
     Date:
       description: stdRecordStamp_PutData
