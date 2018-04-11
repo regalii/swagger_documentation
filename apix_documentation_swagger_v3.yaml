@@ -1199,7 +1199,7 @@ components:
     DateParam:
       name: Date
       in: header
-      description: Today's date
+      description: Today's date (e.g. Wed, 11 Apr 2018 17:34:23 GMT)
       required: true
       schema:
         type: string
