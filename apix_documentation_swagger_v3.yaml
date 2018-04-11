@@ -1098,6 +1098,9 @@ paths:
                   status:
                     description: The status of your bill, it can be `updating`, `failed`, `waiting`, `updated`.
                     type: string
+                  migrated_at:
+                    description: The date time of migration.
+                    type: string
                   mfa_challenges:
                     description: Challenges requested by the Biller. Refero to [handing MFA] (#handling-multi-factor-authentication)
                     type: array
@@ -1117,8 +1120,9 @@ paths:
                   balance_updated_at: '2017-01-16T20:12:58Z'
                   error_code: null
                   error_message: null
-                  status: linked
+                  status: updating
                   mfa_challenges: []
+                  migrated_at: null
   /bills/bulk_refresh:
     post:
       tags:
@@ -1126,13 +1130,21 @@ paths:
       description: |
         This endpoint receives an array of bill ids as a parameter and refreshes them. Updated bills can be eventually pulled by passing id_in to the <a href='#/bills/{id}/refresh:'>list bills</a> endpoint.
       operationId: bulk_refreshBill
-      parameters:
-        - name: id
-          in: path
-          description: ID of bill to return
-          required: true
-          schema:
-            type: integer
+      requestBody:
+        description: Within the request body the parameters sent are a biller_id, login and password
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bill_ids:
+                  type: array
+                  description: Array of bill ids.
+                  items:
+                    type: string
+              required:
+                - bill_ids
       responses:
         '200':
           description: successful response
@@ -1149,45 +1161,26 @@ paths:
     get:
       tags:
         - xPay
-      description: >-
-        Get RPPS billers.
+      description: |
+        This endpoint provides the list of RPPS billers
       operationId: getRppsBillers
-      responses:
-        '200':
-          description: successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                example:
-                  message: Refresh in progress for 3 bills
-  /transactions:
-    post:
-      tags:
-        - xPay
-      description: >-
-        Create transaction (Pays a bill).
-      operationId: postTransactions
       parameters:
-        - in: query
-          name: id
-          required: true
-          description: 'The ID of the bill'
+        - name: q[biller_type_eq]
+          in: query
+          required: false
+          description: Only returns rpps billers of that biller type
           schema:
-            type: integer
-        - in: query
-          name: amount
-          required: true
-          description: 'Amount to pay'
+            type: string
+        - name: q[name_eq]
+          in: query
+          required: false
+          description: Only returns rpps billers of that biller name
           schema:
-            type: number
-        - in: query
-          name: currency
-          required: true
-          description: 'Amount currency'
+            type: string
+        - name: q[country_eq]
+          in: query
+          required: false
+          description: Only returns rpps billers of that country
           schema:
             type: string
       responses:
@@ -1198,54 +1191,210 @@ paths:
               schema:
                 type: object
                 properties:
-                  type:
-                    type: string
                   id:
+                    description: Id of the rpps biller
                     type: integer
-                  amount:
-                    type: number
-                  amount_currency:
+                  name:
+                    description: name of the rpps biller
+                    type: integer
+                  biller_type:
+                    description: the type of biller
                     type: string
-                  fx_rate:
-                    type: number
-                  amount_usd:
-                    type: number
-                  transaction_fee:
-                    type: number
-                  total_usd:
-                    type: number
-                  hours_to_fulfill:
+                  biller_class:
+                    description: the biller class belongs
+                    type: string
+                  country:
+                    description: the country that the rpps biller belongs
+                    type: string
+                  state:
+                    description: the state that the rpps biller belongs
+                    type: string
+                  territory_code:
+                    description: the territory code that the rpps biller belongs
+                    type: string
+                  currency:
+                    description: the currency supported by the rpps biller
+                    type: string
+                  address:
+                    description: the address of the rpps biller
+                    type: array
+                  masks:
+                    description: the masks of the rpps biller
+                    type: array
+                example:
+                  rpps_billers:
+                    - id: 692b45ea-7369-4232-bdd6-2bd662fe1ebd
+                      name: 1000 Granville Homeowners Association
+                      biller_type: Core
+                      biller_class: Homeowners Association
+                      country: USA
+                      state: null
+                      territory_code: National
+                      currency: USD
+                      addresses:
+                        - city: San Francisco
+                          state: CA
+                          country: USA
+                          address1: PO Box 45463
+                          address2: null
+                          eff_date: '2010-07-26'
+                          external_id: '67942'
+                          postal_code: 94145-0463
+                          address_type: Standard
+                      masks:
+                        - length: '7'
+                          eff_date: '2010-07-20'
+                          exception: false
+                          external_id: '343033'
+                          mask_format: '####-##'
+                          descriptions: []
+                        - length: '8'
+                          eff_date: '2010-07-20'
+                          exception: false
+                          external_id: '343034'
+                          mask_format: '####-###'
+                          descriptions: []
+                        - length: '4'
+                          eff_date: '2010-07-20'
+                          exception: false
+                          external_id: '343035'
+                          mask_format: '####'
+                          descriptions: []
+                        - length: '3'
+                          eff_date: '2010-07-20'
+                          exception: false
+                          external_id: '343036'
+                          mask_format: '###'
+                          descriptions: []
+                        - length: '7'
+                          eff_date: '2010-07-20'
+                          exception: false
+                          external_id: '343037'
+                          mask_format: '###-###'
+                          descriptions: []
+                        - length: '8'
+                          eff_date: '2010-07-20'
+                          exception: false
+                          external_id: '343038'
+                          mask_format: '###-###@'
+                          descriptions: []
+
+  /transactions:
+    post:
+      tags:
+        - xPay
+      description: |
+        With this endpoint you can create a new transaction by passing an RPPS Biller ID and information
+        about the payment and the person (client) who is making the payment (see parameters below).
+
+        Once the transactions are created in Regalii’s system, it takes 2-3 days to process the
+        transaction. After that time, the transaction’s status will be updated. You can always check the
+        transaction status by making a request to the Get transaction endpoint.
+      operationId: postTransactions
+      requestBody:
+        description: Within the request body the parameters sent are an `account_number`, `amount`, `currency`, `rpps_biller_id`, `phone_number`, `client_number`, `payer_born_on`, `first_name`, `last_name`.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                account_number:
+                  type: integer
+                  description: Account number where the payment is directed to
+                amount:
+                  type: string
+                  description: Amount to pay
+                currency:
+                  type: string
+                  description: Amount currency
+                rpps_biller_id:
+                  type: string
+                  description: RPPS Biller identifier
+                phone_number:
+                  type: string
+                  description: Phone number of the person who makes the payment
+                client_number:
+                  type: string
+                  description: Client number of the person who makes the payment
+                payer_born_on:
+                  type: string
+                  description: Date of birth of the payer of the transaction
+                first_name:
+                  type: string
+                  description: First name of the person who makes the payment
+                last_name:
+                  type: string
+                  description: Last name of the person who makes the payment
+                address:
+                  type: object
+                  description: Address of the person who makes the payment. This parameter should be a hash that contains the `street`, `zip_code`, `city` and `state`
+              required:
+                - account_number
+                - amount
+                - currency
+                - rpps_biller_id
+                - phone_number
+                - client_number
+                - payer_born_on
+                - first_name
+                - last_name
+      responses:
+        '200':
+          description: successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
                     type: integer
                   status:
                     type: string
+                  bill_id:
+                    type: string
+                  account_number:
+                    type: string
+                  currency:
+                    type: string
+                  amount:
+                    type: number
+                  created_at:
+                    type: string
+                  updated_at:
+                    type: string
+                  error_code:
+                    type: string
+                  error_message:
+                    type: string
                 example:
-                  type: "transaction"
-                  id: 59335549
-                  amount: 5568.00
-                  amount_currency: "MXN"
-                  fx_rate: 18.2569
-                  amount_usd: 304.98
-                  transaction_fee: 3.0
-                  total_usd: 307.98
-                  hours_to_fulfill: 48
-                  status: "fulfilled"
+                  id: be42c413-fcce-4857-b6fa-374228e33912
+                  status: initialized
+                  bill_id: null
+                  account_number: 1234-56
+                  currency: USD
+                  amount: 2000.0
+                  created_at: 2018-04-06T15:41:52.846Z
+                  updated_at: 2018-04-06T15:41:52.846Z
+                  error_code: null
+                  error_message: null
     get:
       tags:
         - xPay
-      description: >-
-        Returns a list of bill payments that Regalii has processed for you,  in a page of 100 results. You may provide various search criteria, including id and timestamp.
-      operationId: getTransactions
+      description: |
+        This endpoint returns the list of transactions that Regalii has processed for you.
+      operationId: getAllTransactions
       parameters:
         - in: query
           name: page
           required: false
-          description: 'If set, it allows you to display any page of bills'
+          description: 'Allows you to obtain a specific page of the transactions’ list'
           schema:
             type: integer
         - in: query
           name: 'q[created_at_gteq]'
           required: false
-          description: 'If set, it’ll return results after the specified timestamp.'
+          description: 'Returns those transactions that were created after the timestamp provided'
           schema:
             type: array
             items:
@@ -1253,23 +1402,39 @@ paths:
         - in: query
           name: 'q[created_at_lteq]'
           required: false
-          description: 'If set, it’ll return results before the specified timestamp.'
+          description: 'Returns those transactions that were created before the timestamp provided'
           schema:
             type: array
             items:
               type: string
         - in: query
-          name: 'q[id_eq]'
+          name: 'q[biller_id_eq]'
           required: false
-          description: 'Query transactions using the id'
+          description: 'Returns the transactions of a specific biller'
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: 'q[bill_id_eq]'
+          required: false
+          description: 'Query transactions using the external_id you supplied'
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: 'q[biller_id_in][]'
+          required: false
+          description: 'Returns the transactions of the billers whose ids are provided'
           schema:
             type: array
             items:
               type: integer
         - in: query
-          name: 'q[external_id_eq]'
+          name: 'q[bill_id_in][]'
           required: false
-          description: 'Query transactions using the external_id you supplied'
+          description: 'Returns the transactions of the bills whose ids are provided'
           schema:
             type: array
             items:
@@ -1282,10 +1447,152 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
+                  id:
+                    type: string
+                  status:
+                    type: string
+                  bill_id:
+                    type: string
+                  account_number:
+                    type: string
+                  currency:
+                    type: string
+                  amount:
+                    type: number
+                  created_at:
+                    type: string
+                  updated_at:
+                    type: string
+                  error_code:
+                    type: string
+                  error_message:
                     type: string
                 example:
-                  message: Refresh in progress for 3 bills
+                  transactions:
+                    - id: 9fe8bf62-d78b-462c-9195-14977420bbeb
+                      status: initialized
+                      bill_id: null
+                      account_number: 12345
+                      currency: USD
+                      amount: 2000.0
+                      created_at: 2018-04-06T14:49:12.830Z
+                      updated_at: 2018-04-06T14:49:12.830Z
+                      error_code: null
+                      error_message: null
+  /transactions/{id}:
+    get:
+      tags:
+        - xPay
+      description: |
+        This endpoint returns the details of a specific transaction. If the payment was successful, you
+        would see the transaction status is __linked__. If there is any problem with the payment, you
+        would see the __error_code__ and __error_message__ in the transaction’s response. The possible
+        values for transaction’s status are `initialized`, `pending`, `linked`, `confirmed` and
+        `rejected`.
+
+      operationId: getTransactions
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id of the transaction
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  status:
+                    type: string
+                  bill_id:
+                    type: string
+                  account_number:
+                    type: string
+                  currency:
+                    type: string
+                  amount:
+                    type: number
+                  created_at:
+                    type: string
+                  updated_at:
+                    type: string
+                  error_code:
+                    type: string
+                  error_message:
+                    type: string
+                example:
+                  id: f922316f-9b67-41e6-8e36-5438478ff35a
+                  status: pending
+                  bill_id: null
+                  account_number: 899006982
+                  currency: USD
+                  amount: 15.0
+                  created_at: 2018-02-16T18:34:02.234Z
+                  updated_at: 2018-02-16T18:34:02.234Z
+                  error_code: null
+                  error_message: null
+    delete:
+      tags:
+        - xPay
+      description: |
+        Deletes the transaction that corresponds to the `:id` sent. It’s only possible to delete a
+        transaction if the processing of the transaction payment hasn’t started, i.e., if it’s still in
+        the __initialized__ state. If you make a request to delete an already processing transaction,
+        then you would get a __unprocessable_entity__ HTTP response.
+
+      operationId: getTransactions
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id of the transaction
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  status:
+                    type: string
+                  bill_id:
+                    type: string
+                  account_number:
+                    type: string
+                  currency:
+                    type: string
+                  amount:
+                    type: number
+                  created_at:
+                    type: string
+                  updated_at:
+                    type: string
+                  error_code:
+                    type: string
+                  error_message:
+                    type: string
+                example:
+                  id: be42c413-fcce-4857-b6fa-374228e33912
+                  status: initialized
+                  bill_id: null
+                  account_number: 1234-56
+                  currency: USD
+                  amount: 2000.0
+                  created_at: 2018-04-06T15:41:52.846Z
+                  updated_at: 2018-04-06T15:43:20.090Z
+                  error_code: null
+                  error_message: null
   /migrations:
     post:
       tags:
@@ -1293,13 +1600,80 @@ paths:
       description: >-
         This endpoint... to be edited.
       operationId: postMigrations
-      parameters:
-        - name: id
-          in: path
-          description: ID of bill to return
-          required: true
-          schema:
-            type: integer
+      requestBody:
+        description: Within the request body the parameters sent are a $$$$$
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                biller_id:
+                  type: string
+                  description: The ID of the biller.
+                login:
+                  type: string
+                  description: The username/email address/identifier credential
+                password:
+                  type: string
+                  description: The password credential
+                cc_first_name:
+                  type: string
+                  description: End user’s first name
+                cc_last_name:
+                  type: string
+                  description: End user’s last name
+                cc_country:
+                  type: string
+                  description: Country where card number was issued (two uppercase letters example US)
+                cc_number:
+                  type: string
+                  description: Card number
+                cc_brand:
+                  type: string
+                  description: mastercard/visa/american_express
+                cc_expiry_year:
+                  type: string
+                  description: 4 number digit
+                cc_address:
+                  type: string
+                  description: Street name and number
+                cc_city:
+                  type: string
+                  description: City
+                cc_state:
+                  type: string
+                  description: Two letter abbreviation of a US state
+                cc_type:
+                  type: string
+                  description: credit/debit
+                cc_zip:
+                  type: string
+                  description: Address’ zipcode
+                cc_security_code:
+                  type: string
+                  description: Card’s security code (3 or 4 digit number)
+                cc_expiry_month:
+                  type: string
+                  description: Card’s expiry month (2 digit number)
+              required:
+                - biller_id
+                - login
+                - password
+                - cc_first_name
+                - cc_last_name
+                - cc_country
+                - cc_number
+                - cc_brand
+                - cc_expiry_year
+                - cc_address
+                - cc_city
+                - cc_state
+                - cc_type
+                - cc_zip
+                - cc_security_code
+                - cc_expiry_month
+
       responses:
         '200':
           description: successful response
@@ -1311,7 +1685,12 @@ paths:
                   message:
                     type: string
                 example:
-                  message: Refresh in progress for 3 bills
+                  error_code: null
+                  error_message: null
+                  id: de2a19ff-91d1-4c45-b6c4-cb4abfaa4077
+                  status: updating
+                  requested_at: 2018-04-06T18:18:36.144Z
+                  migrated_at: null
     get:
       tags:
         - xChange
@@ -1319,10 +1698,10 @@ paths:
         This endpoint is used to get all attempted migrations.
       operationId: getMigrations
       parameters:
-        - name: id
-          in: path
-          description: ID of bill to return
-          required: true
+        - name: page
+          in: query
+          description: If set, it allows you to display any page of the migrations’ list
+          required: false
           schema:
             type: integer
       responses:
@@ -1333,11 +1712,32 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
+                  error_code:
+                    type: string
+                  error_message:
+                    type: string
+                  id:
+                    type: string
+                  status:
+                    type: string
+                  requested_at:
+                    type: string
+                  migrated_at:
                     type: string
                 example:
-                  message: Refresh in progress for 3 bills
-
+                  migrations:
+                    - error_code: null
+                      error_message: null
+                      id: de2a19ff-91d1-4c45-b6c4-cb4abfaa4077
+                      status: updating
+                      requested_at: 2018-04-06T18:18:36.144Z
+                      migrated_at: null
+                    - error_code: null
+                      error_message: null
+                      id: d13efe0e-d79c-4770-9a56-1487504ce4b0
+                      status: updating
+                      requested_at: 2018-04-06T18:16:00.033Z
+                      migrated_at: null
   /migrations/id:
     get:
       tags:
@@ -1360,23 +1760,54 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
+                  error_code:
+                    type: string
+                  error_message:
+                    type: string
+                  id:
+                    type: string
+                  status:
+                    type: string
+                  requested_at:
+                    type: string
+                  migrated_at:
                     type: string
                 example:
-                  message: Refresh in progress for 3 bills
+                  error_code: null
+                  error_message: null
+                  id: de2a19ff-91d1-4c45-b6c4-cb4abfaa4077
+                  status: updating
+                  requested_at: 2018-04-06T18:18:36.144Z
+                  migrated_at: null
     patch:
       tags:
         - xChange
       description: >-
         pending to write
       operationId: updateMigration
-      parameters:
-        - name: id
-          in: path
-          description: ID of bill to return
-          required: true
-          schema:
-            type: integer
+      requestBody:
+        description: Within the request body the parameters sent are a biller_id, login and password
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+                  description: The username/email address/identifier credential
+                password:
+                  type: string
+                  description: The password credential
+                mfa_challenges[id]:
+                  type: array
+                  description: The id of the challenge that is being answered
+                mfa_challenges[response]:
+                  type: array
+                  description: The response to the challenge
+              required:
+                - login
+                - password
       responses:
         '200':
           description: successful response
@@ -1385,11 +1816,25 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
+                  error_code:
+                    type: string
+                  error_message:
+                    type: string
+                  id:
+                    type: string
+                  status:
+                    type: string
+                  requested_at:
+                    type: string
+                  migrated_at:
                     type: string
                 example:
-                  message: Refresh in progress for 3 bills
-
+                  error_code: null
+                  error_message: null
+                  id: e17d610b-9d71-4d0b-bb40-3aa72be55378
+                  status: failed
+                  requested_at: '2018-04-10T17:57:03.755Z'
+                  migrated_at: '2018-04-10T17:57:28.361Z'
 components:
   parameters:
     DateParam:
