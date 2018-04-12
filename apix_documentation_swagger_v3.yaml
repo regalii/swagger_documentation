@@ -183,7 +183,7 @@ info:
 
     __Step 1__
 
-      A checksum string needs to be created first by using your HTTP headers containing the `Content-Type`, `Content-MD5`, `Endpoint` and today’s `Timestamp`.
+      A checksum string needs to be created first by using your HTTP headers containing the `Content-Type`, `Content-MD5`, `Endpoint` and today's `Timestamp`.
 
       The checksum string is computed as follows:
 
@@ -231,7 +231,7 @@ info:
       * The bill finishes updating and now requires password entry (error 420); waiting; or has data ready since updated
       * A long-running fetch has completed
       * The bill has been re-run by Regalii due to an earlier error or outage
-      * It is the clients responsibility to trigger bills to refresh under normal operation.
+      * It is the client's responsibility to trigger bills to refresh under normal operation.
 
       ___
 
@@ -276,7 +276,6 @@ paths:
       parameters:
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
-
       responses:
         200:
           description: successful response
@@ -319,11 +318,8 @@ paths:
           description: page index for returned information.
           schema:
             type: integer
-
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
-
-
       responses:
         200:
           description: successful response
@@ -394,7 +390,7 @@ paths:
     post:
       tags:
         - xData
-      summary: creates a bill for billers with credentials bill
+      summary: Creates a bill for billers with credentials bill
         identifier
       operationId: createBills
       description: |
@@ -545,10 +541,8 @@ paths:
               type: string
               items:
                 type: string
-
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
-
       responses:
         200:
           description: successful response
@@ -645,7 +639,7 @@ paths:
     post:
       tags:
         - xData
-      summary: this endpoint retrieves a specific bill’s cached data.
+      summary: This endpoint retrieves a specific bill’s cached data.
       operationId: getBill
       description: |
         This endpoint retrieves a specific bill’s cached data. To pull fresh
@@ -657,10 +651,8 @@ paths:
           required: true
           schema:
             type: integer
-
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
-
       responses:
         200:
           description: successful response
@@ -744,9 +736,9 @@ paths:
     patch:
       tags:
         - xData
-      description: his endpoint update the value of.... (to edit)
+      description: This endpoint updates a specific bill
       operationId: updateBill
-      summary: his endpoint update the value of.... (to edit)
+      summary: This endpoint updates a specific bill
       parameters:
         - name: id
           in: path
@@ -754,10 +746,8 @@ paths:
           required: true
           schema:
             type: integer
-
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
-
       requestBody:
         description: Within the request body the parameters sent are a login, password and
           an array of mfa_challenges objects
@@ -871,7 +861,8 @@ paths:
     delete:
       tags:
         - xData
-      description: This endpoint deletes a specific bill.
+      description: This endpoint deletes a specific bill
+      summary: This endpoint deletes a specific bill
       operationId: deleteBill
       parameters:
         - name: id
@@ -880,10 +871,8 @@ paths:
           required: true
           schema:
             type: integer
-
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
-
       responses:
         200:
           description: successful response
@@ -894,36 +883,60 @@ paths:
                 properties:
                   type:
                     type: string
+                    description: bill
                   id:
                     type: integer
+                    description: the ID of the bill [deprecated]
                   uuid:
                     type: string
+                    description: the UUID of the bill
                   biller_id:
                     type: integer
+                    description: the ID of the biller [deprecated]
                   biller_uuid:
                     type: string
+                    description: the UUID of the biller
                   account_number:
                     type: string
+                    description: the bills account number
                   name_on_account:
                     type: string
+                    description: the name asociated with the accoun number
                   due_date:
                     type: string
+                    description: the deadline to pay the bill
                   balance:
                     type: number
+                    description: the returned balance
                   balance_currency:
                     type: string
+                    description: the bills currency
                   balance_updated_at:
                     type: string
+                    description: the date of last balance update
                   error_code:
                     type: string
+                    description: the error code in the case of get one
                   error_message:
                     type: string
+                    description: the error message associated to error code in the case of get one
                   status:
                     type: string
+                    description: one of the different posible status associated to the bill
                   mfa_challenges:
+                    description: params for multi-factor authentication challenge
                     type: array
                     items:
                       type: object
+                      properties:
+                        type:
+                          type: string
+                        id:
+                          type: integer
+                        prompt:
+                          type: string
+                        expires_at:
+                          type: string
                 example:
                   type: bill
                   id: 674117
@@ -944,9 +957,10 @@ paths:
     post:
       tags:
         - xData
-      description: >-
+      description: |
         This endpoint refreshes a specific bill by polling the biller. It
         responds with the same structure as <create bill>.
+      summary: Refreshes a specific bill by polling the biller
       operationId: refreshBill
       parameters:
         - name: id
@@ -955,10 +969,8 @@ paths:
           required: true
           schema:
             type: integer
-
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
-
       responses:
         200:
           description: successful response
@@ -969,36 +981,51 @@ paths:
                 properties:
                   type:
                     type: string
+                    description: bill
                   id:
                     type: integer
+                    description: the ID of the bill [deprecated]
                   uuid:
                     type: string
+                    description: the UUID of the bill
                   biller_id:
                     type: integer
+                    description: the ID of the biller [deprecated]
                   biller_uuid:
                     type: string
+                    description: the UUID of the biller
                   account_number:
                     type: string
+                    description: the bills account number
                   name_on_account:
                     type: string
+                    description: the name asociated with the accoun number
                   due_date:
                     type: string
+                    description: the deadline to pay the bill
                   balance:
                     type: number
+                    description: the returned balance
                   balance_currency:
                     type: string
+                    description: the bills currency
                   balance_updated_at:
                     type: string
+                    description: the date of last balance update
                   error_code:
                     type: string
+                    description: the error code in the case of get one
                   error_message:
                     type: string
+                    description: the error message associated to error code in the case of get one
                   status:
                     type: string
+                    description: one of the different posible status associated to the bill
                   migrated_at:
                     description: The date time of migration.
                     type: string
                   mfa_challenges:
+                    description: params for multi-factor authentication challenge
                     type: array
                     items:
                       type: object
@@ -1023,16 +1050,15 @@ paths:
     post:
       tags:
         - xData
-      description: >-
+      description: |
         This endpoint receives an array of bill ids as a parameter and refreshes
         them. Updated bills can be eventually pulled by passing id_in to the
         <list bills> endpoint.
+      summary: Receives an array of bill ids as a parameter and refreshes them.
       operationId: bulk_refreshBill
-
       parameters:
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
-
       requestBody:
         description: Within the request body the parameters sent are a biller_id, login and password
         required: true
@@ -1048,7 +1074,6 @@ paths:
                     type: string
               required:
                 - bill_ids
-
       responses:
         200:
           description: successful response
@@ -1202,7 +1227,6 @@ paths:
       parameters:
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
-
       requestBody:
         description: Within the request body the parameters sent are an `account_number`, `amount`, `currency`, `rpps_biller_id`, `phone_number`, `client_number`, `payer_born_on`, `first_name`, `last_name`.
         required: true
@@ -1312,7 +1336,6 @@ paths:
           description: Allows you to obtain a specific page of the transactions’ list
           schema:
             type: integer
-
         - in: query
           name: q[created_at_gteq]
           required: false
@@ -1320,7 +1343,6 @@ paths:
           schema:
             type: string
             format: date-time
-
         - in: query
           name: q[created_at_lteq]
           required: false
@@ -1328,7 +1350,6 @@ paths:
           schema:
             type: string
             format: date-time
-
         - in: query
           name: q[biller_id_eq]
           required: false
@@ -1341,7 +1362,6 @@ paths:
           description: Query transactions using the external_id you supplied
           schema:
             type: string
-
         - in: query
           name: q[biller_id_in][]
           required: false
@@ -1358,10 +1378,8 @@ paths:
             type: array
             items:
               type: string
-
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
-
       responses:
         200:
           description: successful response
@@ -1412,7 +1430,6 @@ paths:
         would see the __error_code__ and __error_message__ in the transaction’s response. The possible
         values for transaction’s status are `initialized`, `pending`, `linked`, `confirmed` and
         `rejected`.
-
       operationId: getTransactions
       parameters:
         - in: path
@@ -1470,7 +1487,6 @@ paths:
         transaction if the processing of the transaction payment hasn’t started, i.e., if it’s still in
         the __initialized__ state. If you make a request to delete an already processing transaction,
         then you would get a __unprocessable_entity__ HTTP response.
-
       operationId: getTransactions
       parameters:
         - in: path
@@ -1531,7 +1547,6 @@ paths:
       parameters:
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
-
       requestBody:
         description: Within the request body the parameters sent are a $$$$$
         required: true
@@ -1605,7 +1620,6 @@ paths:
                 - cc_zip
                 - cc_security_code
                 - cc_expiry_month
-
       responses:
         200:
           description: successful response
@@ -1636,10 +1650,8 @@ paths:
           required: false
           schema:
             type: integer
-
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
-
       responses:
         200:
           description: successful response
@@ -1688,10 +1700,8 @@ paths:
           required: true
           schema:
             type: integer
-
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
-
       responses:
         200:
           description: successful response
@@ -1725,7 +1735,6 @@ paths:
       description: >-
         pending to write
       operationId: updateMigration
-
       parameters:
         - name: id
           in: path
@@ -1733,7 +1742,6 @@ paths:
           required: true
           schema:
             type: integer
-
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
       requestBody:
@@ -1765,7 +1773,6 @@ paths:
               required:
                 - login
                 - password
-
       responses:
         200:
           description: successful response
@@ -1799,7 +1806,7 @@ components:
     DateParam:
       name: Date
       in: header
-      description: Todays date (e.g. Wed, 11 Apr 2018 17:34:23 GMT)
+      description: Today's date (e.g. Wed, 11 Apr 2018 17:34:23 GMT)
       required: true
       schema:
         type: string
@@ -1811,3 +1818,4 @@ components:
       required: false
       schema:
         type: string
+  
