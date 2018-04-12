@@ -42,7 +42,6 @@ info:
 
     ---
 
-
     Separate keys for each environment and `https` protocol must be used
 
     - __Note:__ For security reasons, the APIx doesn't support the TLS V1.0 anymore, we recommend you to use TLS v1.2 for a better security.
@@ -220,6 +219,32 @@ info:
 
       You will see that we will use this format in our Authorization header through this documentation.
 
+    # Webhooks
+
+      Regalii offers webhooks which can be used to notify you when there are updates to a bill or
+      transaction.
+
+      ___
+
+      __Bills__
+
+      * The bill finishes updating and now requires password entry (error 420); waiting; or has data ready since updated
+      * A long-running fetch has completed
+      * The bill has been re-run by Regalii due to an earlier error or outage
+      * It is the client's responsibility to trigger bills to refresh under normal operation.
+
+      ___
+
+      __How to Register a Webhook__
+
+      You can set up a webhook URL with Regalii by contacting us
+
+      ___
+
+      __Data in Webhook__
+
+      Webhooks return the same data offered in the bill status.
+
 servers:
   - url: https://apix.casiregalii.com
     description: Sandbox, Mocked Credentials; Mocked Data
@@ -227,8 +252,6 @@ servers:
     description: Production, Real Credentials; Real Data
 
 tags:
-  - name: Webhooks
-    description: Detailed information about our Webhooks
   - name: Common
     description: Common endpoints
   - name: xData
