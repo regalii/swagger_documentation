@@ -408,14 +408,17 @@ paths:
               type: object
               properties:
                 biller_id:
-                  type: integer
+                  type: string
                   description: The ID of the biller.
+                  example: "0282369b-acd1-4e44-a894-c2a10ea5f8e3"
                 login:
                   type: string
                   description: The account login.
+                  example: "jdoe@successful.ii"
                 password:
                   type: string
                   description: The account password
+                  example: "HeLl0o1!"
               required:
                 - biller_id
                 - login
@@ -1204,62 +1207,14 @@ paths:
         - $ref: '#/components/parameters/ContentMD5Param'
 
       requestBody:
-        description: Within the request body the parameters sent are an `account_number`, `amount`, `currency`, `rpps_biller_id`, `phone_number`, `client_number`, `payer_born_on`, `first_name`, `last_name`.
+        description: Within the request body the parameters sent are an `account_number`, `amount`, `currency`, `rpps_biller_id`, `phone_number`, `client_number`, `payer_born_on`, `first_name`, `last_name` and an optional `address` object.
+         <br/><br/>
+         You have to make sure the account_number matches one of the mask_formats of the RPPS Biller.
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                account_number:
-                  type: integer
-                  description: Account number where the payment is directed to
-                amount:
-                  type: string
-                  description: Amount to pay
-                currency:
-                  type: string
-                  description: Amount currency
-                rpps_biller_id:
-                  type: string
-                  description: RPPS Biller identifier
-                phone_number:
-                  type: string
-                  description: Phone number of the person who makes the payment
-                client_number:
-                  type: string
-                  description: Client number of the person who makes the payment
-                payer_born_on:
-                  type: string
-                  description: Date of birth of the payer of the transaction
-                first_name:
-                  type: string
-                  description: First name of the person who makes the payment
-                last_name:
-                  type: string
-                  description: Last name of the person who makes the payment
-                address:
-                  type: object
-                  description: Address of the person who makes the payment. This parameter should be a hash that contains the `street`, `zip_code`, `city` and `state`
-                  properties:
-                    street:
-                      type: string
-                    zip_code:
-                      type: string
-                    city:
-                      type: string
-                    state:
-                      type: string
-              required:
-                - account_number
-                - amount
-                - currency
-                - rpps_biller_id
-                - phone_number
-                - client_number
-                - payer_born_on
-                - first_name
-                - last_name
+              $ref: '#/components/schemas/Transaction'
       responses:
         200:
           description: successful response
@@ -1538,73 +1493,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                biller_id:
-                  type: string
-                  description: The ID of the biller.
-                login:
-                  type: string
-                  description: The username/email address/identifier credential
-                password:
-                  type: string
-                  description: The password credential
-                cc_first_name:
-                  type: string
-                  description: End user’s first name
-                cc_last_name:
-                  type: string
-                  description: End user’s last name
-                cc_country:
-                  type: string
-                  description: Country where card number was issued (two uppercase letters example US)
-                cc_number:
-                  type: string
-                  description: Card number
-                cc_brand:
-                  type: string
-                  description: mastercard/visa/american_express
-                cc_expiry_year:
-                  type: string
-                  description: 4 number digit
-                cc_address:
-                  type: string
-                  description: Street name and number
-                cc_city:
-                  type: string
-                  description: City
-                cc_state:
-                  type: string
-                  description: Two letter abbreviation of a US state
-                cc_type:
-                  type: string
-                  description: credit/debit
-                cc_zip:
-                  type: string
-                  description: Address’ zipcode
-                cc_security_code:
-                  type: string
-                  description: Card’s security code (3 or 4 digit number)
-                cc_expiry_month:
-                  type: string
-                  description: Card’s expiry month (2 digit number)
-              required:
-                - biller_id
-                - login
-                - password
-                - cc_first_name
-                - cc_last_name
-                - cc_country
-                - cc_number
-                - cc_brand
-                - cc_expiry_year
-                - cc_address
-                - cc_city
-                - cc_state
-                - cc_type
-                - cc_zip
-                - cc_security_code
-                - cc_expiry_month
+              $ref: '#/components/schemas/Migration'
 
       responses:
         200:
@@ -1811,3 +1700,155 @@ components:
       required: false
       schema:
         type: string
+  schemas:
+    Transaction:
+      type: object
+      required:
+        - account_number
+        - amount
+        - currency
+        - rpps_biller_id
+        - phone_number
+        - client_number
+        - payer_born_on
+        - first_name
+        - last_name
+      properties:
+        account_number:
+          type: string
+          description: Account number where the payment is directed to.
+          example: "1234-56"
+        amount:
+          type: integer
+          description: Amount to pay
+          example: "2000.0"
+        currency:
+          type: string
+          description: Amount's currency
+          example: "USD"
+        rpps_biller_id:
+          type: string
+          description: RPPS Biller identifier
+          example: "692b45ea-7369-4232-bdd6-2bd662fe1ebd"
+        phone_number:
+          type: string
+          description: Phone number of the person who makes the payment
+          example: "(714) 202-5081"
+        client_number:
+          type: string
+          description: Client number of the person who makes the payment
+          example: "805-612-0442"
+        payer_born_on:
+          type: string
+          format: date
+          description: Date of birth of the payer of the transaction
+          example: "1983-09-03"
+        first_name:
+          type: string
+          description: First name of the person who makes the payment
+          example: "John"
+        last_name:
+          type: string
+          description: Last name of the person who makes the payment
+          example: "Doe"
+        address:
+          type: object
+          description: Address of the person who makes the payment.
+          properties:
+            street:
+              type: string
+              example: "351 W 14th St Apt L"
+            zip_code:
+              type: string
+              example: "10014"
+            city:
+              type: string
+              example: "New York"
+            state:
+              type: string
+              example: "NY"
+
+    Migration:
+      type: object
+      required:
+        - biller_id
+        - login
+        - password
+        - cc_first_name
+        - cc_last_name
+        - cc_country
+        - cc_number
+        - cc_brand
+        - cc_expiry_year
+        - cc_address
+        - cc_city
+        - cc_state
+        - cc_type
+        - cc_zip
+        - cc_security_code
+        - cc_expiry_month
+      properties:
+        biller_id:
+          type: string
+          description: The ID of the biller.
+          example: "6ab564f9-4e9d-4b03-96d6-dd9f2c39ec53"
+        login:
+          type: string
+          description: The username/email address/identifier credential
+          example: "someone@gmail.com"
+        password:
+          type: string
+          description: The password credential
+          example: "Pwd123!"
+        cc_first_name:
+          type: string
+          description: End user’s first name
+          example: "Elon"
+        cc_last_name:
+          type: string
+          description: End user’s last name
+          example: "Musk"
+        cc_country:
+          type: string
+          description: Country where card number was issued (US only for the time being)
+          example: "US"
+        cc_number:
+          type: string
+          description: Card number
+          example: "5221740002389461"
+        cc_brand:
+          type: string
+          description: mastercard/visa/american_express
+          example: "visa"
+        cc_expiry_year:
+          type: string
+          description: 4 number digit
+          example: "2021"
+        cc_address:
+          type: string
+          description: Street name and number
+          example: "351 W 14th St Apt L"
+        cc_city:
+          type: string
+          description: City
+          example: "New York"
+        cc_state:
+          type: string
+          description: Two letter abbreviation of a US state
+          example: "NY"
+        cc_type:
+          type: string
+          description: credit/debit
+          example: "credit"
+        cc_zip:
+          type: string
+          description: Address’ zipcode
+          example: "10014"
+        cc_security_code:
+          type: string
+          description: Card’s security code (3 or 4 digit number)
+          example: "123"
+        cc_expiry_month:
+          type: string
+          description: Card’s expiry month (2 digit number)
+          example: "02"      
