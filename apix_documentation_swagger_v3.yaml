@@ -1092,11 +1092,11 @@ paths:
         - xPay
       description: |
         This endpoint provides the list of RPPS billers
+      summary: This endpoint provides the list of RPPS billers
       operationId: getRppsBillers
       parameters:
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
-
         - name: q[biller_type_eq]
           in: query
           required: false
@@ -1210,7 +1210,6 @@ paths:
                           external_id: 343038
                           mask_format: ###-###@
                           descriptions: []
-
   /transactions:
     post:
       tags:
@@ -1222,8 +1221,8 @@ paths:
         Once the transactions are created in Regalii’s system, it takes 2-3 days to process the
         transaction. After that time, the transaction’s status will be updated. You can always check the
         transaction status by making a request to the Get transaction endpoint.
+      summary: Create a new transaction by passing an RPPS Biller ID and information about the payment
       operationId: postTransactions
-
       parameters:
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
@@ -1293,24 +1292,34 @@ paths:
                 type: object
                 properties:
                   id:
+                    description: the generated transaction id
                     type: integer
                   status:
+                    description: the status of the transaction
                     type: string
                   bill_id:
+                    description: related bill with transaction
                     type: string
                   account_number:
+                    description: related account number with the transaction
                     type: string
                   currency:
+                    description: currency for the transaction
                     type: string
                   amount:
+                    description: amount of the transaction
                     type: number
                   created_at:
+                    description: timestamp of the transaction
                     type: string
                   updated_at:
+                    description: timestamp of the transaction update
                     type: string
                   error_code:
+                    description: the error code in the case of get one
                     type: string
                   error_message:
+                    description: the error message associated to error code in the case of get one
                     type: string
                 example:
                   id: be42c413-fcce-4857-b6fa-374228e33912
@@ -1328,6 +1337,7 @@ paths:
         - xPay
       description: |
         This endpoint returns the list of transactions that Regalii has processed for you.
+      summary: Returns the list of transactions that Regalii has processed for you
       operationId: getAllTransactions
       parameters:
         - in: query
@@ -1389,24 +1399,34 @@ paths:
                 type: object
                 properties:
                   id:
-                    type: string
+                    description: the generated transaction id
+                    type: integer
                   status:
+                    description: the status of the transaction
                     type: string
                   bill_id:
+                    description: related bill with transaction
                     type: string
                   account_number:
+                    description: related account number with the transaction
                     type: string
                   currency:
+                    description: currency for the transaction
                     type: string
                   amount:
+                    description: amount of the transaction
                     type: number
                   created_at:
+                    description: timestamp of the transaction
                     type: string
                   updated_at:
+                    description: timestamp of the transaction update
                     type: string
                   error_code:
+                    description: the error code in the case of get one
                     type: string
                   error_message:
+                    description: the error message associated to error code in the case of get one
                     type: string
                 example:
                   transactions:
@@ -1430,6 +1450,7 @@ paths:
         would see the __error_code__ and __error_message__ in the transaction’s response. The possible
         values for transaction’s status are `initialized`, `pending`, `linked`, `confirmed` and
         `rejected`.
+      summary: Returns the details of a specific transaction
       operationId: getTransactions
       parameters:
         - in: path
@@ -1449,24 +1470,34 @@ paths:
                 type: object
                 properties:
                   id:
-                    type: string
+                    description: the generated transaction id
+                    type: integer
                   status:
+                    description: the status of the transaction
                     type: string
                   bill_id:
+                    description: related bill with transaction
                     type: string
                   account_number:
+                    description: related account number with the transaction
                     type: string
                   currency:
+                    description: currency for the transaction
                     type: string
                   amount:
+                    description: amount of the transaction
                     type: number
                   created_at:
+                    description: timestamp of the transaction
                     type: string
                   updated_at:
+                    description: timestamp of the transaction update
                     type: string
                   error_code:
+                    description: the error code in the case of get one
                     type: string
                   error_message:
+                    description: the error message associated to error code in the case of get one
                     type: string
                 example:
                   id: f922316f-9b67-41e6-8e36-5438478ff35a
@@ -1487,6 +1518,7 @@ paths:
         transaction if the processing of the transaction payment hasn’t started, i.e., if it’s still in
         the __initialized__ state. If you make a request to delete an already processing transaction,
         then you would get a __unprocessable_entity__ HTTP response.
+      summary: Deletes a specific transaction
       operationId: getTransactions
       parameters:
         - in: path
@@ -1506,24 +1538,34 @@ paths:
                 type: object
                 properties:
                   id:
-                    type: string
+                    description: the generated transaction id
+                    type: integer
                   status:
+                    description: the status of the transaction
                     type: string
                   bill_id:
+                    description: related bill with transaction
                     type: string
                   account_number:
+                    description: related account number with the transaction
                     type: string
                   currency:
+                    description: currency for the transaction
                     type: string
                   amount:
+                    description: amount of the transaction
                     type: number
                   created_at:
+                    description: timestamp of the transaction
                     type: string
                   updated_at:
+                    description: timestamp of the transaction update
                     type: string
                   error_code:
+                    description: the error code in the case of get one
                     type: string
                   error_message:
+                    description: the error message associated to error code in the case of get one
                     type: string
                 example:
                   id: be42c413-fcce-4857-b6fa-374228e33912
