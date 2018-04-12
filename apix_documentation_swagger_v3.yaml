@@ -26,7 +26,7 @@ info:
 
     Separate keys for each environment and `https` protocol must be used
 
-    - __Note:__ For security reasons, the APIx doesnt support the TLS V1.0 anymore, we recommend you to use TLS v1.2 for a better security.
+    - __Note:__ For security reasons, the APIx doesn't support the TLS V1.0 anymore, we recommend you to use TLS v1.2 for a better security.
 
     ---
 
@@ -44,7 +44,7 @@ info:
 
     Separate keys for each environment and `https` protocol must be used
 
-    - __Note:__ For security reasons, the APIx doesnt support the TLS V1.0 anymore, we recommend you to use TLS v1.2 for a better security.
+    - __Note:__ For security reasons, the APIx doesn't support the TLS V1.0 anymore, we recommend you to use TLS v1.2 for a better security.
 
     ---
 
