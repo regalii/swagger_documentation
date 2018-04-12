@@ -1582,15 +1582,15 @@ paths:
     post:
       tags:
         - xChange
-      description: >-
-        This endpoint... to be edited.
+      description: |
+        Use this endpoint to replace the payment method on the biller’s website.
+      summary: Replaces the payment method on the biller’s website
       operationId: postMigrations
-
       parameters:
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
       requestBody:
-        description: Within the request body the parameters sent are a $$$$$
+        description: Within the request body the parameters sent are `biller_id`, `login` for the account, `password`, the `name`, `last name`, `country`, `card number`, `brand of the card`, `expiry year`, `expiry month`, `address`, `city`, `state`, `zipcode`, card `type` if it is credit or debit and the `cvv` of three or four numbers
         required: true
         content:
           application/json:
@@ -1670,7 +1670,23 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
+                  error_code:
+                    description: the error code in the case of get one
+                    type: string
+                  error_message:
+                    description: the error message associated to error code in the case of get one
+                    type: string
+                  id:
+                    description: id of the generated migration
+                    type: string
+                  status:
+                    description: status of the generated migration
+                    type: string
+                  requested_at:
+                    description: timestamp of the requested migration
+                    type: string
+                  migrated_at:
+                    description: timestamp of the successful migration
                     type: string
                 example:
                   error_code: null
@@ -1682,8 +1698,9 @@ paths:
     get:
       tags:
         - xChange
-      description: >-
-        This endpoint is used to get all attempted migrations.
+      description: |
+        This endpoint is used to get all attempted migrations
+      summary: Get all attempted migrations
       operationId: getMigrations
       parameters:
         - name: page
@@ -1703,16 +1720,22 @@ paths:
                 type: object
                 properties:
                   error_code:
+                    description: the error code in the case of get one
                     type: string
                   error_message:
+                    description: the error message associated to error code in the case of get one
                     type: string
                   id:
+                    description: id of the generated migration
                     type: string
                   status:
+                    description: status of the generated migration
                     type: string
                   requested_at:
+                    description: timestamp of the requested migration
                     type: string
                   migrated_at:
+                    description: timestamp of the successful migration
                     type: string
                 example:
                   migrations:
@@ -1734,6 +1757,7 @@ paths:
         - xChange
       description: >-
         Get last migration attempt of a bill
+      summary: Get last migration attempt of a bill
       operationId: getMigration
       parameters:
         - name: id
@@ -1753,16 +1777,22 @@ paths:
                 type: object
                 properties:
                   error_code:
+                    description: the error code in the case of get one
                     type: string
                   error_message:
+                    description: the error message associated to error code in the case of get one
                     type: string
                   id:
+                    description: id of the generated migration
                     type: string
                   status:
+                    description: status of the generated migration
                     type: string
                   requested_at:
+                    description: timestamp of the requested migration
                     type: string
                   migrated_at:
+                    description: timestamp of the successful migration
                     type: string
                 example:
                   error_code: null
@@ -1774,8 +1804,9 @@ paths:
     patch:
       tags:
         - xChange
-      description: >-
-        pending to write
+      description: |
+        Allows the resolution of an MFA challenge
+      summary: Allows the resolution of an MFA challenge
       operationId: updateMigration
       parameters:
         - name: id
@@ -1824,16 +1855,25 @@ paths:
                 type: object
                 properties:
                   error_code:
+                    description: the error code in the case of get one
                     type: string
                   error_message:
+                    description: the error message associated to error code in the case of get one
                     type: string
                   id:
+                    description: id of the generated migration
                     type: string
                   status:
+                    description: status of the generated migration
                     type: string
                   requested_at:
+                    description: timestamp of the requested migration
                     type: string
                   migrated_at:
+                    description: timestamp of the successful migration
+                    type: string
+                  message:
+                    description: the result message
                     type: string
                 example:
                   error_code: null
