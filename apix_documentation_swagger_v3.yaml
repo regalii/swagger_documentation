@@ -14,10 +14,10 @@ info:
 
     __Tools for Testing__
 
-    Below is a list of tools that you can use to test different endpoints and
-    their responses before you start coding against them. It is recommended that
-    you test a couple of endpoints first to get an idea how to properly construct
-    requests in your application.
+    Aditionally you can use by yourself the below list of tools that you can use to test different
+    endpoints and their responses before you start coding against them. It is recommended that
+    you test a couple of endpoints first to get an idea how to properly construct requests in your
+    application.
 
       * [Paw](https://paw.cloud/)
       * [Postman Chrome](https://www.getpostman.com/)
@@ -26,7 +26,7 @@ info:
 
     Separate keys for each environment and `https` protocol must be used
 
-    - __Note:__ For security reasons, the APIx doesn't support the TLS V1.0 anymore, we recommend you to use TLS v1.2 for a better security.
+    - __Note:__ For security reasons, the APIx doesnt support the TLS V1.0 anymore, we recommend you to use TLS v1.2 for a better security.
 
     ---
 
@@ -44,7 +44,7 @@ info:
 
     Separate keys for each environment and `https` protocol must be used
 
-    - __Note:__ For security reasons, the APIx doesn't support the TLS V1.0 anymore, we recommend you to use TLS v1.2 for a better security.
+    - __Note:__ For security reasons, the APIx doesnt support the TLS V1.0 anymore, we recommend you to use TLS v1.2 for a better security.
 
     ---
 
@@ -231,7 +231,7 @@ info:
       * The bill finishes updating and now requires password entry (error 420); waiting; or has data ready since updated
       * A long-running fetch has completed
       * The bill has been re-run by Regalii due to an earlier error or outage
-      * It is the client's responsibility to trigger bills to refresh under normal operation.
+      * It is the clients responsibility to trigger bills to refresh under normal operation.
 
       ___
 
@@ -262,7 +262,6 @@ tags:
     description: Access to xChange documentation
 
 paths:
-
   /account:
     get:
       tags:
@@ -279,7 +278,7 @@ paths:
         - $ref: '#/components/parameters/ContentMD5Param'
 
       responses:
-        '200':
+        200:
           description: successful response
           content:
             application/vnd.regalii.v3.2+json:
@@ -288,12 +287,16 @@ paths:
                 properties:
                   name:
                     type: string
+                    description: the name of the company
                   balance:
                     type: number
+                    description: the current balance of the company
                   minimum_balance:
                     type: number
+                    description: is the maximum debit balance that the company could have
                   currency:
                     type: string
+                    description: the currency type for the company
                 example:
                   name: ACME Company
                   balance: 537.5
@@ -305,7 +308,7 @@ paths:
         - Common
       summary: Provides the current list of billers and their associated properties.
       operationId: getBillersCredentials
-      description: >-
+      description: |
         Provides the current list of billers and their associated properties.
         To ensure that your customers are able to leverage the enhancements that we make
         over time, you are required to cache the full list of billers and update it on a weekly basis.
@@ -313,7 +316,7 @@ paths:
         - in: path
           name: page
           required: true
-          description: Page index for returned information.
+          description: page index for returned information.
           schema:
             type: integer
 
@@ -322,55 +325,68 @@ paths:
 
 
       responses:
-        '200':
+        200:
           description: successful response
           content:
             application/vnd.regalii.v3.2+json:
               schema:
                 type: array
-                title: "billers"
+                title: billers
                 properties:
                   type:
                     type: string
+                    description: biller
                   id:
                     type: integer
+                    description: the ID of the biller [deprecated]
                   uuid:
                     type: string
+                    description: the UUID of the biller
                   name:
                     type: string
+                    description: the name of the biller
                   country:
                     type: string
+                    description: country of the biller
                   currency:
                     type: string
+                    description: currency of the biller
                   biller_type:
                     type: string
+                    description: is the type of biller
                   bill_type:
                     type: string
+                    description: the type of bill, that can be for example water, internet, cable and so on
                   required_parameters:
                     type: array
+                    description: the login and password required parameters
                     items:
                       type: string
                   returned_parameters:
+                    description: the returned parameters by the bill
                     type: array
                     items:
                       type: string
                   can_migrate:
+                    description: can use xChange
                     type: boolean
                   charge_user:
+                    description: can charge user
                     type: boolean
                   has_xdata:
+                    description: can use xData
                     type: boolean
                 example:
-                  type: "biller"
+                  type: biller
                   id: 6510
-                  uuid: "3bc572a9-cb55-4aea-80aa-40b058d26673"
-                  name: "Con Edison"
-                  country: "US"
-                  currency: "USD"
-                  biller_type: "Electricity"
-                  bill_type: "credentials"
-                  required_parameters: ["login","password"]
-                  returned_parameters: ["balance","due_date","account_number","name_on_account","xdata"]
+                  uuid: 3bc572a9-cb55-4aea-80aa-40b058d26673
+                  name: Con Edison
+                  country: US
+                  currency: USD
+                  biller_type: Electricity
+                  bill_type: credentials
+                  required_parameters: [login,password]
+                  returned_parameters: [balance,due_date,account_number,name_on_account,xdata]
                   can_migrate: false
                   charge_user: true
                   has_xdata: false
@@ -408,7 +424,7 @@ paths:
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
       responses:
-        '200':
+        200:
           description: successful response
           content:
             application/vnd.regalii.v3.2+json:
@@ -417,33 +433,48 @@ paths:
                 properties:
                   type:
                     type: string
+                    description: bill
                   id:
                     type: integer
+                    description: the ID of the bill [deprecated]
                   uuid:
                     type: string
+                    description: the UUID of the bill
                   biller_id:
                     type: integer
+                    description: the ID of the biller [deprecated]
                   biller_uuid:
                     type: string
+                    description: the UUID of the biller
                   account_number:
                     type: string
+                    description: the bills account number
                   name_on_account:
                     type: string
+                    description: the name asociated with the accoun number
                   due_date:
                     type: string
+                    description: the deadline to pay the bill
                   balance:
                     type: number
+                    description: the returned balance
                   balance_currency:
                     type: string
+                    description: the bills currency
                   balance_updated_at:
                     type: string
+                    description: the date of last balance update
                   error_code:
                     type: string
+                    description: the error code in the case of get one
                   error_message:
                     type: string
+                    description: the error message associated to error code in the case of get one
                   status:
                     type: string
+                    description: one of the different posible status associated to the bill
                   mfa_challenges:
+                    description: params for multi-factor authentication challenge
                     type: array
                     items:
                       type: object
@@ -462,12 +493,12 @@ paths:
                   uuid: c5482bbe-0f46-4e30-b660-3b1bb0ea773f
                   biller_id: 6510
                   biller_uuid: b44f5c1c-a6b7-4688-8311-080512ca4f1e
-                  account_number: '4222422244'
+                  account_number: 4222422244
                   name_on_account: Jose Bautista
-                  due_date: '2016-11-30'
+                  due_date: 2016-11-30
                   balance: 56.43
                   balance_currency: USD
-                  balance_updated_at: '2017-01-16T20:12:58Z'
+                  balance_updated_at: 2017-01-16T20:12:58Z
                   error_code: null
                   error_message: null
                   status: updated
@@ -483,31 +514,31 @@ paths:
         - in: query
           name: page
           required: false
-          description: 'If set, it allows you to display any page of bills.'
+          description: If set, it allows you to display any page of bills.
           schema:
             type: integer
         - in: query
-          name: 'q[created_at_gteq]'
+          name: q[created_at_gteq]
           schema:
             type: string
             items:
               type: string
               format: date-time
           required: false
-          description: 'If set, it’ll return results after the specified timestamp.'
+          description: If set, it’ll return results after the specified timestamp.
         - in: query
-          name: 'q[created_at_lteq]'
+          name: q[created_at_lteq]
           required: false
-          description: 'If set, it’ll return results before the specified timestamp.'
+          description: If set, it’ll return results before the specified timestamp.
           schema:
             type: string
             items:
               type: string
               format: date-time
         - in: query
-          name: 'q[id_in][]'
+          name: q[id_in][]
           required: false
-          description: 'If set, it’ll return the bills for the specified bill ids.'
+          description: If set, it’ll return the bills for the specified bill ids.
           schema:
             type: array
             items:
@@ -519,7 +550,7 @@ paths:
         - $ref: '#/components/parameters/ContentMD5Param'
 
       responses:
-        '200':
+        200:
           description: successful response
           content:
             application/vnd.regalii.v3.2+json:
@@ -530,35 +561,51 @@ paths:
                 properties:
                   type:
                     type: string
+                    description: bill
                   id:
                     type: integer
+                    description: the ID of the bill [deprecated]
                   uuid:
                     type: string
+                    description: the UUID of the bill
                   biller_id:
                     type: integer
+                    description: the ID of the biller [deprecated]
                   biller_uuid:
                     type: string
+                    description: the UUID of the biller
                   account_number:
                     type: string
+                    description: the bills account number
                   name_on_account:
                     type: string
+                    description: the name asociated with the accoun number
                   due_date:
                     type: string
+                    description: the deadline to pay the bill
                   balance:
                     type: number
+                    description: the returned balance
                   balance_currency:
                     type: string
+                    description: the bills currency
                   balance_updated_at:
                     type: string
+                    description: the date of last balance update
                   error_code:
                     type: string
+                    description: the error code in the case of get one
                   error_message:
                     type: string
+                    description: the error message associated to error code in the case of get one
                   status:
                     type: string
+                    description: one of the different posible status associated to the bill
                   migrated_at:
                     type: string
+                    description: the date of last migration
                   mfa_challenges:
+                    description: params for multi-factor authentication challenge
                     type: array
                 example:
                   bills:
@@ -567,12 +614,12 @@ paths:
                       uuid: c5482bbe-0f46-4e30-b660-3b1bb0ea773f
                       biller_id: 6510
                       biller_uuid: b44f5c1c-a6b7-4688-8311-080512ca4f1e
-                      account_number: 87249256"
+                      account_number: 87249256
                       name_on_account: Rita Sporer
-                      due_date: '2017-01-29T05:00:00Z'
+                      due_date: 2017-01-29T05:00:00Z
                       balance: 62.38
                       balance_currency: USD
-                      balance_updated_at: '2017-01-17T19:57:56Z'
+                      balance_updated_at: 2017-01-17T19:57:56Z
                       error_code: null
                       error_message: null
                       status: linked
@@ -583,12 +630,12 @@ paths:
                       uuid: c5482bbe-0f46-4e30-b660-3b1bb0ea773f
                       biller_id: 1
                       biller_uuid: b44f5c1c-a6b7-4688-8311-080512ca4f1e
-                      account_number: '1234567'
+                      account_number: 1234567
                       name_on_account: Jose Bautista
-                      due_date": null
-                      balance": 400
+                      due_date: null
+                      balance: 400
                       balance_currency: RD
-                      balance_updated_at: '2017-01-17T21:47:19Z'
+                      balance_updated_at: 2017-01-17T21:47:19Z
                       error_code: null
                       error_message: null
                       status: linked
@@ -598,7 +645,7 @@ paths:
     post:
       tags:
         - xData
-      summary: retrieves a specific bill’s cached data.
+      summary: this endpoint retrieves a specific bill’s cached data.
       operationId: getBill
       description: |
         This endpoint retrieves a specific bill’s cached data. To pull fresh
@@ -615,7 +662,7 @@ paths:
         - $ref: '#/components/parameters/ContentMD5Param'
 
       responses:
-        '200':
+        200:
           description: successful response
           content:
             application/vnd.regalii.v3.2+json:
@@ -624,33 +671,48 @@ paths:
                 properties:
                   type:
                     type: string
+                    description: bill
                   id:
                     type: integer
+                    description: the ID of the bill [deprecated]
                   uuid:
                     type: string
+                    description: the UUID of the bill
                   biller_id:
                     type: integer
+                    description: the ID of the biller [deprecated]
                   biller_uuid:
                     type: string
+                    description: the UUID of the biller
                   account_number:
                     type: string
+                    description: the bills account number
                   name_on_account:
                     type: string
+                    description: the name asociated with the accoun number
                   due_date:
                     type: string
+                    description: the deadline to pay the bill
                   balance:
                     type: number
+                    description: the returned balance
                   balance_currency:
                     type: string
+                    description: the bills currency
                   balance_updated_at:
                     type: string
+                    description: the date of last balance update
                   error_code:
                     type: string
+                    description: the error code in the case of get one
                   error_message:
                     type: string
+                    description: the error message associated to error code in the case of get one
                   status:
                     type: string
+                    description: one of the different posible status associated to the bill
                   mfa_challenges:
+                    description: params for multi-factor authentication challenge
                     type: array
                     items:
                       type: object
@@ -669,12 +731,12 @@ paths:
                   uuid: c5482bbe-0f46-4e30-b660-3b1bb0ea773f
                   biller_id: 6510
                   biller_uuid: b44f5c1c-a6b7-4688-8311-080512ca4f1e
-                  account_number: '4222422244'
+                  account_number: 4222422244
                   name_on_account: Jose Bautista
-                  due_date: '2016-11-30'
+                  due_date: 2016-11-30
                   balance: 56.43
                   balance_currency: USD
-                  balance_updated_at: '2017-01-16T20:12:58Z'
+                  balance_updated_at: 2017-01-16T20:12:58Z
                   error_code: null
                   error_message: null
                   status: linked
@@ -727,7 +789,7 @@ paths:
                   - login
                   - password
       responses:
-        '200':
+        200:
           description: successful response
           content:
             application/vnd.regalii.v3.2+json:
@@ -736,33 +798,48 @@ paths:
                 properties:
                   type:
                     type: string
+                    description: bill
                   id:
                     type: integer
+                    description: the ID of the bill [deprecated]
                   uuid:
                     type: string
+                    description: the UUID of the bill
                   biller_id:
                     type: integer
+                    description: the ID of the biller [deprecated]
                   biller_uuid:
                     type: string
+                    description: the UUID of the biller
                   account_number:
                     type: string
+                    description: the bills account number
                   name_on_account:
                     type: string
+                    description: the name asociated with the accoun number
                   due_date:
                     type: string
+                    description: the deadline to pay the bill
                   balance:
                     type: number
+                    description: the returned balance
                   balance_currency:
                     type: string
+                    description: the bills currency
                   balance_updated_at:
                     type: string
+                    description: the date of last balance update
                   error_code:
                     type: string
+                    description: the error code in the case of get one
                   error_message:
                     type: string
+                    description: the error message associated to error code in the case of get one
                   status:
                     type: string
+                    description: one of the different posible status associated to the bill
                   mfa_challenges:
+                    description: params for multi-factor authentication challenge
                     type: array
                     items:
                       type: object
@@ -781,12 +858,12 @@ paths:
                   uuid: c5482bbe-0f46-4e30-b660-3b1bb0ea773f
                   biller_id: 6510
                   biller_uuid: b44f5c1c-a6b7-4688-8311-080512ca4f1e
-                  account_number: '4222422244'
+                  account_number: 4222422244
                   name_on_account: Jose Bautista
-                  due_date: '2016-11-30'
+                  due_date: 2016-11-30
                   balance: 56.43
                   balance_currency: USD
-                  balance_updated_at: '2017-01-16T20:12:58Z'
+                  balance_updated_at: 2017-01-16T20:12:58Z
                   error_code: null
                   error_message: null
                   status: linked
@@ -808,7 +885,7 @@ paths:
         - $ref: '#/components/parameters/ContentMD5Param'
 
       responses:
-        '200':
+        200:
           description: successful response
           content:
             application/vnd.regalii.v3.2+json:
@@ -853,12 +930,12 @@ paths:
                   uuid: c5482bbe-0f46-4e30-b660-3b1bb0ea773f
                   biller_id: 6510
                   biller_uuid: b44f5c1c-a6b7-4688-8311-080512ca4f1e
-                  account_number: '4222422244'
+                  account_number: 4222422244
                   name_on_account: Jose Bautista
-                  due_date: '2016-11-30'
+                  due_date: 2016-11-30
                   balance: 56.43
                   balance_currency: USD
-                  balance_updated_at: '2017-01-16T20:12:58Z'
+                  balance_updated_at: 2017-01-16T20:12:58Z
                   error_code: null
                   error_message: null
                   status: linked
@@ -883,7 +960,7 @@ paths:
         - $ref: '#/components/parameters/ContentMD5Param'
 
       responses:
-        '200':
+        200:
           description: successful response
           content:
             application/vnd.regalii.v3.2+json:
@@ -931,12 +1008,12 @@ paths:
                   uuid: c5482bbe-0f46-4e30-b660-3b1bb0ea773f
                   biller_id: 6510
                   biller_uuid: b44f5c1c-a6b7-4688-8311-080512ca4f1e
-                  account_number: '4222422244'
+                  account_number: 4222422244
                   name_on_account: Jose Bautista
-                  due_date: '2016-11-30'
+                  due_date: 2016-11-30
                   balance: 56.43
                   balance_currency: USD
-                  balance_updated_at: '2017-01-16T20:12:58Z'
+                  balance_updated_at: 2017-01-16T20:12:58Z
                   error_code: null
                   error_message: null
                   status: updating
@@ -973,7 +1050,7 @@ paths:
                 - bill_ids
 
       responses:
-        '200':
+        200:
           description: successful response
           content:
             application/vnd.regalii.v3.2+json:
@@ -1014,7 +1091,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        200:
           description: successful response
           content:
             application/vnd.regalii.v3.2+json:
@@ -1067,46 +1144,46 @@ paths:
                           country: USA
                           address1: PO Box 45463
                           address2: null
-                          eff_date: '2010-07-26'
-                          external_id: '67942'
+                          eff_date: 2010-07-26
+                          external_id: 67942
                           postal_code: 94145-0463
                           address_type: Standard
                       masks:
-                        - length: '7'
-                          eff_date: '2010-07-20'
+                        - length: 7
+                          eff_date: 2010-07-20
                           exception: false
-                          external_id: '343033'
-                          mask_format: '####-##'
+                          external_id: 343033
+                          mask_format: ####-##
                           descriptions: []
-                        - length: '8'
-                          eff_date: '2010-07-20'
+                        - length: 8
+                          eff_date: 2010-07-20
                           exception: false
-                          external_id: '343034'
-                          mask_format: '####-###'
+                          external_id: 343034
+                          mask_format: ####-###
                           descriptions: []
-                        - length: '4'
-                          eff_date: '2010-07-20'
+                        - length: 4
+                          eff_date: 2010-07-20
                           exception: false
-                          external_id: '343035'
-                          mask_format: '####'
+                          external_id: 343035
+                          mask_format: ####
                           descriptions: []
-                        - length: '3'
-                          eff_date: '2010-07-20'
+                        - length: 3
+                          eff_date: 2010-07-20
                           exception: false
-                          external_id: '343036'
-                          mask_format: '###'
+                          external_id: 343036
+                          mask_format: ###
                           descriptions: []
-                        - length: '7'
-                          eff_date: '2010-07-20'
+                        - length: 7
+                          eff_date: 2010-07-20
                           exception: false
-                          external_id: '343037'
-                          mask_format: '###-###'
+                          external_id: 343037
+                          mask_format: ###-###
                           descriptions: []
-                        - length: '8'
-                          eff_date: '2010-07-20'
+                        - length: 8
+                          eff_date: 2010-07-20
                           exception: false
-                          external_id: '343038'
-                          mask_format: '###-###@'
+                          external_id: 343038
+                          mask_format: ###-###@
                           descriptions: []
 
   /transactions:
@@ -1184,7 +1261,7 @@ paths:
                 - first_name
                 - last_name
       responses:
-        '200':
+        200:
           description: successful response
           content:
             application/vnd.regalii.v3.2+json:
@@ -1232,51 +1309,51 @@ paths:
         - in: query
           name: page
           required: false
-          description: 'Allows you to obtain a specific page of the transactions’ list'
+          description: Allows you to obtain a specific page of the transactions’ list
           schema:
             type: integer
 
         - in: query
-          name: 'q[created_at_gteq]'
+          name: q[created_at_gteq]
           required: false
-          description: 'Returns those transactions that were created after the timestamp provided'
+          description: Returns those transactions that were created after the timestamp provided
           schema:
             type: string
             format: date-time
 
         - in: query
-          name: 'q[created_at_lteq]'
+          name: q[created_at_lteq]
           required: false
-          description: 'Returns those transactions that were created before the timestamp provided'
+          description: Returns those transactions that were created before the timestamp provided
           schema:
             type: string
             format: date-time
 
         - in: query
-          name: 'q[biller_id_eq]'
+          name: q[biller_id_eq]
           required: false
-          description: 'Returns the transactions of a specific biller'
+          description: Returns the transactions of a specific biller
           schema:
             type: string
         - in: query
-          name: 'q[bill_id_eq]'
+          name: q[bill_id_eq]
           required: false
-          description: 'Query transactions using the external_id you supplied'
+          description: Query transactions using the external_id you supplied
           schema:
             type: string
 
         - in: query
-          name: 'q[biller_id_in][]'
+          name: q[biller_id_in][]
           required: false
-          description: 'Returns the transactions of the billers whose ids are provided'
+          description: Returns the transactions of the billers whose ids are provided
           schema:
             type: array
             items:
               type: string
         - in: query
-          name: 'q[bill_id_in][]'
+          name: q[bill_id_in][]
           required: false
-          description: 'Returns the transactions of the bills whose ids are provided'
+          description: Returns the transactions of the bills whose ids are provided
           schema:
             type: array
             items:
@@ -1286,7 +1363,7 @@ paths:
         - $ref: '#/components/parameters/ContentMD5Param'
 
       responses:
-        '200':
+        200:
           description: successful response
           content:
             application/vnd.regalii.v3.2+json:
@@ -1347,7 +1424,7 @@ paths:
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
       responses:
-        '200':
+        200:
           description: successful response
           content:
             application/json:
@@ -1405,7 +1482,7 @@ paths:
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
       responses:
-        '200':
+        200:
           description: successful response
           content:
             application/json:
@@ -1530,7 +1607,7 @@ paths:
                 - cc_expiry_month
 
       responses:
-        '200':
+        200:
           description: successful response
           content:
             application/vnd.regalii.v3.2+json:
@@ -1564,7 +1641,7 @@ paths:
         - $ref: '#/components/parameters/ContentMD5Param'
 
       responses:
-        '200':
+        200:
           description: successful response
           content:
             application/vnd.regalii.v3.2+json:
@@ -1616,7 +1693,7 @@ paths:
         - $ref: '#/components/parameters/ContentMD5Param'
 
       responses:
-        '200':
+        200:
           description: successful response
           content:
             application/vnd.regalii.v3.2+json:
@@ -1690,7 +1767,7 @@ paths:
                 - password
 
       responses:
-        '200':
+        200:
           description: successful response
           content:
             application/vnd.regalii.v3.2+json:
@@ -1714,15 +1791,15 @@ paths:
                   error_message: null
                   id: e17d610b-9d71-4d0b-bb40-3aa72be55378
                   status: failed
-                  requested_at: '2018-04-10T17:57:03.755Z'
-                  migrated_at: '2018-04-10T17:57:28.361Z'
+                  requested_at: 2018-04-10T17:57:03.755Z
+                  migrated_at: 2018-04-10T17:57:28.361Z
                   message: Refresh in progress for 3 bills
 components:
   parameters:
     DateParam:
       name: Date
       in: header
-      description: Today's date (e.g. Wed, 11 Apr 2018 17:34:23 GMT)
+      description: Todays date (e.g. Wed, 11 Apr 2018 17:34:23 GMT)
       required: true
       schema:
         type: string
