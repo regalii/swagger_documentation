@@ -1942,3 +1942,125 @@ components:
           type: string
           description: Card’s expiry month (2 digit number)
           example: "02"
+
+    MFA_Response:
+      type: object
+      required:
+        - id
+        - type
+        - response
+      properties:
+        id:
+          type: string
+          description: The ID or UUID of the challenge
+        type:
+          type: string
+          description: The type of challenge (question, code, image, image_choice)
+        response:
+          type: string
+          description: Response to the challenge
+
+    MFA_Challenge:
+      description: Shared information of MFA Challenges
+      type: object
+      required:
+        - type
+        - id
+        - uuid
+        - expires_at
+      properties:
+        type:
+          type: string
+          description: The type of challenge (question, code, image, image_choice)
+        id:
+          type: integer
+          description: The ID of the challenge
+        uuid:
+          type: string
+          description: The UUID of the challenge
+        expires_at:
+          type: string
+          format: date-time
+          description: The delay of expiration; after this date the answer will be rejected. It can be null
+
+    MFA_Challenge_Simple:
+      description: Structure of an MFA Challenge of type 'question' or 'code'
+      allOf:
+        - $ref: '#/components/schemas/MFA_Challenge'
+        - type: object
+          required:
+            - prompt
+          properties:
+            prompt:
+              type: string
+              description: The question to show to the owner of the account
+              example: What is 4 + 4?
+
+    MFA_Challenge_Image:
+      description: Structure of an MFA Challenge of type 'image'
+      allOf:
+        - $ref: '#/components/schemas/MFA_Challenge'
+        - type: object
+          required:
+            - prompt
+          properties:
+            prompt:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: "The type of the image: url or uri"
+                value:
+                  type: string
+                  description: The URL of the image for url or the content of the image for uri
+                  example: http://via.placeholder.com/350x150
+
+    MFA_Challenge_Image_Choices:
+      description: Structure of an MFA Challenge of type 'image_choice'
+      allOf:
+        - $ref: '#/components/schemas/MFA_Challenge'
+        - type: object
+          required:
+            - prompt
+          properties:
+            prompt:
+              type: array
+              description: An array of images
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: The ID of the proposition (basically the index of the array)
+                  type:
+                    type: string
+                    description: "The type of the image: url or uri"
+                  value:
+                    type: string
+                    description: The URL of the image for url or the content of the image for uri
+                    example: http://via.placeholder.com/350x150
+    MFA_Challenge_Choices:
+      description: Structure of an MFA Challenge of type '?'
+      allOf:
+        - $ref: '#/components/schemas/MFA_Challenge'
+        - type: object
+          required:
+            - prompt
+          properties:
+            prompt:
+              type: array
+              description: An array of choices
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: The ID of the proposition (basically the index of the array)
+                  category:
+                    type: string
+                    description: ALlowing to group proposition, can be null, if present, the value can be present at least twice, in different categories
+                    example: Phone
+                  value:
+                    type: string
+                    description: The proposition
+                    example: "+1234567890"
