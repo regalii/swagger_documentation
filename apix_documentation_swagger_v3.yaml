@@ -30,37 +30,19 @@ info:
 
     ---
 
-    __Sandbox__
+    ## Sandbox
 
     Regalii maintains a Sandbox which allows developers to test the API using mocked data.
 
     ---
 
-    __Billers__
+    ### Billers
 
     The list of billers is not in sync with the billers in production.
 
     ---
 
-    Separate keys for each environment and `https` protocol must be used
-
-    - __Note:__ For security reasons, the APIx doesn't support the TLS V1.0 anymore, we recommend you to use TLS v1.2 for a better security.
-
-    ---
-
-    __Sandbox__
-
-    Regalii maintains a Sandbox which allows developers to test the API using mocked data.
-
-    ---
-
-    __Billers__
-
-    The list of billers is not in sync with the billers in production.
-
-    ---
-
-    __Credentials__
+    ### Credentials
 
     The Sandbox accepts any credentials. You can use the following special credentials when you create a Bill to force a certain response.
 
@@ -152,36 +134,36 @@ info:
 
     ---
 
-    __Multi-Factor Question__
+    ### Multi-Factor Question
 
     The questions must be answered in up to 30 seconds.
 
     ---
 
-    __Production__
+    ## Production
 
     Once you complete your integration contact us to receive your production keys
     and endpoint.
 
     # Authentication
 
+    - __Note:__ We are working on implementing our Authentication method within this dynamic documentation, so that you no longer have to worry about calculating the checksum and manually adding the header. In the meantime, you can try out the endpoints to receive the basic Curl structure, to which you will have to add the proper Authentication header to make a successful request.
+
     Regalii uses an api-key and a secret-key for authentication that we generate and will provide to you.
 
     Regalii expects for the api-key to be included in all API requests to the server
-    in the ‘Authorization’ header combined with a checksum which we will described later on:
+    in the ‘Authorization’ header, combined with a checksum which we will describe later on:
 
     __Authorization:__ `APIAuth <your-api-key>:<checksum>`
 
-    - __Note:__ You must replace <your-api-key>:<checksum> with your personal API
+    - __Note:__ You must replace `<your-api-key>:<checksum>` with your personal API
     key and the calculated checksum.
 
     ---
 
-    __Calculating the Checksum__
+    ## Calculating the Checksum
 
-    - __Note:__ All of our official libraries calculate the checksum automatically.
-
-    __Step 1__
+    ### Step 1
 
       A checksum string needs to be created first by using your HTTP headers containing the `Content-Type`, `Content-MD5`, `Endpoint` and today's `Timestamp`.
 
@@ -189,35 +171,37 @@ info:
 
       checksum_string = `content-type`,`content-md5`,`endpoint`,`timestamp`
 
-      - __Note:__ The ‘Endpoint’ is simply the URL you are sending the request to. Keep in mind that
-      this value has to be exactly the same as the URL you are trying to reach. For instance, if you
-      want to create a new bill by requesting a post to https://apix.casiregalii.com/bills, your
-      checksum string should look like this (please also notice the timestamp format).
+      - __Note:__ The ‘Endpoint’ is simply the URL you are sending the request to, excluding the server and including the parameters. For instance, if you
+      want to obtain a bill's data by requesting a get to `https://apix.casiregalii.com/bills/1`, your
+      checksum string should look like this:
+      `application/json,,/bills/1,Wed, 10 Jan 2017 16:53:15 GMT`
+      - __Note:__ Please notice the timestamp format. In UNIX-based systems you could obtain it by running: <b>echo \`date -Ru | sed 's/+0000/GMT/'`</b> in your terminal.
 
-      `application/json,,/bills,Wed, 10 Jan 2017 16:53:15 GMT`
+    ### Step 2
 
-    __Step 2__
-
-      The checksum string is then used to create the checksum which is a Base64 SHA1 HMAC string
+      The checksum string is then used to create the checksum, which is a Base64 SHA1 HMAC string
       encoded using your private secret key.
 
-    __Step 3__
+    ### Step 3
 
-      For testing, verify that if you pass “application/json,,/account,Wed, 02 Nov 2016 17:26:52 GMT” to your checksum function and use “verify-secret” as secret key, it should return “nLet/JEZG9CRXHScwaQ/na4vsKQ=”
+      For testing, verify that if you pass `application/json,,/account,Wed, 02 Nov 2016 17:26:52 GMT` to your checksum function and use `verify-secret` as secret key, it should return `nLet/JEZG9CRXHScwaQ/na4vsKQ=`. See checksum verification [example](https://gist.github.com/dagosi/c2e7db228a9c15e2f5bcdccd7a056183).
 
-      Checksum verification [example](https://gist.github.com/dagosi/c2e7db228a9c15e2f5bcdccd7a056183).
+      How to create a checksum in [Bash](https://gist.github.com/dagosi/d85979e364af745750a9dff8c8c5a949):
 
-      How to create a checksum in [Bash](https://gist.github.com/dagosi/d85979e364af745750a9dff8c8c5a949)
+      ```
+      CURRENT_DATE=`date -Ru | sed 's/+0000/GMT/'`
+      CHECKSUM=$(echo -n "application/json,,/account,$CURRENT_DATE" \
+        | openssl dgst -sha1 -binary -hmac "your-secret-key" \
+        | base64)
+      ```
 
     ---
 
-    __How to use the Checksum__
+    ## How to use the Checksum
 
       Now that you have a checksum, you can add it to your headers using the `Authorization` header as we previously mentioned. As an example, let’s assume that your api-key is `f0253d2a6a76ed12499e7878d7803ffb` and that your checksum is `nLet/JEZG9CRXHScwaQ/na4vsKQ=`. Now, you can add this header to your request.
 
       `-H Authorization: APIAuth f0253d2a6a76ed12499e7878d7803ffb:nLet/JEZG9CRXHScwaQ/na4vsKQ=`
-
-      You will see that we will use this format in our Authorization header through this documentation.
 
     # Webhooks
 
@@ -226,7 +210,7 @@ info:
 
       ___
 
-      __Bills__
+      ## Bills
 
       * The bill finishes updating and now requires password entry (error 420); waiting; or has data ready since updated
       * A long-running fetch has completed
@@ -235,13 +219,13 @@ info:
 
       ___
 
-      __How to Register a Webhook__
+      ## How to Register a Webhook
 
       You can set up a webhook URL with Regalii by contacting us
 
       ___
 
-      __Data in Webhook__
+      ## Data in Webhook
 
       Webhooks return the same data offered in the bill status.
 
