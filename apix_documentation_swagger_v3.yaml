@@ -165,6 +165,8 @@ info:
 
     # Authentication
 
+    - __Note:__ We are working on implementing our Authentication method within this dynamic documentation, so that you no longer have to worry about calculating the checksum and manually adding the header. In the meantime, you can try out the endpoints to receive the basic Curl structure, to which you will have to add the proper Authentication header to make a successful request.
+
     Regalii uses an api-key and a secret-key for authentication that we generate and will provide to you.
 
     Regalii expects for the api-key to be included in all API requests to the server
@@ -177,9 +179,7 @@ info:
 
     ---
 
-    __Calculating the Checksum__
-
-    - __Note:__ We are working on implementing our Authentication method within this dynamic documentation, so that you no longer have to worry about this calculation.
+    __Calculating the Checksum__    
 
     __Step 1__
 
