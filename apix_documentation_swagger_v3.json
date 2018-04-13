@@ -1,0 +1,2324 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "3.2",
+    "title": "Regalii API Documentation",
+    "description": "# Introduction\n\nWelcome to the Regalii API! You can use our API documentation to access\nRegalii API endpoints, which can get you information on various billers,\nbills, and transactions.\n\n---\n\n__Tools for Testing__\n\nAditionally you can use by yourself the below list of tools that you can use to test different\nendpoints and their responses before you start coding against them. It is recommended that\nyou test a couple of endpoints first to get an idea how to properly construct requests in your\napplication.\n\n  * [Paw](https://paw.cloud/)\n  * [Postman Chrome](https://www.getpostman.com/)\n\n# Environments\n\nSeparate keys for each environment and `https` protocol must be used\n\n- __Note:__ For security reasons, the APIx doesn't support the TLS V1.0 anymore, we recommend you to use TLS v1.2 for a better security.\n\n---\n\n__Sandbox__\n\nRegalii maintains a Sandbox which allows developers to test the API using mocked data.\n\n---\n\n__Billers__\n\nThe list of billers is not in sync with the billers in production.\n\n---\n\nSeparate keys for each environment and `https` protocol must be used\n\n- __Note:__ For security reasons, the APIx doesn't support the TLS V1.0 anymore, we recommend you to use TLS v1.2 for a better security.\n\n---\n\n__Sandbox__\n\nRegalii maintains a Sandbox which allows developers to test the API using mocked data.\n\n---\n\n__Billers__\n\nThe list of billers is not in sync with the billers in production.\n\n---\n\n__Credentials__\n\nThe Sandbox accepts any credentials. You can use the following special credentials when you create a Bill to force a certain response.\n\n- __Note:__ Do not send real credentials to the Sandbox.\n\n<table>\n   <tr>\n    <td><strong>Login</strong></td>\n    <td><strong>Password</strong></td>\n    <td><strong>Status</strong></td>\n    <td><strong>Error Code</strong></td>\n  </tr>\n   <tr>\n    <td>email@fetching.ii</td>\n    <td>secret</td>\n    <td>updating</td>\n    <td></td>\n  </tr>\n   <tr>\n    <td>email@mfa_code.ii</td>\n    <td>secret</td>\n    <td>waiting</td>\n    <td></td>\n  </tr>\n   <tr>\n    <td>email@mfa_question.ii</td>\n    <td>secret</td>\n    <td>waiting</td>\n    <td></td>\n  </tr>\n  <tr>\n    <td>email@mfa_choice.ii</td>\n    <td>secret</td>\n    <td>waiting</td>\n    <td></td>\n  </tr>\n  <tr>\n    <td>email@mfa_image.ii</td>\n    <td>secret</td>\n    <td>waiting</td>\n    <td></td>\n  </tr>\n   <tr>\n    <td>email@mfa_image_choice.ii</td>\n    <td>secret</td>\n    <td>waiting</td>\n    <td></td>\n  </tr>\n  <tr>\n    <td>email@successful.ii</td>\n    <td>secret</td>\n    <td>updated</td>\n    <td></td>\n  </tr>\n  <tr>\n    <td>email@unavailable.ii</td>\n    <td>secret</td>\n    <td></td>\n    <td>R122</td>\n  </tr>\n  <tr>\n    <td>email@input.ii</td>\n    <td>secret</td>\n    <td></td>\n    <td>R121</td>\n  </tr>\n  <tr>\n    <td>email@credentials.ii</td>\n    <td>secret</td>\n    <td></td>\n    <td>R120</td>\n  </tr>\n  <tr>\n    <td>email@exception.ii</td>\n    <td>secret</td>\n    <td></td>\n    <td>R121</td>\n  </tr>\n   <tr>\n    <td>email@timeout.ii</td>\n    <td>secret</td>\n    <td></td>\n    <td>R121</td>\n  </tr>\n</table>\n\n\nJust the @{state}.ii is the required part, email and password can be anything.\n\n---\n\n__Multi-Factor Question__\n\nThe questions must be answered in up to 30 seconds.\n\n---\n\n__Production__\n\nOnce you complete your integration contact us to receive your production keys\nand endpoint.\n\n# Authentication\n\nRegalii uses an api-key and a secret-key for authentication that we generate and will provide to you.\n\nRegalii expects for the api-key to be included in all API requests to the server\nin the ‘Authorization’ header combined with a checksum which we will described later on:\n\n__Authorization:__ `APIAuth <your-api-key>:<checksum>`\n\n- __Note:__ You must replace <your-api-key>:<checksum> with your personal API\nkey and the calculated checksum.\n\n---\n\n__Calculating the Checksum__\n\n- __Note:__ All of our official libraries calculate the checksum automatically.\n\n__Step 1__\n\n  A checksum string needs to be created first by using your HTTP headers containing the `Content-Type`, `Content-MD5`, `Endpoint` and today's `Timestamp`.\n\n  The checksum string is computed as follows:\n\n  checksum_string = `content-type`,`content-md5`,`endpoint`,`timestamp`\n\n  - __Note:__ The ‘Endpoint’ is simply the URL you are sending the request to. Keep in mind that\n  this value has to be exactly the same as the URL you are trying to reach. For instance, if you\n  want to create a new bill by requesting a post to https://apix.casiregalii.com/bills, your\n  checksum string should look like this (please also notice the timestamp format).\n\n  `application/json,,/bills,Wed, 10 Jan 2017 16:53:15 GMT`\n\n__Step 2__\n\n  The checksum string is then used to create the checksum which is a Base64 SHA1 HMAC string\n  encoded using your private secret key.\n\n__Step 3__\n\n  For testing, verify that if you pass “application/json,,/account,Wed, 02 Nov 2016 17:26:52 GMT” to your checksum function and use “verify-secret” as secret key, it should return “nLet/JEZG9CRXHScwaQ/na4vsKQ=”\n\n  Checksum verification [example](https://gist.github.com/dagosi/c2e7db228a9c15e2f5bcdccd7a056183).\n\n  How to create a checksum in [Bash](https://gist.github.com/dagosi/d85979e364af745750a9dff8c8c5a949)\n\n---\n\n__How to use the Checksum__\n\n  Now that you have a checksum, you can add it to your headers using the `Authorization` header as we previously mentioned. As an example, let’s assume that your api-key is `f0253d2a6a76ed12499e7878d7803ffb` and that your checksum is `nLet/JEZG9CRXHScwaQ/na4vsKQ=`. Now, you can add this header to your request.\n\n  `-H Authorization: APIAuth f0253d2a6a76ed12499e7878d7803ffb:nLet/JEZG9CRXHScwaQ/na4vsKQ=`\n\n  You will see that we will use this format in our Authorization header through this documentation.\n\n# Webhooks\n\n  Regalii offers webhooks which can be used to notify you when there are updates to a bill or\n  transaction.\n\n  ___\n\n  __Bills__\n\n  * The bill finishes updating and now requires password entry (error 420); waiting; or has data ready since updated\n  * A long-running fetch has completed\n  * The bill has been re-run by Regalii due to an earlier error or outage\n  * It is the client's responsibility to trigger bills to refresh under normal operation.\n\n  ___\n\n  __How to Register a Webhook__\n\n  You can set up a webhook URL with Regalii by contacting us\n\n  ___\n\n  __Data in Webhook__\n\n  Webhooks return the same data offered in the bill status.\n"
+  },
+  "servers": [
+    {
+      "url": "https://apix.casiregalii.com",
+      "description": "Sandbox, Mocked Credentials; Mocked Data"
+    },
+    {
+      "url": "https://apix.regalii.com",
+      "description": "Production, Real Credentials; Real Data"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Common",
+      "description": "Common endpoints"
+    },
+    {
+      "name": "xData",
+      "description": "Access to xData documentation"
+    },
+    {
+      "name": "xPay",
+      "description": "Access to xPay documentation"
+    },
+    {
+      "name": "xChange",
+      "description": "Access to xChange documentation"
+    }
+  ],
+  "paths": {
+    "/account": {
+      "get": {
+        "tags": [
+          "Common"
+        ],
+        "summary": "Returns the properties of your Regalii account.",
+        "operationId": "getAccount",
+        "description": "Returns the properties of your Regalii account. This includes the name of your company, the current balance you owe, and the maximum amount of credit allowed to your account in the currency specified.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/DateParam"
+          },
+          {
+            "$ref": "#/components/parameters/ContentMD5Param"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful response",
+            "content": {
+              "application/vnd.regalii.v3.2+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "the name of the company"
+                    },
+                    "balance": {
+                      "type": "number",
+                      "description": "the current balance of the company"
+                    },
+                    "minimum_balance": {
+                      "type": "number",
+                      "description": "is the maximum debit balance that the company could have"
+                    },
+                    "currency": {
+                      "type": "string",
+                      "description": "the currency type for the company"
+                    }
+                  },
+                  "example": {
+                    "name": "ACME Company",
+                    "balance": 537.5,
+                    "minimum_balance": -30000,
+                    "currency": "USD"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/billers": {
+      "get": {
+        "tags": [
+          "Common"
+        ],
+        "summary": "Provides the current list of billers and their associated properties.",
+        "operationId": "getBillersCredentials",
+        "description": "Provides the current list of billers and their associated properties.\nTo ensure that your customers are able to leverage the enhancements that we make\nover time, you are required to cache the full list of billers and update it on a weekly basis.\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "page",
+            "required": true,
+            "description": "page index for returned information.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/DateParam"
+          },
+          {
+            "$ref": "#/components/parameters/ContentMD5Param"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful response",
+            "content": {
+              "application/vnd.regalii.v3.2+json": {
+                "schema": {
+                  "type": "array",
+                  "title": "billers",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "description": "biller"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "description": "the ID of the biller [deprecated]"
+                    },
+                    "uuid": {
+                      "type": "string",
+                      "description": "the UUID of the biller"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "the name of the biller"
+                    },
+                    "country": {
+                      "type": "string",
+                      "description": "country of the biller"
+                    },
+                    "currency": {
+                      "type": "string",
+                      "description": "currency of the biller"
+                    },
+                    "biller_type": {
+                      "type": "string",
+                      "description": "is the type of biller"
+                    },
+                    "bill_type": {
+                      "type": "string",
+                      "description": "the type of bill, that can be for example water, internet, cable and so on"
+                    },
+                    "required_parameters": {
+                      "type": "array",
+                      "description": "the login and password required parameters",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "returned_parameters": {
+                      "description": "the returned parameters by the bill",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "can_migrate": {
+                      "description": "can use xChange",
+                      "type": "boolean"
+                    },
+                    "charge_user": {
+                      "description": "can charge user",
+                      "type": "boolean"
+                    },
+                    "has_xdata": {
+                      "description": "can use xData",
+                      "type": "boolean"
+                    }
+                  },
+                  "example": {
+                    "type": "biller",
+                    "id": 6510,
+                    "uuid": "3bc572a9-cb55-4aea-80aa-40b058d26673",
+                    "name": "Con Edison",
+                    "country": "US",
+                    "currency": "USD",
+                    "biller_type": "Electricity",
+                    "bill_type": "credentials",
+                    "required_parameters": [
+                      "login",
+                      "password"
+                    ],
+                    "returned_parameters": [
+                      "balance",
+                      "due_date",
+                      "account_number",
+                      "name_on_account",
+                      "xdata"
+                    ],
+                    "can_migrate": false,
+                    "charge_user": true,
+                    "has_xdata": false
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bills": {
+      "post": {
+        "tags": [
+          "xData"
+        ],
+        "summary": "Creates a bill for billers with credentials bill identifier",
+        "operationId": "createBills",
+        "description": "This endpoint creates a bill for billers with credentials bill identifier. When you send credentials to create a bill, the bill object is created and we then attempt to fetch the bill from the biller. Thus no matter what happens (MFA, wrong credentials, biller down, etc), the bill object is created. The request may take up to 59 seconds to return. If an error or MFA is returned, update the bill to resolve the issue.\n",
+        "requestBody": {
+          "description": "Within the request body the parameters sent are a biller_id, login and password",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "biller_id": {
+                    "type": "integer",
+                    "description": "The ID of the biller."
+                  },
+                  "login": {
+                    "type": "string",
+                    "description": "The account login."
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "The account password"
+                  }
+                },
+                "required": [
+                  "biller_id",
+                  "login",
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/DateParam"
+          },
+          {
+            "$ref": "#/components/parameters/ContentMD5Param"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful response",
+            "content": {
+              "application/vnd.regalii.v3.2+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "description": "bill"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "description": "the ID of the bill [deprecated]"
+                    },
+                    "uuid": {
+                      "type": "string",
+                      "description": "the UUID of the bill"
+                    },
+                    "biller_id": {
+                      "type": "integer",
+                      "description": "the ID of the biller [deprecated]"
+                    },
+                    "biller_uuid": {
+                      "type": "string",
+                      "description": "the UUID of the biller"
+                    },
+                    "account_number": {
+                      "type": "string",
+                      "description": "the bills account number"
+                    },
+                    "name_on_account": {
+                      "type": "string",
+                      "description": "the name asociated with the accoun number"
+                    },
+                    "due_date": {
+                      "type": "string",
+                      "description": "the deadline to pay the bill"
+                    },
+                    "balance": {
+                      "type": "number",
+                      "description": "the returned balance"
+                    },
+                    "balance_currency": {
+                      "type": "string",
+                      "description": "the bills currency"
+                    },
+                    "balance_updated_at": {
+                      "type": "string",
+                      "description": "the date of last balance update"
+                    },
+                    "error_code": {
+                      "type": "string",
+                      "description": "the error code in the case of get one"
+                    },
+                    "error_message": {
+                      "type": "string",
+                      "description": "the error message associated to error code in the case of get one"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "one of the different posible status associated to the bill"
+                    },
+                    "mfa_challenges": {
+                      "description": "params for multi-factor authentication challenge",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string"
+                          },
+                          "id": {
+                            "type": "integer"
+                          },
+                          "prompt": {
+                            "type": "string"
+                          },
+                          "expires_at": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "type": "bill",
+                    "id": 1512,
+                    "uuid": "c5482bbe-0f46-4e30-b660-3b1bb0ea773f",
+                    "biller_id": 6510,
+                    "biller_uuid": "b44f5c1c-a6b7-4688-8311-080512ca4f1e",
+                    "account_number": 4222422244,
+                    "name_on_account": "Jose Bautista",
+                    "due_date": "2016-11-30",
+                    "balance": 56.43,
+                    "balance_currency": "USD",
+                    "balance_updated_at": "2017-01-16T20:12:58Z",
+                    "error_code": null,
+                    "error_message": null,
+                    "status": "updated",
+                    "mfa_challenges": []
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "xData"
+        ],
+        "summary": "This endpoint retrieves all the bills.",
+        "operationId": "getBills",
+        "description": "This endpoint retrieves all the bills\n",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "description": "If set, it allows you to display any page of bills.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q[created_at_gteq]",
+            "schema": {
+              "type": "string",
+              "items": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": false,
+            "description": "If set, it’ll return results after the specified timestamp."
+          },
+          {
+            "in": "query",
+            "name": "q[created_at_lteq]",
+            "required": false,
+            "description": "If set, it’ll return results before the specified timestamp.",
+            "schema": {
+              "type": "string",
+              "items": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          },
+          {
+            "in": "query",
+            "name": "q[id_in][]",
+            "required": false,
+            "description": "If set, it’ll return the bills for the specified bill ids.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          {
+            "$ref": "#/components/parameters/DateParam"
+          },
+          {
+            "$ref": "#/components/parameters/ContentMD5Param"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful response",
+            "content": {
+              "application/vnd.regalii.v3.2+json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  },
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "description": "bill"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "description": "the ID of the bill [deprecated]"
+                    },
+                    "uuid": {
+                      "type": "string",
+                      "description": "the UUID of the bill"
+                    },
+                    "biller_id": {
+                      "type": "integer",
+                      "description": "the ID of the biller [deprecated]"
+                    },
+                    "biller_uuid": {
+                      "type": "string",
+                      "description": "the UUID of the biller"
+                    },
+                    "account_number": {
+                      "type": "string",
+                      "description": "the bills account number"
+                    },
+                    "name_on_account": {
+                      "type": "string",
+                      "description": "the name asociated with the accoun number"
+                    },
+                    "due_date": {
+                      "type": "string",
+                      "description": "the deadline to pay the bill"
+                    },
+                    "balance": {
+                      "type": "number",
+                      "description": "the returned balance"
+                    },
+                    "balance_currency": {
+                      "type": "string",
+                      "description": "the bills currency"
+                    },
+                    "balance_updated_at": {
+                      "type": "string",
+                      "description": "the date of last balance update"
+                    },
+                    "error_code": {
+                      "type": "string",
+                      "description": "the error code in the case of get one"
+                    },
+                    "error_message": {
+                      "type": "string",
+                      "description": "the error message associated to error code in the case of get one"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "one of the different posible status associated to the bill"
+                    },
+                    "migrated_at": {
+                      "type": "string",
+                      "description": "the date of last migration"
+                    },
+                    "mfa_challenges": {
+                      "description": "params for multi-factor authentication challenge",
+                      "type": "array"
+                    }
+                  },
+                  "example": {
+                    "bills": [
+                      {
+                        "type": "bill",
+                        "id": 674124,
+                        "uuid": "c5482bbe-0f46-4e30-b660-3b1bb0ea773f",
+                        "biller_id": 6510,
+                        "biller_uuid": "b44f5c1c-a6b7-4688-8311-080512ca4f1e",
+                        "account_number": 87249256,
+                        "name_on_account": "Rita Sporer",
+                        "due_date": "2017-01-29T05:00:00Z",
+                        "balance": 62.38,
+                        "balance_currency": "USD",
+                        "balance_updated_at": "2017-01-17T19:57:56Z",
+                        "error_code": null,
+                        "error_message": null,
+                        "status": "linked",
+                        "migrated_at": null,
+                        "mfa_challenges": []
+                      },
+                      {
+                        "type": "bill",
+                        "id": 674125,
+                        "uuid": "c5482bbe-0f46-4e30-b660-3b1bb0ea773f",
+                        "biller_id": 1,
+                        "biller_uuid": "b44f5c1c-a6b7-4688-8311-080512ca4f1e",
+                        "account_number": 1234567,
+                        "name_on_account": "Jose Bautista",
+                        "due_date": null,
+                        "balance": 400,
+                        "balance_currency": "RD",
+                        "balance_updated_at": "2017-01-17T21:47:19Z",
+                        "error_code": null,
+                        "error_message": null,
+                        "status": "linked",
+                        "migrated_at": null,
+                        "mfa_challenges": []
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bills/{id}": {
+      "post": {
+        "tags": [
+          "xData"
+        ],
+        "summary": "This endpoint retrieves a specific bill’s cached data.",
+        "operationId": "getBill",
+        "description": "This endpoint retrieves a specific bill’s cached data. To pull fresh\ndata from a biller see <refresh bill>.\n",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of bill to return",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/DateParam"
+          },
+          {
+            "$ref": "#/components/parameters/ContentMD5Param"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful response",
+            "content": {
+              "application/vnd.regalii.v3.2+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "description": "bill"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "description": "the ID of the bill [deprecated]"
+                    },
+                    "uuid": {
+                      "type": "string",
+                      "description": "the UUID of the bill"
+                    },
+                    "biller_id": {
+                      "type": "integer",
+                      "description": "the ID of the biller [deprecated]"
+                    },
+                    "biller_uuid": {
+                      "type": "string",
+                      "description": "the UUID of the biller"
+                    },
+                    "account_number": {
+                      "type": "string",
+                      "description": "the bills account number"
+                    },
+                    "name_on_account": {
+                      "type": "string",
+                      "description": "the name asociated with the accoun number"
+                    },
+                    "due_date": {
+                      "type": "string",
+                      "description": "the deadline to pay the bill"
+                    },
+                    "balance": {
+                      "type": "number",
+                      "description": "the returned balance"
+                    },
+                    "balance_currency": {
+                      "type": "string",
+                      "description": "the bills currency"
+                    },
+                    "balance_updated_at": {
+                      "type": "string",
+                      "description": "the date of last balance update"
+                    },
+                    "error_code": {
+                      "type": "string",
+                      "description": "the error code in the case of get one"
+                    },
+                    "error_message": {
+                      "type": "string",
+                      "description": "the error message associated to error code in the case of get one"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "one of the different posible status associated to the bill"
+                    },
+                    "mfa_challenges": {
+                      "description": "params for multi-factor authentication challenge",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string"
+                          },
+                          "id": {
+                            "type": "integer"
+                          },
+                          "prompt": {
+                            "type": "string"
+                          },
+                          "expires_at": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "type": "bill",
+                    "id": 674117,
+                    "uuid": "c5482bbe-0f46-4e30-b660-3b1bb0ea773f",
+                    "biller_id": 6510,
+                    "biller_uuid": "b44f5c1c-a6b7-4688-8311-080512ca4f1e",
+                    "account_number": 4222422244,
+                    "name_on_account": "Jose Bautista",
+                    "due_date": "2016-11-30",
+                    "balance": 56.43,
+                    "balance_currency": "USD",
+                    "balance_updated_at": "2017-01-16T20:12:58Z",
+                    "error_code": null,
+                    "error_message": null,
+                    "status": "linked",
+                    "mfa_challenges": []
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "xData"
+        ],
+        "description": "This endpoint updates a specific bill",
+        "operationId": "updateBill",
+        "summary": "This endpoint updates a specific bill",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of bill to return",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/DateParam"
+          },
+          {
+            "$ref": "#/components/parameters/ContentMD5Param"
+          }
+        ],
+        "requestBody": {
+          "description": "Within the request body the parameters sent are a login, password and an array of mfa_challenges objects",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "login": {
+                    "type": "string",
+                    "description": "The username/email address/identifier credential"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "The password credential"
+                  },
+                  "mfa_challenges": {
+                    "type": "array",
+                    "description": "Challenge information",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The id of the challenge that is being answered"
+                        },
+                        "response": {
+                          "type": "string",
+                          "description": "The response to the challenge"
+                        }
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "login",
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful response",
+            "content": {
+              "application/vnd.regalii.v3.2+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "description": "bill"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "description": "the ID of the bill [deprecated]"
+                    },
+                    "uuid": {
+                      "type": "string",
+                      "description": "the UUID of the bill"
+                    },
+                    "biller_id": {
+                      "type": "integer",
+                      "description": "the ID of the biller [deprecated]"
+                    },
+                    "biller_uuid": {
+                      "type": "string",
+                      "description": "the UUID of the biller"
+                    },
+                    "account_number": {
+                      "type": "string",
+                      "description": "the bills account number"
+                    },
+                    "name_on_account": {
+                      "type": "string",
+                      "description": "the name asociated with the accoun number"
+                    },
+                    "due_date": {
+                      "type": "string",
+                      "description": "the deadline to pay the bill"
+                    },
+                    "balance": {
+                      "type": "number",
+                      "description": "the returned balance"
+                    },
+                    "balance_currency": {
+                      "type": "string",
+                      "description": "the bills currency"
+                    },
+                    "balance_updated_at": {
+                      "type": "string",
+                      "description": "the date of last balance update"
+                    },
+                    "error_code": {
+                      "type": "string",
+                      "description": "the error code in the case of get one"
+                    },
+                    "error_message": {
+                      "type": "string",
+                      "description": "the error message associated to error code in the case of get one"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "one of the different posible status associated to the bill"
+                    },
+                    "mfa_challenges": {
+                      "description": "params for multi-factor authentication challenge",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string"
+                          },
+                          "id": {
+                            "type": "integer"
+                          },
+                          "prompt": {
+                            "type": "string"
+                          },
+                          "expires_at": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "type": "bill",
+                    "id": 674117,
+                    "uuid": "c5482bbe-0f46-4e30-b660-3b1bb0ea773f",
+                    "biller_id": 6510,
+                    "biller_uuid": "b44f5c1c-a6b7-4688-8311-080512ca4f1e",
+                    "account_number": 4222422244,
+                    "name_on_account": "Jose Bautista",
+                    "due_date": "2016-11-30",
+                    "balance": 56.43,
+                    "balance_currency": "USD",
+                    "balance_updated_at": "2017-01-16T20:12:58Z",
+                    "error_code": null,
+                    "error_message": null,
+                    "status": "linked",
+                    "mfa_challenges": []
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "xData"
+        ],
+        "description": "This endpoint deletes a specific bill",
+        "summary": "This endpoint deletes a specific bill",
+        "operationId": "deleteBill",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of bill to return",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/DateParam"
+          },
+          {
+            "$ref": "#/components/parameters/ContentMD5Param"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful response",
+            "content": {
+              "application/vnd.regalii.v3.2+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "description": "bill"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "description": "the ID of the bill [deprecated]"
+                    },
+                    "uuid": {
+                      "type": "string",
+                      "description": "the UUID of the bill"
+                    },
+                    "biller_id": {
+                      "type": "integer",
+                      "description": "the ID of the biller [deprecated]"
+                    },
+                    "biller_uuid": {
+                      "type": "string",
+                      "description": "the UUID of the biller"
+                    },
+                    "account_number": {
+                      "type": "string",
+                      "description": "the bills account number"
+                    },
+                    "name_on_account": {
+                      "type": "string",
+                      "description": "the name asociated with the accoun number"
+                    },
+                    "due_date": {
+                      "type": "string",
+                      "description": "the deadline to pay the bill"
+                    },
+                    "balance": {
+                      "type": "number",
+                      "description": "the returned balance"
+                    },
+                    "balance_currency": {
+                      "type": "string",
+                      "description": "the bills currency"
+                    },
+                    "balance_updated_at": {
+                      "type": "string",
+                      "description": "the date of last balance update"
+                    },
+                    "error_code": {
+                      "type": "string",
+                      "description": "the error code in the case of get one"
+                    },
+                    "error_message": {
+                      "type": "string",
+                      "description": "the error message associated to error code in the case of get one"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "one of the different posible status associated to the bill"
+                    },
+                    "mfa_challenges": {
+                      "description": "params for multi-factor authentication challenge",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string"
+                          },
+                          "id": {
+                            "type": "integer"
+                          },
+                          "prompt": {
+                            "type": "string"
+                          },
+                          "expires_at": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "type": "bill",
+                    "id": 674117,
+                    "uuid": "c5482bbe-0f46-4e30-b660-3b1bb0ea773f",
+                    "biller_id": 6510,
+                    "biller_uuid": "b44f5c1c-a6b7-4688-8311-080512ca4f1e",
+                    "account_number": 4222422244,
+                    "name_on_account": "Jose Bautista",
+                    "due_date": "2016-11-30",
+                    "balance": 56.43,
+                    "balance_currency": "USD",
+                    "balance_updated_at": "2017-01-16T20:12:58Z",
+                    "error_code": null,
+                    "error_message": null,
+                    "status": "linked",
+                    "mfa_challenges": []
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bills/{id}/refresh": {
+      "post": {
+        "tags": [
+          "xData"
+        ],
+        "description": "This endpoint refreshes a specific bill by polling the biller. It\nresponds with the same structure as <create bill>.\n",
+        "summary": "Refreshes a specific bill by polling the biller",
+        "operationId": "refreshBill",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of bill to return",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/DateParam"
+          },
+          {
+            "$ref": "#/components/parameters/ContentMD5Param"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful response",
+            "content": {
+              "application/vnd.regalii.v3.2+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "description": "bill"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "description": "the ID of the bill [deprecated]"
+                    },
+                    "uuid": {
+                      "type": "string",
+                      "description": "the UUID of the bill"
+                    },
+                    "biller_id": {
+                      "type": "integer",
+                      "description": "the ID of the biller [deprecated]"
+                    },
+                    "biller_uuid": {
+                      "type": "string",
+                      "description": "the UUID of the biller"
+                    },
+                    "account_number": {
+                      "type": "string",
+                      "description": "the bills account number"
+                    },
+                    "name_on_account": {
+                      "type": "string",
+                      "description": "the name asociated with the accoun number"
+                    },
+                    "due_date": {
+                      "type": "string",
+                      "description": "the deadline to pay the bill"
+                    },
+                    "balance": {
+                      "type": "number",
+                      "description": "the returned balance"
+                    },
+                    "balance_currency": {
+                      "type": "string",
+                      "description": "the bills currency"
+                    },
+                    "balance_updated_at": {
+                      "type": "string",
+                      "description": "the date of last balance update"
+                    },
+                    "error_code": {
+                      "type": "string",
+                      "description": "the error code in the case of get one"
+                    },
+                    "error_message": {
+                      "type": "string",
+                      "description": "the error message associated to error code in the case of get one"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "one of the different posible status associated to the bill"
+                    },
+                    "migrated_at": {
+                      "description": "The date time of migration.",
+                      "type": "string"
+                    },
+                    "mfa_challenges": {
+                      "description": "params for multi-factor authentication challenge",
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  "example": {
+                    "type": "bill",
+                    "id": 674117,
+                    "uuid": "c5482bbe-0f46-4e30-b660-3b1bb0ea773f",
+                    "biller_id": 6510,
+                    "biller_uuid": "b44f5c1c-a6b7-4688-8311-080512ca4f1e",
+                    "account_number": 4222422244,
+                    "name_on_account": "Jose Bautista",
+                    "due_date": "2016-11-30",
+                    "balance": 56.43,
+                    "balance_currency": "USD",
+                    "balance_updated_at": "2017-01-16T20:12:58Z",
+                    "error_code": null,
+                    "error_message": null,
+                    "status": "updating",
+                    "mfa_challenges": [],
+                    "migrated_at": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bills/bulk_refresh": {
+      "post": {
+        "tags": [
+          "xData"
+        ],
+        "description": "This endpoint receives an array of bill ids as a parameter and refreshes\nthem. Updated bills can be eventually pulled by passing id_in to the\n<list bills> endpoint.\n",
+        "summary": "Receives an array of bill ids as a parameter and refreshes them.",
+        "operationId": "bulk_refreshBill",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/DateParam"
+          },
+          {
+            "$ref": "#/components/parameters/ContentMD5Param"
+          }
+        ],
+        "requestBody": {
+          "description": "Within the request body the parameters sent are a biller_id, login and password",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "bill_ids": {
+                    "type": "array",
+                    "description": "Array of bill ids.",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "bill_ids"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful response",
+            "content": {
+              "application/vnd.regalii.v3.2+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "message": "Refresh in progress for 3 bills"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rpps_billers": {
+      "get": {
+        "tags": [
+          "xPay"
+        ],
+        "description": "This endpoint provides the list of RPPS billers\n",
+        "summary": "This endpoint provides the list of RPPS billers",
+        "operationId": "getRppsBillers",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/DateParam"
+          },
+          {
+            "$ref": "#/components/parameters/ContentMD5Param"
+          },
+          {
+            "name": "q[biller_type_eq]",
+            "in": "query",
+            "required": false,
+            "description": "Only returns rpps billers of that biller type",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "q[name_eq]",
+            "in": "query",
+            "required": false,
+            "description": "Only returns rpps billers of that biller name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "q[country_eq]",
+            "in": "query",
+            "required": false,
+            "description": "Only returns rpps billers of that country",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful response",
+            "content": {
+              "application/vnd.regalii.v3.2+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "description": "Id of the rpps biller",
+                      "type": "integer"
+                    },
+                    "name": {
+                      "description": "name of the rpps biller",
+                      "type": "integer"
+                    },
+                    "biller_type": {
+                      "description": "the type of biller",
+                      "type": "string"
+                    },
+                    "biller_class": {
+                      "description": "the biller class belongs",
+                      "type": "string"
+                    },
+                    "country": {
+                      "description": "the country that the rpps biller belongs",
+                      "type": "string"
+                    },
+                    "state": {
+                      "description": "the state that the rpps biller belongs",
+                      "type": "string"
+                    },
+                    "territory_code": {
+                      "description": "the territory code that the rpps biller belongs",
+                      "type": "string"
+                    },
+                    "currency": {
+                      "description": "the currency supported by the rpps biller",
+                      "type": "string"
+                    },
+                    "address": {
+                      "description": "the address of the rpps biller",
+                      "type": "array"
+                    },
+                    "masks": {
+                      "description": "the masks of the rpps biller",
+                      "type": "array"
+                    }
+                  },
+                  "example": {
+                    "rpps_billers": [
+                      {
+                        "id": "692b45ea-7369-4232-bdd6-2bd662fe1ebd",
+                        "name": "1000 Granville Homeowners Association",
+                        "biller_type": "Core",
+                        "biller_class": "Homeowners Association",
+                        "country": "USA",
+                        "state": null,
+                        "territory_code": "National",
+                        "currency": "USD",
+                        "addresses": [
+                          {
+                            "city": "San Francisco",
+                            "state": "CA",
+                            "country": "USA",
+                            "address1": "PO Box 45463",
+                            "address2": null,
+                            "eff_date": "2010-07-26",
+                            "external_id": 67942,
+                            "postal_code": "94145-0463",
+                            "address_type": "Standard"
+                          }
+                        ],
+                        "masks": [
+                          {
+                            "length": 7,
+                            "eff_date": "2010-07-20",
+                            "exception": false,
+                            "external_id": 343033,
+                            "mask_format": null,
+                            "descriptions": []
+                          },
+                          {
+                            "length": 8,
+                            "eff_date": "2010-07-20",
+                            "exception": false,
+                            "external_id": 343034,
+                            "mask_format": null,
+                            "descriptions": []
+                          },
+                          {
+                            "length": 4,
+                            "eff_date": "2010-07-20",
+                            "exception": false,
+                            "external_id": 343035,
+                            "mask_format": null,
+                            "descriptions": []
+                          },
+                          {
+                            "length": 3,
+                            "eff_date": "2010-07-20",
+                            "exception": false,
+                            "external_id": 343036,
+                            "mask_format": null,
+                            "descriptions": []
+                          },
+                          {
+                            "length": 7,
+                            "eff_date": "2010-07-20",
+                            "exception": false,
+                            "external_id": 343037,
+                            "mask_format": null,
+                            "descriptions": []
+                          },
+                          {
+                            "length": 8,
+                            "eff_date": "2010-07-20",
+                            "exception": false,
+                            "external_id": 343038,
+                            "mask_format": null,
+                            "descriptions": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transactions": {
+      "post": {
+        "tags": [
+          "xPay"
+        ],
+        "description": "With this endpoint you can create a new transaction by passing an RPPS Biller ID and information\nabout the payment and the person (client) who is making the payment (see parameters below).\n\nOnce the transactions are created in Regalii’s system, it takes 2-3 days to process the\ntransaction. After that time, the transaction’s status will be updated. You can always check the\ntransaction status by making a request to the Get transaction endpoint.\n",
+        "summary": "Create a new transaction by passing an RPPS Biller ID and information about the payment",
+        "operationId": "postTransactions",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/DateParam"
+          },
+          {
+            "$ref": "#/components/parameters/ContentMD5Param"
+          }
+        ],
+        "requestBody": {
+          "description": "Within the request body the parameters sent are an `account_number`, `amount`, `currency`, `rpps_biller_id`, `phone_number`, `client_number`, `payer_born_on`, `first_name`, `last_name`.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "account_number": {
+                    "type": "integer",
+                    "description": "Account number where the payment is directed to"
+                  },
+                  "amount": {
+                    "type": "string",
+                    "description": "Amount to pay"
+                  },
+                  "currency": {
+                    "type": "string",
+                    "description": "Amount currency"
+                  },
+                  "rpps_biller_id": {
+                    "type": "string",
+                    "description": "RPPS Biller identifier"
+                  },
+                  "phone_number": {
+                    "type": "string",
+                    "description": "Phone number of the person who makes the payment"
+                  },
+                  "client_number": {
+                    "type": "string",
+                    "description": "Client number of the person who makes the payment"
+                  },
+                  "payer_born_on": {
+                    "type": "string",
+                    "description": "Date of birth of the payer of the transaction"
+                  },
+                  "first_name": {
+                    "type": "string",
+                    "description": "First name of the person who makes the payment"
+                  },
+                  "last_name": {
+                    "type": "string",
+                    "description": "Last name of the person who makes the payment"
+                  },
+                  "address": {
+                    "type": "object",
+                    "description": "Address of the person who makes the payment. This parameter should be a hash that contains the `street`, `zip_code`, `city` and `state`",
+                    "properties": {
+                      "street": {
+                        "type": "string"
+                      },
+                      "zip_code": {
+                        "type": "string"
+                      },
+                      "city": {
+                        "type": "string"
+                      },
+                      "state": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "account_number",
+                  "amount",
+                  "currency",
+                  "rpps_biller_id",
+                  "phone_number",
+                  "client_number",
+                  "payer_born_on",
+                  "first_name",
+                  "last_name"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful response",
+            "content": {
+              "application/vnd.regalii.v3.2+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "description": "the generated transaction id",
+                      "type": "integer"
+                    },
+                    "status": {
+                      "description": "the status of the transaction",
+                      "type": "string"
+                    },
+                    "bill_id": {
+                      "description": "related bill with transaction",
+                      "type": "string"
+                    },
+                    "account_number": {
+                      "description": "related account number with the transaction",
+                      "type": "string"
+                    },
+                    "currency": {
+                      "description": "currency for the transaction",
+                      "type": "string"
+                    },
+                    "amount": {
+                      "description": "amount of the transaction",
+                      "type": "number"
+                    },
+                    "created_at": {
+                      "description": "timestamp of the transaction",
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "description": "timestamp of the transaction update",
+                      "type": "string"
+                    },
+                    "error_code": {
+                      "description": "the error code in the case of get one",
+                      "type": "string"
+                    },
+                    "error_message": {
+                      "description": "the error message associated to error code in the case of get one",
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "id": "be42c413-fcce-4857-b6fa-374228e33912",
+                    "status": "initialized",
+                    "bill_id": null,
+                    "account_number": "1234-56",
+                    "currency": "USD",
+                    "amount": 2000,
+                    "created_at": "2018-04-06T15:41:52.846Z",
+                    "updated_at": "2018-04-06T15:41:52.846Z",
+                    "error_code": null,
+                    "error_message": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "xPay"
+        ],
+        "description": "This endpoint returns the list of transactions that Regalii has processed for you.\n",
+        "summary": "Returns the list of transactions that Regalii has processed for you",
+        "operationId": "getAllTransactions",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "description": "Allows you to obtain a specific page of the transactions’ list",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q[created_at_gteq]",
+            "required": false,
+            "description": "Returns those transactions that were created after the timestamp provided",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q[created_at_lteq]",
+            "required": false,
+            "description": "Returns those transactions that were created before the timestamp provided",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q[biller_id_eq]",
+            "required": false,
+            "description": "Returns the transactions of a specific biller",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q[bill_id_eq]",
+            "required": false,
+            "description": "Query transactions using the external_id you supplied",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q[biller_id_in][]",
+            "required": false,
+            "description": "Returns the transactions of the billers whose ids are provided",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "in": "query",
+            "name": "q[bill_id_in][]",
+            "required": false,
+            "description": "Returns the transactions of the bills whose ids are provided",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "$ref": "#/components/parameters/DateParam"
+          },
+          {
+            "$ref": "#/components/parameters/ContentMD5Param"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful response",
+            "content": {
+              "application/vnd.regalii.v3.2+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "description": "the generated transaction id",
+                      "type": "integer"
+                    },
+                    "status": {
+                      "description": "the status of the transaction",
+                      "type": "string"
+                    },
+                    "bill_id": {
+                      "description": "related bill with transaction",
+                      "type": "string"
+                    },
+                    "account_number": {
+                      "description": "related account number with the transaction",
+                      "type": "string"
+                    },
+                    "currency": {
+                      "description": "currency for the transaction",
+                      "type": "string"
+                    },
+                    "amount": {
+                      "description": "amount of the transaction",
+                      "type": "number"
+                    },
+                    "created_at": {
+                      "description": "timestamp of the transaction",
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "description": "timestamp of the transaction update",
+                      "type": "string"
+                    },
+                    "error_code": {
+                      "description": "the error code in the case of get one",
+                      "type": "string"
+                    },
+                    "error_message": {
+                      "description": "the error message associated to error code in the case of get one",
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "transactions": [
+                      {
+                        "id": "9fe8bf62-d78b-462c-9195-14977420bbeb",
+                        "status": "initialized",
+                        "bill_id": null,
+                        "account_number": 12345,
+                        "currency": "USD",
+                        "amount": 2000,
+                        "created_at": "2018-04-06T14:49:12.830Z",
+                        "updated_at": "2018-04-06T14:49:12.830Z",
+                        "error_code": null,
+                        "error_message": null
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transactions/{id}": {
+      "get": {
+        "tags": [
+          "xPay"
+        ],
+        "description": "This endpoint returns the details of a specific transaction. If the payment was successful, you\nwould see the transaction status is __linked__. If there is any problem with the payment, you\nwould see the __error_code__ and __error_message__ in the transaction’s response. The possible\nvalues for transaction’s status are `initialized`, `pending`, `linked`, `confirmed` and\n`rejected`.\n",
+        "summary": "Returns the details of a specific transaction",
+        "operationId": "getTransactions",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "Id of the transaction",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/DateParam"
+          },
+          {
+            "$ref": "#/components/parameters/ContentMD5Param"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "description": "the generated transaction id",
+                      "type": "integer"
+                    },
+                    "status": {
+                      "description": "the status of the transaction",
+                      "type": "string"
+                    },
+                    "bill_id": {
+                      "description": "related bill with transaction",
+                      "type": "string"
+                    },
+                    "account_number": {
+                      "description": "related account number with the transaction",
+                      "type": "string"
+                    },
+                    "currency": {
+                      "description": "currency for the transaction",
+                      "type": "string"
+                    },
+                    "amount": {
+                      "description": "amount of the transaction",
+                      "type": "number"
+                    },
+                    "created_at": {
+                      "description": "timestamp of the transaction",
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "description": "timestamp of the transaction update",
+                      "type": "string"
+                    },
+                    "error_code": {
+                      "description": "the error code in the case of get one",
+                      "type": "string"
+                    },
+                    "error_message": {
+                      "description": "the error message associated to error code in the case of get one",
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "id": "f922316f-9b67-41e6-8e36-5438478ff35a",
+                    "status": "pending",
+                    "bill_id": null,
+                    "account_number": 899006982,
+                    "currency": "USD",
+                    "amount": 15,
+                    "created_at": "2018-02-16T18:34:02.234Z",
+                    "updated_at": "2018-02-16T18:34:02.234Z",
+                    "error_code": null,
+                    "error_message": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "xPay"
+        ],
+        "description": "Deletes the transaction that corresponds to the `:id` sent. It’s only possible to delete a\ntransaction if the processing of the transaction payment hasn’t started, i.e., if it’s still in\nthe __initialized__ state. If you make a request to delete an already processing transaction,\nthen you would get a __unprocessable_entity__ HTTP response.\n",
+        "summary": "Deletes a specific transaction",
+        "operationId": "getTransactions",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "Id of the transaction",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/DateParam"
+          },
+          {
+            "$ref": "#/components/parameters/ContentMD5Param"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "description": "the generated transaction id",
+                      "type": "integer"
+                    },
+                    "status": {
+                      "description": "the status of the transaction",
+                      "type": "string"
+                    },
+                    "bill_id": {
+                      "description": "related bill with transaction",
+                      "type": "string"
+                    },
+                    "account_number": {
+                      "description": "related account number with the transaction",
+                      "type": "string"
+                    },
+                    "currency": {
+                      "description": "currency for the transaction",
+                      "type": "string"
+                    },
+                    "amount": {
+                      "description": "amount of the transaction",
+                      "type": "number"
+                    },
+                    "created_at": {
+                      "description": "timestamp of the transaction",
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "description": "timestamp of the transaction update",
+                      "type": "string"
+                    },
+                    "error_code": {
+                      "description": "the error code in the case of get one",
+                      "type": "string"
+                    },
+                    "error_message": {
+                      "description": "the error message associated to error code in the case of get one",
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "id": "be42c413-fcce-4857-b6fa-374228e33912",
+                    "status": "initialized",
+                    "bill_id": null,
+                    "account_number": "1234-56",
+                    "currency": "USD",
+                    "amount": 2000,
+                    "created_at": "2018-04-06T15:41:52.846Z",
+                    "updated_at": "2018-04-06T15:43:20.090Z",
+                    "error_code": null,
+                    "error_message": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/migrations": {
+      "post": {
+        "tags": [
+          "xChange"
+        ],
+        "description": "Use this endpoint to replace the payment method on the biller’s website.\n",
+        "summary": "Replaces the payment method on the biller’s website",
+        "operationId": "postMigrations",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/DateParam"
+          },
+          {
+            "$ref": "#/components/parameters/ContentMD5Param"
+          }
+        ],
+        "requestBody": {
+          "description": "Within the request body the parameters sent are `biller_id`, `login` for the account, `password`, the `name`, `last name`, `country`, `card number`, `brand of the card`, `expiry year`, `expiry month`, `address`, `city`, `state`, `zipcode`, card `type` if it is credit or debit and the `cvv` of three or four numbers",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "biller_id": {
+                    "type": "string",
+                    "description": "The ID of the biller."
+                  },
+                  "login": {
+                    "type": "string",
+                    "description": "The username/email address/identifier credential"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "The password credential"
+                  },
+                  "cc_first_name": {
+                    "type": "string",
+                    "description": "End user’s first name"
+                  },
+                  "cc_last_name": {
+                    "type": "string",
+                    "description": "End user’s last name"
+                  },
+                  "cc_country": {
+                    "type": "string",
+                    "description": "Country where card number was issued (two uppercase letters example US)"
+                  },
+                  "cc_number": {
+                    "type": "string",
+                    "description": "Card number"
+                  },
+                  "cc_brand": {
+                    "type": "string",
+                    "description": "mastercard/visa/american_express"
+                  },
+                  "cc_expiry_year": {
+                    "type": "string",
+                    "description": "4 number digit"
+                  },
+                  "cc_address": {
+                    "type": "string",
+                    "description": "Street name and number"
+                  },
+                  "cc_city": {
+                    "type": "string",
+                    "description": "City"
+                  },
+                  "cc_state": {
+                    "type": "string",
+                    "description": "Two letter abbreviation of a US state"
+                  },
+                  "cc_type": {
+                    "type": "string",
+                    "description": "credit/debit"
+                  },
+                  "cc_zip": {
+                    "type": "string",
+                    "description": "Address’ zipcode"
+                  },
+                  "cc_security_code": {
+                    "type": "string",
+                    "description": "Card’s security code (3 or 4 digit number)"
+                  },
+                  "cc_expiry_month": {
+                    "type": "string",
+                    "description": "Card’s expiry month (2 digit number)"
+                  }
+                },
+                "required": [
+                  "biller_id",
+                  "login",
+                  "password",
+                  "cc_first_name",
+                  "cc_last_name",
+                  "cc_country",
+                  "cc_number",
+                  "cc_brand",
+                  "cc_expiry_year",
+                  "cc_address",
+                  "cc_city",
+                  "cc_state",
+                  "cc_type",
+                  "cc_zip",
+                  "cc_security_code",
+                  "cc_expiry_month"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful response",
+            "content": {
+              "application/vnd.regalii.v3.2+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error_code": {
+                      "description": "the error code in the case of get one",
+                      "type": "string"
+                    },
+                    "error_message": {
+                      "description": "the error message associated to error code in the case of get one",
+                      "type": "string"
+                    },
+                    "id": {
+                      "description": "id of the generated migration",
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "status of the generated migration",
+                      "type": "string"
+                    },
+                    "requested_at": {
+                      "description": "timestamp of the requested migration",
+                      "type": "string"
+                    },
+                    "migrated_at": {
+                      "description": "timestamp of the successful migration",
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "error_code": null,
+                    "error_message": null,
+                    "id": "de2a19ff-91d1-4c45-b6c4-cb4abfaa4077",
+                    "status": "updating",
+                    "requested_at": "2018-04-06T18:18:36.144Z",
+                    "migrated_at": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "xChange"
+        ],
+        "description": "This endpoint is used to get all attempted migrations\n",
+        "summary": "Get all attempted migrations",
+        "operationId": "getMigrations",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "If set, it allows you to display any page of the migrations’ list",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/DateParam"
+          },
+          {
+            "$ref": "#/components/parameters/ContentMD5Param"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful response",
+            "content": {
+              "application/vnd.regalii.v3.2+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error_code": {
+                      "description": "the error code in the case of get one",
+                      "type": "string"
+                    },
+                    "error_message": {
+                      "description": "the error message associated to error code in the case of get one",
+                      "type": "string"
+                    },
+                    "id": {
+                      "description": "id of the generated migration",
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "status of the generated migration",
+                      "type": "string"
+                    },
+                    "requested_at": {
+                      "description": "timestamp of the requested migration",
+                      "type": "string"
+                    },
+                    "migrated_at": {
+                      "description": "timestamp of the successful migration",
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "migrations": [
+                      {
+                        "error_code": null,
+                        "error_message": null,
+                        "id": "de2a19ff-91d1-4c45-b6c4-cb4abfaa4077",
+                        "status": "updating",
+                        "requested_at": "2018-04-06T18:18:36.144Z",
+                        "migrated_at": null
+                      },
+                      {
+                        "error_code": null,
+                        "error_message": null,
+                        "id": "d13efe0e-d79c-4770-9a56-1487504ce4b0",
+                        "status": "updating",
+                        "requested_at": "2018-04-06T18:16:00.033Z",
+                        "migrated_at": null
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/migrations/{id}": {
+      "get": {
+        "tags": [
+          "xChange"
+        ],
+        "description": "Get last migration attempt of a bill",
+        "summary": "Get last migration attempt of a bill",
+        "operationId": "getMigration",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of bill to return",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/DateParam"
+          },
+          {
+            "$ref": "#/components/parameters/ContentMD5Param"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful response",
+            "content": {
+              "application/vnd.regalii.v3.2+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error_code": {
+                      "description": "the error code in the case of get one",
+                      "type": "string"
+                    },
+                    "error_message": {
+                      "description": "the error message associated to error code in the case of get one",
+                      "type": "string"
+                    },
+                    "id": {
+                      "description": "id of the generated migration",
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "status of the generated migration",
+                      "type": "string"
+                    },
+                    "requested_at": {
+                      "description": "timestamp of the requested migration",
+                      "type": "string"
+                    },
+                    "migrated_at": {
+                      "description": "timestamp of the successful migration",
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "error_code": null,
+                    "error_message": null,
+                    "id": "de2a19ff-91d1-4c45-b6c4-cb4abfaa4077",
+                    "status": "updating",
+                    "requested_at": "2018-04-06T18:18:36.144Z",
+                    "migrated_at": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "xChange"
+        ],
+        "description": "Allows the resolution of an MFA challenge\n",
+        "summary": "Allows the resolution of an MFA challenge",
+        "operationId": "updateMigration",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of bill to return",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/DateParam"
+          },
+          {
+            "$ref": "#/components/parameters/ContentMD5Param"
+          }
+        ],
+        "requestBody": {
+          "description": "Within the request body the parameters sent are a biller_id, login and password",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "login": {
+                    "type": "string",
+                    "description": "The username/email address/identifier credential"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "The password credential"
+                  },
+                  "mfa_challenges": {
+                    "type": "array",
+                    "description": "Challenge information",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The id of the challenge that is being answered"
+                        },
+                        "response": {
+                          "type": "string",
+                          "description": "The response to the challenge"
+                        }
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "login",
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful response",
+            "content": {
+              "application/vnd.regalii.v3.2+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error_code": {
+                      "description": "the error code in the case of get one",
+                      "type": "string"
+                    },
+                    "error_message": {
+                      "description": "the error message associated to error code in the case of get one",
+                      "type": "string"
+                    },
+                    "id": {
+                      "description": "id of the generated migration",
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "status of the generated migration",
+                      "type": "string"
+                    },
+                    "requested_at": {
+                      "description": "timestamp of the requested migration",
+                      "type": "string"
+                    },
+                    "migrated_at": {
+                      "description": "timestamp of the successful migration",
+                      "type": "string"
+                    },
+                    "message": {
+                      "description": "the result message",
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "error_code": null,
+                    "error_message": null,
+                    "id": "e17d610b-9d71-4d0b-bb40-3aa72be55378",
+                    "status": "failed",
+                    "requested_at": "2018-04-10T17:57:03.755Z",
+                    "migrated_at": "2018-04-10T17:57:28.361Z",
+                    "message": "Refresh in progress for 3 bills"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "DateParam": {
+        "name": "Date",
+        "in": "header",
+        "description": "Today's date (e.g. Wed, 11 Apr 2018 17:34:23 GMT)",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "ContentMD5Param": {
+        "name": "Content-MD5",
+        "in": "header",
+        "description": "Content-MD5",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
