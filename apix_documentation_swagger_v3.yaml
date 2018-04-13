@@ -30,37 +30,19 @@ info:
 
     ---
 
-    __Sandbox__
+    ## Sandbox
 
     Regalii maintains a Sandbox which allows developers to test the API using mocked data.
 
     ---
 
-    __Billers__
+    ### Billers
 
     The list of billers is not in sync with the billers in production.
 
     ---
 
-    Separate keys for each environment and `https` protocol must be used
-
-    - __Note:__ For security reasons, the APIx doesn't support the TLS V1.0 anymore, we recommend you to use TLS v1.2 for a better security.
-
-    ---
-
-    __Sandbox__
-
-    Regalii maintains a Sandbox which allows developers to test the API using mocked data.
-
-    ---
-
-    __Billers__
-
-    The list of billers is not in sync with the billers in production.
-
-    ---
-
-    __Credentials__
+    ### Credentials
 
     The Sandbox accepts any credentials. You can use the following special credentials when you create a Bill to force a certain response.
 
@@ -152,13 +134,13 @@ info:
 
     ---
 
-    __Multi-Factor Question__
+    ### Multi-Factor Question
 
     The questions must be answered in up to 30 seconds.
 
     ---
 
-    __Production__
+    ## Production
 
     Once you complete your integration contact us to receive your production keys
     and endpoint.
@@ -179,9 +161,9 @@ info:
 
     ---
 
-    __Calculating the Checksum__    
+    ## Calculating the Checksum
 
-    __Step 1__
+    ### Step 1
 
       A checksum string needs to be created first by using your HTTP headers containing the `Content-Type`, `Content-MD5`, `Endpoint` and today's `Timestamp`.
 
@@ -195,12 +177,12 @@ info:
       `application/json,,/bills/1,Wed, 10 Jan 2017 16:53:15 GMT`
       - __Note:__ Please notice the timestamp format. In UNIX-based systems you could obtain it by running: <b>echo \`date -Ru | sed 's/+0000/GMT/'`</b> in your terminal.
 
-    __Step 2__
+    ### Step 2
 
       The checksum string is then used to create the checksum, which is a Base64 SHA1 HMAC string
       encoded using your private secret key.
 
-    __Step 3__
+    ### Step 3
 
       For testing, verify that if you pass `application/json,,/account,Wed, 02 Nov 2016 17:26:52 GMT` to your checksum function and use `verify-secret` as secret key, it should return `nLet/JEZG9CRXHScwaQ/na4vsKQ=`. See checksum verification [example](https://gist.github.com/dagosi/c2e7db228a9c15e2f5bcdccd7a056183).
 
@@ -215,7 +197,7 @@ info:
 
     ---
 
-    __How to use the Checksum__
+    ## How to use the Checksum
 
       Now that you have a checksum, you can add it to your headers using the `Authorization` header as we previously mentioned. As an example, let’s assume that your api-key is `f0253d2a6a76ed12499e7878d7803ffb` and that your checksum is `nLet/JEZG9CRXHScwaQ/na4vsKQ=`. Now, you can add this header to your request.
 
@@ -228,7 +210,7 @@ info:
 
       ___
 
-      __Bills__
+      ## Bills
 
       * The bill finishes updating and now requires password entry (error 420); waiting; or has data ready since updated
       * A long-running fetch has completed
@@ -237,13 +219,13 @@ info:
 
       ___
 
-      __How to Register a Webhook__
+      ## How to Register a Webhook
 
       You can set up a webhook URL with Regalii by contacting us
 
       ___
 
-      __Data in Webhook__
+      ## Data in Webhook
 
       Webhooks return the same data offered in the bill status.
 
