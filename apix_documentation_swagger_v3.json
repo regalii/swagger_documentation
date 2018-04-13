@@ -5,8 +5,7 @@
     "title": "Regalii API Documentation",
     "description": "# Introduction\n\nWelcome to the Regalii API! You can use our API documentation to access\nRegalii API endpoints, which can get you information on various billers,\nbills, and transactions.\n\n---\n\n__Tools for Testing__\n\nAditionally you can use by yourself the below list of tools that you can use to test different\nendpoints and their responses before you start coding against them. It is recommended that\nyou test a couple of endpoints first to get an idea how to properly construct requests in your\napplication.\n\n  * [Paw](https://paw.cloud/)\n  * [Postman Chrome](https://www.getpostman.com/)\n\n# Environments\n\nSeparate keys for each environment and `https` protocol must be used\n\n- __Note:__ For security reasons, the APIx doesn't support the TLS V1.0 anymore, we recommend you to use TLS v1.2 for a better security.\n\n---\n\n__Sandbox__\n\nRegalii maintains a Sandbox which allows developers to test the API using mocked data.\n\n---\n\n__Billers__\n\nThe list of billers is not in sync with the billers in production.\n\n---\n\nSeparate keys for each environment and `https` protocol must be used\n\n- __Note:__ For security reasons, the APIx doesn't support the TLS V1.0 anymore, we recommend you to use TLS v1.2 for a better security.\n\n---\n\n__Sandbox__\n\nRegalii maintains a Sandbox which allows developers to test the API using mocked data.\n\n---\n\n__Billers__\n\nThe list of billers is not in sync with the billers in production.\n\n---\n\n__Credentials__\n\nThe Sandbox accepts any credentials. You can use the following special credentials when you create a Bill to force a certain response.\n\n- __Note:__ Do not send real credentials to the Sandbox.\n\n<table>\n   <tr>\n    <td><strong>Login</strong></td>\n    <td><strong>Password</strong></td>\n    <td><strong>Status</strong></td>\n    <td><strong>Error Code</strong></td>\n  </tr>\n   <tr>\n    <td>email@fetching.ii</td>\n    <td>secret</td>\n    <td>updating</td>\n    <td></td>\n  </tr>\n   <tr>\n    <td>email@mfa_code.ii</td>\n    <td>secret</td>\n    <td>waiting</td>\n    <td></td>\n  </tr>\n   <tr>\n    <td>email@mfa_question.ii</td>\n    <td>secret</td>\n    <td>waiting</td>\n    <td></td>\n  </tr>\n  <tr>\n    <td>email@mfa_choice.ii</td>\n    <td>secret</td>\n    <td>waiting</td>\n    <td></td>\n  </tr>\n  <tr>\n    <td>email@mfa_image.ii</td>\n    <td>secret</td>\n    <td>waiting</td>\n    <td></td>\n  </tr>\n   <tr>\n    <td>email@mfa_image_choice.ii</td>\n    <td>secret</td>\n    <td>waiting</td>\n    <td></td>\n  </tr>\n  <tr>\n    <td>email@successful.ii</td>\n    <td>secret</td>\n    <td>updated</td>\n    <td></td>\n  </tr>\n  <tr>\n    <td>email@unavailable.ii</td>\n    <td>secret</td>\n    <td></td>\n    <td>R122</td>\n  </tr>\n  <tr>\n    <td>email@input.ii</td>\n    <td>secret</td>\n    <td></td>\n    <td>R121</td>\n  </tr>\n  <tr>\n    <td>email@credentials.ii</td>\n    <td>secret</td>\n    <td></td>\n    <td>R120</td>\n  </tr>\n  <tr>\n    <td>email@exception.ii</td>\n    <td>secret</td>\n    <td></td>\n    <td>R121</td>\n  </tr>\n   <tr>\n    <td>email@timeout.ii</td>\n    <td>secret</td>\n    <td></td>\n    <td>R121</td>\n  </tr>\n</table>\n\n\nJust the @{state}.ii is the required part, email and password can be anything.\n\n---\n\n__Multi-Factor Question__\n\nThe questions must be answered in up to 30 seconds.\n\n---\n\n__Production__\n\nOnce you complete your integration contact us to receive your production keys\nand endpoint.\n\n# Authentication\n\nRegalii uses an api-key and a secret-key for authentication that we generate and will provide to you.\n\nRegalii expects for the api-key to be included in all API requests to the server\nin the ‘Authorization’ header combined with a checksum which we will described later on:\n\n__Authorization:__ `APIAuth <your-api-key>:<checksum>`\n\n- __Note:__ You must replace <your-api-key>:<checksum> with your personal API\nkey and the calculated checksum.\n\n---\n\n__Calculating the Checksum__\n\n- __Note:__ All of our official libraries calculate the checksum automatically.\n\n__Step 1__\n\n  A checksum string needs to be created first by using your HTTP headers containing the `Content-Type`, `Content-MD5`, `Endpoint` and today's `Timestamp`.\n\n  The checksum string is computed as follows:\n\n  checksum_string = `content-type`,`content-md5`,`endpoint`,`timestamp`\n\n  - __Note:__ The ‘Endpoint’ is simply the URL you are sending the request to. Keep in mind that\n  this value has to be exactly the same as the URL you are trying to reach. For instance, if you\n  want to create a new bill by requesting a post to https://apix.casiregalii.com/bills, your\n  checksum string should look like this (please also notice the timestamp format).\n\n  `application/json,,/bills,Wed, 10 Jan 2017 16:53:15 GMT`\n\n__Step 2__\n\n  The checksum string is then used to create the checksum which is a Base64 SHA1 HMAC string\n  encoded using your private secret key.\n\n__Step 3__\n\n  For testing, verify that if you pass “application/json,,/account,Wed, 02 Nov 2016 17:26:52 GMT” to your checksum function and use “verify-secret” as secret key, it should return “nLet/JEZG9CRXHScwaQ/na4vsKQ=”\n\n  Checksum verification [example](https://gist.github.com/dagosi/c2e7db228a9c15e2f5bcdccd7a056183).\n\n  How to create a checksum in [Bash](https://gist.github.com/dagosi/d85979e364af745750a9dff8c8c5a949)\n\n---\n\n__How to use the Checksum__\n\n  Now that you have a checksum, you can add it to your headers using the `Authorization` header as we previously mentioned. As an example, let’s assume that your api-key is `f0253d2a6a76ed12499e7878d7803ffb` and that your checksum is `nLet/JEZG9CRXHScwaQ/na4vsKQ=`. Now, you can add this header to your request.\n\n  `-H Authorization: APIAuth f0253d2a6a76ed12499e7878d7803ffb:nLet/JEZG9CRXHScwaQ/na4vsKQ=`\n\n  You will see that we will use this format in our Authorization header through this documentation.\n\n# Webhooks\n\n  Regalii offers webhooks which can be used to notify you when there are updates to a bill or\n  transaction.\n\n  ___\n\n  __Bills__\n\n  * The bill finishes updating and now requires password entry (error 420); waiting; or has data ready since updated\n  * A long-running fetch has completed\n  * The bill has been re-run by Regalii due to an earlier error or outage\n  * It is the client's responsibility to trigger bills to refresh under normal operation.\n\n  ___\n\n  __How to Register a Webhook__\n\n  You can set up a webhook URL with Regalii by contacting us\n\n  ___\n\n  __Data in Webhook__\n\n  Webhooks return the same data offered in the bill status.\n"
   },
-  "servers": [
-    {
+  "servers": [{
       "url": "https://apix.casiregalii.com",
       "description": "Sandbox, Mocked Credentials; Mocked Data"
     },
@@ -15,8 +14,7 @@
       "description": "Production, Real Credentials; Real Data"
     }
   ],
-  "tags": [
-    {
+  "tags": [{
       "name": "Common",
       "description": "Common endpoints"
     },
@@ -42,8 +40,7 @@
         "summary": "Returns the properties of your Regalii account.",
         "operationId": "getAccount",
         "description": "Returns the properties of your Regalii account. This includes the name of your company, the current balance you owe, and the maximum amount of credit allowed to your account in the currency specified.",
-        "parameters": [
-          {
+        "parameters": [{
             "$ref": "#/components/parameters/DateParam"
           },
           {
@@ -96,8 +93,7 @@
         "summary": "Provides the current list of billers and their associated properties.",
         "operationId": "getBillersCredentials",
         "description": "Provides the current list of billers and their associated properties.\nTo ensure that your customers are able to leverage the enhancements that we make\nover time, you are required to cache the full list of billers and update it on a weekly basis.\n",
-        "parameters": [
-          {
+        "parameters": [{
             "in": "path",
             "name": "page",
             "required": true,
@@ -250,8 +246,7 @@
             }
           }
         },
-        "parameters": [
-          {
+        "parameters": [{
             "$ref": "#/components/parameters/DateParam"
           },
           {
@@ -374,8 +369,7 @@
         "summary": "This endpoint retrieves all the bills.",
         "operationId": "getBills",
         "description": "This endpoint retrieves all the bills\n",
-        "parameters": [
-          {
+        "parameters": [{
             "in": "query",
             "name": "page",
             "required": false,
@@ -509,8 +503,7 @@
                     }
                   },
                   "example": {
-                    "bills": [
-                      {
+                    "bills": [{
                         "type": "bill",
                         "id": 674124,
                         "uuid": "c5482bbe-0f46-4e30-b660-3b1bb0ea773f",
@@ -563,8 +556,7 @@
         "summary": "This endpoint retrieves a specific bill’s cached data.",
         "operationId": "getBill",
         "description": "This endpoint retrieves a specific bill’s cached data. To pull fresh\ndata from a biller see <refresh bill>.\n",
-        "parameters": [
-          {
+        "parameters": [{
             "name": "id",
             "in": "path",
             "description": "ID of bill to return",
@@ -696,8 +688,7 @@
         "description": "This endpoint updates a specific bill",
         "operationId": "updateBill",
         "summary": "This endpoint updates a specific bill",
-        "parameters": [
-          {
+        "parameters": [{
             "name": "id",
             "in": "path",
             "description": "ID of bill to return",
@@ -871,8 +862,7 @@
         "description": "This endpoint deletes a specific bill",
         "summary": "This endpoint deletes a specific bill",
         "operationId": "deleteBill",
-        "parameters": [
-          {
+        "parameters": [{
             "name": "id",
             "in": "path",
             "description": "ID of bill to return",
@@ -1006,8 +996,7 @@
         "description": "This endpoint refreshes a specific bill by polling the biller. It\nresponds with the same structure as <create bill>.\n",
         "summary": "Refreshes a specific bill by polling the biller",
         "operationId": "refreshBill",
-        "parameters": [
-          {
+        "parameters": [{
             "name": "id",
             "in": "path",
             "description": "ID of bill to return",
@@ -1132,8 +1121,7 @@
         "description": "This endpoint receives an array of bill ids as a parameter and refreshes\nthem. Updated bills can be eventually pulled by passing id_in to the\n<list bills> endpoint.\n",
         "summary": "Receives an array of bill ids as a parameter and refreshes them.",
         "operationId": "bulk_refreshBill",
-        "parameters": [
-          {
+        "parameters": [{
             "$ref": "#/components/parameters/DateParam"
           },
           {
@@ -1193,8 +1181,7 @@
         "description": "This endpoint provides the list of RPPS billers\n",
         "summary": "This endpoint provides the list of RPPS billers",
         "operationId": "getRppsBillers",
-        "parameters": [
-          {
+        "parameters": [{
             "$ref": "#/components/parameters/DateParam"
           },
           {
@@ -1278,81 +1265,76 @@
                     }
                   },
                   "example": {
-                    "rpps_billers": [
-                      {
-                        "id": "692b45ea-7369-4232-bdd6-2bd662fe1ebd",
-                        "name": "1000 Granville Homeowners Association",
-                        "biller_type": "Core",
-                        "biller_class": "Homeowners Association",
+                    "rpps_billers": [{
+                      "id": "692b45ea-7369-4232-bdd6-2bd662fe1ebd",
+                      "name": "1000 Granville Homeowners Association",
+                      "biller_type": "Core",
+                      "biller_class": "Homeowners Association",
+                      "country": "USA",
+                      "state": null,
+                      "territory_code": "National",
+                      "currency": "USD",
+                      "addresses": [{
+                        "city": "San Francisco",
+                        "state": "CA",
                         "country": "USA",
-                        "state": null,
-                        "territory_code": "National",
-                        "currency": "USD",
-                        "addresses": [
-                          {
-                            "city": "San Francisco",
-                            "state": "CA",
-                            "country": "USA",
-                            "address1": "PO Box 45463",
-                            "address2": null,
-                            "eff_date": "2010-07-26",
-                            "external_id": 67942,
-                            "postal_code": "94145-0463",
-                            "address_type": "Standard"
-                          }
-                        ],
-                        "masks": [
-                          {
-                            "length": 7,
-                            "eff_date": "2010-07-20",
-                            "exception": false,
-                            "external_id": 343033,
-                            "mask_format": null,
-                            "descriptions": []
-                          },
-                          {
-                            "length": 8,
-                            "eff_date": "2010-07-20",
-                            "exception": false,
-                            "external_id": 343034,
-                            "mask_format": null,
-                            "descriptions": []
-                          },
-                          {
-                            "length": 4,
-                            "eff_date": "2010-07-20",
-                            "exception": false,
-                            "external_id": 343035,
-                            "mask_format": null,
-                            "descriptions": []
-                          },
-                          {
-                            "length": 3,
-                            "eff_date": "2010-07-20",
-                            "exception": false,
-                            "external_id": 343036,
-                            "mask_format": null,
-                            "descriptions": []
-                          },
-                          {
-                            "length": 7,
-                            "eff_date": "2010-07-20",
-                            "exception": false,
-                            "external_id": 343037,
-                            "mask_format": null,
-                            "descriptions": []
-                          },
-                          {
-                            "length": 8,
-                            "eff_date": "2010-07-20",
-                            "exception": false,
-                            "external_id": 343038,
-                            "mask_format": null,
-                            "descriptions": []
-                          }
-                        ]
-                      }
-                    ]
+                        "address1": "PO Box 45463",
+                        "address2": null,
+                        "eff_date": "2010-07-26",
+                        "external_id": 67942,
+                        "postal_code": "94145-0463",
+                        "address_type": "Standard"
+                      }],
+                      "masks": [{
+                          "length": 7,
+                          "eff_date": "2010-07-20",
+                          "exception": false,
+                          "external_id": 343033,
+                          "mask_format": null,
+                          "descriptions": []
+                        },
+                        {
+                          "length": 8,
+                          "eff_date": "2010-07-20",
+                          "exception": false,
+                          "external_id": 343034,
+                          "mask_format": null,
+                          "descriptions": []
+                        },
+                        {
+                          "length": 4,
+                          "eff_date": "2010-07-20",
+                          "exception": false,
+                          "external_id": 343035,
+                          "mask_format": null,
+                          "descriptions": []
+                        },
+                        {
+                          "length": 3,
+                          "eff_date": "2010-07-20",
+                          "exception": false,
+                          "external_id": 343036,
+                          "mask_format": null,
+                          "descriptions": []
+                        },
+                        {
+                          "length": 7,
+                          "eff_date": "2010-07-20",
+                          "exception": false,
+                          "external_id": 343037,
+                          "mask_format": null,
+                          "descriptions": []
+                        },
+                        {
+                          "length": 8,
+                          "eff_date": "2010-07-20",
+                          "exception": false,
+                          "external_id": 343038,
+                          "mask_format": null,
+                          "descriptions": []
+                        }
+                      ]
+                    }]
                   }
                 }
               }
@@ -1369,8 +1351,7 @@
         "description": "With this endpoint you can create a new transaction by passing an RPPS Biller ID and information\nabout the payment and the person (client) who is making the payment (see parameters below).\n\nOnce the transactions are created in Regalii’s system, it takes 2-3 days to process the\ntransaction. After that time, the transaction’s status will be updated. You can always check the\ntransaction status by making a request to the Get transaction endpoint.\n",
         "summary": "Create a new transaction by passing an RPPS Biller ID and information about the payment",
         "operationId": "postTransactions",
-        "parameters": [
-          {
+        "parameters": [{
             "$ref": "#/components/parameters/DateParam"
           },
           {
@@ -1529,8 +1510,7 @@
         "description": "This endpoint returns the list of transactions that Regalii has processed for you.\n",
         "summary": "Returns the list of transactions that Regalii has processed for you",
         "operationId": "getAllTransactions",
-        "parameters": [
-          {
+        "parameters": [{
             "in": "query",
             "name": "page",
             "required": false,
@@ -1658,20 +1638,18 @@
                     }
                   },
                   "example": {
-                    "transactions": [
-                      {
-                        "id": "9fe8bf62-d78b-462c-9195-14977420bbeb",
-                        "status": "initialized",
-                        "bill_id": null,
-                        "account_number": 12345,
-                        "currency": "USD",
-                        "amount": 2000,
-                        "created_at": "2018-04-06T14:49:12.830Z",
-                        "updated_at": "2018-04-06T14:49:12.830Z",
-                        "error_code": null,
-                        "error_message": null
-                      }
-                    ]
+                    "transactions": [{
+                      "id": "9fe8bf62-d78b-462c-9195-14977420bbeb",
+                      "status": "initialized",
+                      "bill_id": null,
+                      "account_number": 12345,
+                      "currency": "USD",
+                      "amount": 2000,
+                      "created_at": "2018-04-06T14:49:12.830Z",
+                      "updated_at": "2018-04-06T14:49:12.830Z",
+                      "error_code": null,
+                      "error_message": null
+                    }]
                   }
                 }
               }
@@ -1688,8 +1666,7 @@
         "description": "This endpoint returns the details of a specific transaction. If the payment was successful, you\nwould see the transaction status is __linked__. If there is any problem with the payment, you\nwould see the __error_code__ and __error_message__ in the transaction’s response. The possible\nvalues for transaction’s status are `initialized`, `pending`, `linked`, `confirmed` and\n`rejected`.\n",
         "summary": "Returns the details of a specific transaction",
         "operationId": "getTransactions",
-        "parameters": [
-          {
+        "parameters": [{
             "in": "path",
             "name": "id",
             "required": true,
@@ -1779,8 +1756,7 @@
         "description": "Deletes the transaction that corresponds to the `:id` sent. It’s only possible to delete a\ntransaction if the processing of the transaction payment hasn’t started, i.e., if it’s still in\nthe __initialized__ state. If you make a request to delete an already processing transaction,\nthen you would get a __unprocessable_entity__ HTTP response.\n",
         "summary": "Deletes a specific transaction",
         "operationId": "getTransactions",
-        "parameters": [
-          {
+        "parameters": [{
             "in": "path",
             "name": "id",
             "required": true,
@@ -1872,8 +1848,7 @@
         "description": "Use this endpoint to replace the payment method on the biller’s website.\n",
         "summary": "Replaces the payment method on the biller’s website",
         "operationId": "postMigrations",
-        "parameters": [
-          {
+        "parameters": [{
             "$ref": "#/components/parameters/DateParam"
           },
           {
@@ -2029,8 +2004,7 @@
         "description": "This endpoint is used to get all attempted migrations\n",
         "summary": "Get all attempted migrations",
         "operationId": "getMigrations",
-        "parameters": [
-          {
+        "parameters": [{
             "name": "page",
             "in": "query",
             "description": "If set, it allows you to display any page of the migrations’ list",
@@ -2080,8 +2054,7 @@
                     }
                   },
                   "example": {
-                    "migrations": [
-                      {
+                    "migrations": [{
                         "error_code": null,
                         "error_message": null,
                         "id": "de2a19ff-91d1-4c45-b6c4-cb4abfaa4077",
@@ -2114,8 +2087,7 @@
         "description": "Get last migration attempt of a bill",
         "summary": "Get last migration attempt of a bill",
         "operationId": "getMigration",
-        "parameters": [
-          {
+        "parameters": [{
             "name": "id",
             "in": "path",
             "description": "ID of bill to return",
@@ -2185,8 +2157,7 @@
         "description": "Allows the resolution of an MFA challenge\n",
         "summary": "Allows the resolution of an MFA challenge",
         "operationId": "updateMigration",
-        "parameters": [
-          {
+        "parameters": [{
             "name": "id",
             "in": "path",
             "description": "ID of bill to return",
