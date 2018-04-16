@@ -412,80 +412,7 @@ paths:
           content:
             application/vnd.regalii.v3.2+json:
               schema:
-                type: object
-                properties:
-                  type:
-                    type: string
-                    description: bill
-                  id:
-                    type: integer
-                    description: the ID of the bill [deprecated]
-                  uuid:
-                    type: string
-                    description: the UUID of the bill
-                  biller_id:
-                    type: integer
-                    description: the ID of the biller [deprecated]
-                  biller_uuid:
-                    type: string
-                    description: the UUID of the biller
-                  account_number:
-                    type: string
-                    description: the bills account number
-                  name_on_account:
-                    type: string
-                    description: the name asociated with the accoun number
-                  due_date:
-                    type: string
-                    description: the deadline to pay the bill
-                  balance:
-                    type: number
-                    description: the returned balance
-                  balance_currency:
-                    type: string
-                    description: the bills currency
-                  balance_updated_at:
-                    type: string
-                    description: the date of last balance update
-                  error_code:
-                    type: string
-                    description: the error code in the case of get one
-                  error_message:
-                    type: string
-                    description: the error message associated to error code in the case of get one
-                  status:
-                    type: string
-                    description: one of the different posible status associated to the bill
-                  mfa_challenges:
-                    description: params for multi-factor authentication challenge
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        type:
-                          type: string
-                        id:
-                          type: integer
-                        prompt:
-                          type: string
-                        expires_at:
-                          type: string
-                example:
-                  type: bill
-                  id: 1512
-                  uuid: c5482bbe-0f46-4e30-b660-3b1bb0ea773f
-                  biller_id: 6510
-                  biller_uuid: b44f5c1c-a6b7-4688-8311-080512ca4f1e
-                  account_number: 4222422244
-                  name_on_account: Jose Bautista
-                  due_date: 2016-11-30
-                  balance: 56.43
-                  balance_currency: USD
-                  balance_updated_at: 2017-01-16T20:12:58Z
-                  error_code: null
-                  error_message: null
-                  status: updated
-                  mfa_challenges: []
+                $ref: '#/components/schemas/Bill'
     get:
       tags:
         - xData
@@ -538,56 +465,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                properties:
-                  type:
-                    type: string
-                    description: bill
-                  id:
-                    type: integer
-                    description: the ID of the bill [deprecated]
-                  uuid:
-                    type: string
-                    description: the UUID of the bill
-                  biller_id:
-                    type: integer
-                    description: the ID of the biller [deprecated]
-                  biller_uuid:
-                    type: string
-                    description: the UUID of the biller
-                  account_number:
-                    type: string
-                    description: the bills account number
-                  name_on_account:
-                    type: string
-                    description: the name asociated with the accoun number
-                  due_date:
-                    type: string
-                    description: the deadline to pay the bill
-                  balance:
-                    type: number
-                    description: the returned balance
-                  balance_currency:
-                    type: string
-                    description: the bills currency
-                  balance_updated_at:
-                    type: string
-                    description: the date of last balance update
-                  error_code:
-                    type: string
-                    description: the error code in the case of get one
-                  error_message:
-                    type: string
-                    description: the error message associated to error code in the case of get one
-                  status:
-                    type: string
-                    description: one of the different posible status associated to the bill
-                  migrated_at:
-                    type: string
-                    description: the date of last migration
-                  mfa_challenges:
-                    description: params for multi-factor authentication challenge
-                    type: array
+                  $ref: '#/components/schemas/Bill'
                 example:
                   bills:
                     - type: bill
@@ -597,10 +475,10 @@ paths:
                       biller_uuid: b44f5c1c-a6b7-4688-8311-080512ca4f1e
                       account_number: 87249256
                       name_on_account: Rita Sporer
-                      due_date: 2017-01-29T05:00:00Z
+                      due_date: '2017-01-29T05:00:00Z'
                       balance: 62.38
                       balance_currency: USD
-                      balance_updated_at: 2017-01-17T19:57:56Z
+                      balance_updated_at: '2017-01-17T19:57:56Z'
                       error_code: null
                       error_message: null
                       status: linked
@@ -616,21 +494,21 @@ paths:
                       due_date: null
                       balance: 400
                       balance_currency: RD
-                      balance_updated_at: 2017-01-17T21:47:19Z
+                      balance_updated_at: '2017-01-17T21:47:19Z'
                       error_code: null
                       error_message: null
                       status: linked
                       migrated_at: null
                       mfa_challenges: []
   /bills/{id}:
-    post:
+    get:
       tags:
         - xData
       summary: This endpoint retrieves a specific bill’s cached data.
       operationId: getBill
       description: |
         This endpoint retrieves a specific bill’s cached data. To pull fresh
-        data from a biller see <refresh bill>.
+        data from a biller see `POST /bills/{id}/refresh`
       parameters:
         - name: id
           in: path
@@ -646,80 +524,7 @@ paths:
           content:
             application/vnd.regalii.v3.2+json:
               schema:
-                type: object
-                properties:
-                  type:
-                    type: string
-                    description: bill
-                  id:
-                    type: integer
-                    description: the ID of the bill [deprecated]
-                  uuid:
-                    type: string
-                    description: the UUID of the bill
-                  biller_id:
-                    type: integer
-                    description: the ID of the biller [deprecated]
-                  biller_uuid:
-                    type: string
-                    description: the UUID of the biller
-                  account_number:
-                    type: string
-                    description: the bills account number
-                  name_on_account:
-                    type: string
-                    description: the name asociated with the accoun number
-                  due_date:
-                    type: string
-                    description: the deadline to pay the bill
-                  balance:
-                    type: number
-                    description: the returned balance
-                  balance_currency:
-                    type: string
-                    description: the bills currency
-                  balance_updated_at:
-                    type: string
-                    description: the date of last balance update
-                  error_code:
-                    type: string
-                    description: the error code in the case of get one
-                  error_message:
-                    type: string
-                    description: the error message associated to error code in the case of get one
-                  status:
-                    type: string
-                    description: one of the different posible status associated to the bill
-                  mfa_challenges:
-                    description: params for multi-factor authentication challenge
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        type:
-                          type: string
-                        id:
-                          type: integer
-                        prompt:
-                          type: string
-                        expires_at:
-                          type: string
-                example:
-                  type: bill
-                  id: 674117
-                  uuid: c5482bbe-0f46-4e30-b660-3b1bb0ea773f
-                  biller_id: 6510
-                  biller_uuid: b44f5c1c-a6b7-4688-8311-080512ca4f1e
-                  account_number: 4222422244
-                  name_on_account: Jose Bautista
-                  due_date: 2016-11-30
-                  balance: 56.43
-                  balance_currency: USD
-                  balance_updated_at: 2017-01-16T20:12:58Z
-                  error_code: null
-                  error_message: null
-                  status: linked
-                  mfa_challenges: []
+                $ref: '#/components/schemas/Bill'
     patch:
       tags:
         - xData
@@ -771,80 +576,7 @@ paths:
           content:
             application/vnd.regalii.v3.2+json:
               schema:
-                type: object
-                properties:
-                  type:
-                    type: string
-                    description: bill
-                  id:
-                    type: integer
-                    description: the ID of the bill [deprecated]
-                  uuid:
-                    type: string
-                    description: the UUID of the bill
-                  biller_id:
-                    type: integer
-                    description: the ID of the biller [deprecated]
-                  biller_uuid:
-                    type: string
-                    description: the UUID of the biller
-                  account_number:
-                    type: string
-                    description: the bills account number
-                  name_on_account:
-                    type: string
-                    description: the name asociated with the accoun number
-                  due_date:
-                    type: string
-                    description: the deadline to pay the bill
-                  balance:
-                    type: number
-                    description: the returned balance
-                  balance_currency:
-                    type: string
-                    description: the bills currency
-                  balance_updated_at:
-                    type: string
-                    description: the date of last balance update
-                  error_code:
-                    type: string
-                    description: the error code in the case of get one
-                  error_message:
-                    type: string
-                    description: the error message associated to error code in the case of get one
-                  status:
-                    type: string
-                    description: one of the different posible status associated to the bill
-                  mfa_challenges:
-                    description: params for multi-factor authentication challenge
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        type:
-                          type: string
-                        id:
-                          type: integer
-                        prompt:
-                          type: string
-                        expires_at:
-                          type: string
-                example:
-                  type: bill
-                  id: 674117
-                  uuid: c5482bbe-0f46-4e30-b660-3b1bb0ea773f
-                  biller_id: 6510
-                  biller_uuid: b44f5c1c-a6b7-4688-8311-080512ca4f1e
-                  account_number: 4222422244
-                  name_on_account: Jose Bautista
-                  due_date: 2016-11-30
-                  balance: 56.43
-                  balance_currency: USD
-                  balance_updated_at: 2017-01-16T20:12:58Z
-                  error_code: null
-                  error_message: null
-                  status: linked
-                  mfa_challenges: []
+                $ref: '#/components/schemas/Bill'
     delete:
       tags:
         - xData
@@ -866,80 +598,7 @@ paths:
           content:
             application/vnd.regalii.v3.2+json:
               schema:
-                type: object
-                properties:
-                  type:
-                    type: string
-                    description: bill
-                  id:
-                    type: integer
-                    description: the ID of the bill [deprecated]
-                  uuid:
-                    type: string
-                    description: the UUID of the bill
-                  biller_id:
-                    type: integer
-                    description: the ID of the biller [deprecated]
-                  biller_uuid:
-                    type: string
-                    description: the UUID of the biller
-                  account_number:
-                    type: string
-                    description: the bills account number
-                  name_on_account:
-                    type: string
-                    description: the name asociated with the accoun number
-                  due_date:
-                    type: string
-                    description: the deadline to pay the bill
-                  balance:
-                    type: number
-                    description: the returned balance
-                  balance_currency:
-                    type: string
-                    description: the bills currency
-                  balance_updated_at:
-                    type: string
-                    description: the date of last balance update
-                  error_code:
-                    type: string
-                    description: the error code in the case of get one
-                  error_message:
-                    type: string
-                    description: the error message associated to error code in the case of get one
-                  status:
-                    type: string
-                    description: one of the different posible status associated to the bill
-                  mfa_challenges:
-                    description: params for multi-factor authentication challenge
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        type:
-                          type: string
-                        id:
-                          type: integer
-                        prompt:
-                          type: string
-                        expires_at:
-                          type: string
-                example:
-                  type: bill
-                  id: 674117
-                  uuid: c5482bbe-0f46-4e30-b660-3b1bb0ea773f
-                  biller_id: 6510
-                  biller_uuid: b44f5c1c-a6b7-4688-8311-080512ca4f1e
-                  account_number: 4222422244
-                  name_on_account: Jose Bautista
-                  due_date: 2016-11-30
-                  balance: 56.43
-                  balance_currency: USD
-                  balance_updated_at: 2017-01-16T20:12:58Z
-                  error_code: null
-                  error_message: null
-                  status: linked
-                  mfa_challenges: []
+                $ref: '#/components/schemas/Bill'
   /bills/{id}/refresh:
     post:
       tags:
@@ -964,75 +623,7 @@ paths:
           content:
             application/vnd.regalii.v3.2+json:
               schema:
-                type: object
-                properties:
-                  type:
-                    type: string
-                    description: bill
-                  id:
-                    type: integer
-                    description: the ID of the bill [deprecated]
-                  uuid:
-                    type: string
-                    description: the UUID of the bill
-                  biller_id:
-                    type: integer
-                    description: the ID of the biller [deprecated]
-                  biller_uuid:
-                    type: string
-                    description: the UUID of the biller
-                  account_number:
-                    type: string
-                    description: the bills account number
-                  name_on_account:
-                    type: string
-                    description: the name asociated with the accoun number
-                  due_date:
-                    type: string
-                    description: the deadline to pay the bill
-                  balance:
-                    type: number
-                    description: the returned balance
-                  balance_currency:
-                    type: string
-                    description: the bills currency
-                  balance_updated_at:
-                    type: string
-                    description: the date of last balance update
-                  error_code:
-                    type: string
-                    description: the error code in the case of get one
-                  error_message:
-                    type: string
-                    description: the error message associated to error code in the case of get one
-                  status:
-                    type: string
-                    description: one of the different posible status associated to the bill
-                  migrated_at:
-                    description: The date time of migration.
-                    type: string
-                  mfa_challenges:
-                    description: params for multi-factor authentication challenge
-                    type: array
-                    items:
-                      type: object
-                example:
-                  type: bill
-                  id: 674117
-                  uuid: c5482bbe-0f46-4e30-b660-3b1bb0ea773f
-                  biller_id: 6510
-                  biller_uuid: b44f5c1c-a6b7-4688-8311-080512ca4f1e
-                  account_number: 4222422244
-                  name_on_account: Jose Bautista
-                  due_date: 2016-11-30
-                  balance: 56.43
-                  balance_currency: USD
-                  balance_updated_at: 2017-01-16T20:12:58Z
-                  error_code: null
-                  error_message: null
-                  status: updating
-                  mfa_challenges: []
-                  migrated_at: null
+                $ref: '#/components/schemas/Bill'
   /bills/bulk_refresh:
     post:
       tags:
@@ -1926,6 +1517,83 @@ components:
           type: string
           description: Card’s expiry month (2 digit number)
           example: "02"
+
+    Bill:
+      type: object
+      properties:
+        type:
+          type: string
+          description: bill
+        id:
+          type: integer
+          description: the ID of the bill [deprecated]
+        uuid:
+          type: string
+          description: the UUID of the bill
+        biller_id:
+          type: integer
+          description: the ID of the biller [deprecated]
+        biller_uuid:
+          type: string
+          description: the UUID of the biller
+        account_number:
+          type: string
+          description: the bills account number
+        name_on_account:
+          type: string
+          description: the name asociated with the accoun number
+        due_date:
+          type: string
+          description: the deadline to pay the bill
+          format: date
+        balance:
+          type: number
+          description: the returned balance
+        balance_currency:
+          type: string
+          description: the bills currency
+        balance_updated_at:
+          type: string
+          description: the date of last balance update
+          format: date-time
+        error_code:
+          type: string
+          description: the error code in the case of get one
+        error_message:
+          type: string
+          description: the error message associated to error code in the case of get one
+        status:
+          type: string
+          description: one of the different posible status associated to the bill
+        migrated_at:
+          type: string
+          format: date-time
+        mfa_challenges:
+          description: params for multi-factor authentication challenge
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/MFA_Challenge_Simple'
+              - $ref: '#/components/schemas/MFA_Challenge_Image'
+              - $ref: '#/components/schemas/MFA_Challenge_Image_Choices'
+              - $ref: '#/components/schemas/MFA_Challenge_Choices'
+      example:
+        type: bill
+        id: 674117
+        uuid: c5482bbe-0f46-4e30-b660-3b1bb0ea773f
+        biller_id: 6535
+        biller_uuid: ce56e8a6-6162-423f-8dc6-e0ccab5ef70b
+        account_number: 4222422244
+        name_on_account: Jose Bautista
+        due_date: '2016-11-30'
+        balance: 56.43
+        balance_currency: USD
+        balance_updated_at: '2017-01-16T20:12:58Z'
+        error_code: null
+        error_message: null
+        status: linked
+        migrated_at: null
+        mfa_challenges: []
 
     MFA_Response:
       type: object
