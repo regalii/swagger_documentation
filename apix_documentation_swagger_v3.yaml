@@ -141,8 +141,18 @@ info:
     Additionally, you can use any of the following tools:
 
       * [Paw](https://paw.cloud/)
-      * [Postman Chrome](https://www.getpostman.com/)
+      * [Postman](https://www.getpostman.com/)
       * [Insomnia](https://insomnia.rest/)
+
+    # Language bindings
+
+      We have created libraries in multiple languages that will make it easier for you to use our API:
+
+      * [Ruby](https://github.com/regalii/regaliator)
+      * [Java](https://github.com/regalii/regaliator_java)
+      * [Node.JS](https://github.com/regalii/regaliator_node)
+      * [Python](https://github.com/regalii/regaliator_python)
+      * [PHP](https://github.com/regalii/regaliator_php)
 
     <div class="panel panel-danger">
       <div class="panel-body">
