@@ -2,232 +2,147 @@ openapi: 3.0.0
 
 info:
   version: '3.2'
-  title: Regalii API Documentation
+  title: Arcus API Documentation
   description: |
     # Introduction
 
-    Welcome to the Regalii API! You can use our API documentation to access
-    Regalii API endpoints, which can get you information on various billers,
-    bills, and transactions.
+    Welcome to Arcus! Here you’ll find detailed information for integrating with our API endpoints. We’ve tried to make this documentation as user-friendly and example-filled as possible, but if you have any questions, please head to our Help Center.
+
+    Integration happens in six easy steps:
+    <ol>
+      <li>Sign NDA</li>
+      <li>Receive staging (sandbox) API keys</li>
+      <li>Complete compliance approval</li>
+      <li>Sign commercial contract</li>
+      <li>Receive production API keys</li>
+      <li>Get certified</li>
+    </ol>
 
     ---
 
-    __Tools for Testing__
+    # Our products
 
-    Aditionally you can use by yourself the below list of tools that you can use to test different
-    endpoints and their responses before you start coding against them. It is recommended that
-    you test a couple of endpoints first to get an idea how to properly construct requests in your
-    application.
+    * ## xData
+    * ## xPay
+    * ## xChange
 
-      * [Paw](https://paw.cloud/)
-      * [Postman Chrome](https://www.getpostman.com/)
+    ---
 
     # Environments
 
-    Separate keys for each environment and `https` protocol must be used
+    Arcus will provide you with separate API keys for our two existing environments:
 
-    - __Note:__ For security reasons, the APIx doesn't support the TLS V1.0 anymore, we recommend you to use TLS v1.2 for a better security.
+    * Sandbox. Arcus maintains a Sandbox which allows developers to test the API using mocked data. We recommend keeping in mind the following:
 
-    ---
+        * The list of billers is not in sync with the billers in production
+        * Do not send real credentials to the Sandbox
 
-    ## Sandbox
-
-    Regalii maintains a Sandbox which allows developers to test the API using mocked data.
-
-    ---
-
-    ### Billers
-
-    The list of billers is not in sync with the billers in production.
+    * Production. Once you have completed all the necessary tests on the sandbox, contact us to receive your production keys and endpoint.
 
     ---
 
-    ### Credentials
+    # Security
 
-    The Sandbox accepts any credentials. You can use the following special credentials when you create a Bill to force a certain response.
+    To make requests to our endpoints, you must use the `https` protocol, regardless of the environment you're using.
 
-    - __Note:__ Do not send real credentials to the Sandbox.
+    <div class="panel panel-danger">
+      <div class="panel-body">
+        <h4><strong>Note:</strong> For security reasons, our API doesn't support the TLS V1.0 anymore; we recommend you to use TLS v1.2 for better security.</h4>
+      </div>
+    </div>
 
-    <table>
-       <tr>
-        <td><strong>Login</strong></td>
-        <td><strong>Password</strong></td>
-        <td><strong>Status</strong></td>
-        <td><strong>Error Code</strong></td>
-      </tr>
-       <tr>
-        <td>email@fetching.ii</td>
-        <td>secret</td>
-        <td>updating</td>
-        <td></td>
-      </tr>
-       <tr>
-        <td>email@mfa_code.ii</td>
-        <td>secret</td>
-        <td>waiting</td>
-        <td></td>
-      </tr>
-       <tr>
-        <td>email@mfa_question.ii</td>
-        <td>secret</td>
-        <td>waiting</td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>email@mfa_choice.ii</td>
-        <td>secret</td>
-        <td>waiting</td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>email@mfa_image.ii</td>
-        <td>secret</td>
-        <td>waiting</td>
-        <td></td>
-      </tr>
-       <tr>
-        <td>email@mfa_image_choice.ii</td>
-        <td>secret</td>
-        <td>waiting</td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>email@successful.ii</td>
-        <td>secret</td>
-        <td>updated</td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>email@unavailable.ii</td>
-        <td>secret</td>
-        <td></td>
-        <td>R122</td>
-      </tr>
-      <tr>
-        <td>email@input.ii</td>
-        <td>secret</td>
-        <td></td>
-        <td>R121</td>
-      </tr>
-      <tr>
-        <td>email@credentials.ii</td>
-        <td>secret</td>
-        <td></td>
-        <td>R120</td>
-      </tr>
-      <tr>
-        <td>email@exception.ii</td>
-        <td>secret</td>
-        <td></td>
-        <td>R121</td>
-      </tr>
-       <tr>
-        <td>email@timeout.ii</td>
-        <td>secret</td>
-        <td></td>
-        <td>R121</td>
-      </tr>
-    </table>
+    > ## Authentication
 
+    <div class="panel panel-danger">
+      <div class="panel-body">
+        <h4><strong>Note:</strong> We are currently working on implementing our Authentication method within this dynamic documentation, so that you no longer have to worry about calculating the checksum and manually adding the header. In the meantime, you can try out the endpoints to receive the basic Curl structure, to which you will have to add the proper Authentication header to make a successful request.</h4>
+      </div>
+    </div>
 
-    Just the @{state}.ii is the required part, email and password can be anything.
+    > Arcus uses an api-key and a secret-key for authentication that we generate and will provide to you, one for each environment.
 
+    > Arcus expects for the api-key to be included in all API requests to the server in the ‘Authorization’ header, combined with a checksum which we will describe later on:
+
+    > __Authorization:__ `APIAuth <your-api-key>:<checksum>`
+
+    * ### Calculating the Checksum
+
+        1. A checksum string needs to be created first by using your HTTP headers containing the `Content-Type`, `Content-MD5`, `Endpoint` and today's `Timestamp`.
+
+            The checksum string is computed as follows:
+
+            checksum_string = `content-type`,`content-md5`,`endpoint`,`timestamp`
+
+              - __Note:__ The ‘Endpoint’ is simply the URL you are sending the request to, excluding the server and including the parameters. For instance, if you
+              want to obtain a bill's data by requesting a get to `https://apix.casiregalii.com/bills/1`, your
+              checksum string should look like this:
+              `application/json,,/bills/1,Wed, 10 Jan 2017 16:53:15 GMT`
+              - __Note:__ Please notice the timestamp format. In UNIX-based systems you could obtain it by running: <b>echo \`date -Ru | sed 's/+0000/GMT/'`</b> in your terminal.
+
+        2. The checksum string is then used to create the checksum, which is a Base64 SHA1 HMAC string encoded using your private secret key.
+
+        3. For testing, verify that if you pass `application/json,,/account,Wed, 02 Nov 2016 17:26:52 GMT` to your checksum function and use `verify-secret` as secret key, it should return `nLet/JEZG9CRXHScwaQ/na4vsKQ=`. See checksum verification [example](https://gist.github.com/dagosi/c2e7db228a9c15e2f5bcdccd7a056183).
+
+            How to create a checksum in [Bash](https://gist.github.com/dagosi/d85979e364af745750a9dff8c8c5a949):
+
+            ```
+            CURRENT_DATE=`date -Ru | sed 's/+0000/GMT/'`
+            CHECKSUM=$(echo -n "application/json,,/account,$CURRENT_DATE" \
+              | openssl dgst -sha1 -binary -hmac "your-secret-key" \
+              | base64)
+            ```
     ---
 
-    ### Multi-Factor Question
-
-    The questions must be answered in up to 30 seconds.
-
-    ---
-
-    ## Production
-
-    Once you complete your integration contact us to receive your production keys
-    and endpoint.
-
-    # Authentication
-
-    - __Note:__ We are working on implementing our Authentication method within this dynamic documentation, so that you no longer have to worry about calculating the checksum and manually adding the header. In the meantime, you can try out the endpoints to receive the basic Curl structure, to which you will have to add the proper Authentication header to make a successful request.
-
-    Regalii uses an api-key and a secret-key for authentication that we generate and will provide to you.
-
-    Regalii expects for the api-key to be included in all API requests to the server
-    in the ‘Authorization’ header, combined with a checksum which we will describe later on:
-
-    __Authorization:__ `APIAuth <your-api-key>:<checksum>`
-
-    - __Note:__ You must replace `<your-api-key>:<checksum>` with your personal API
-    key and the calculated checksum.
-
-    ---
-
-    ## Calculating the Checksum
-
-    ### Step 1
-
-      A checksum string needs to be created first by using your HTTP headers containing the `Content-Type`, `Content-MD5`, `Endpoint` and today's `Timestamp`.
-
-      The checksum string is computed as follows:
-
-      checksum_string = `content-type`,`content-md5`,`endpoint`,`timestamp`
-
-      - __Note:__ The ‘Endpoint’ is simply the URL you are sending the request to, excluding the server and including the parameters. For instance, if you
-      want to obtain a bill's data by requesting a get to `https://apix.casiregalii.com/bills/1`, your
-      checksum string should look like this:
-      `application/json,,/bills/1,Wed, 10 Jan 2017 16:53:15 GMT`
-      - __Note:__ Please notice the timestamp format. In UNIX-based systems you could obtain it by running: <b>echo \`date -Ru | sed 's/+0000/GMT/'`</b> in your terminal.
-
-    ### Step 2
-
-      The checksum string is then used to create the checksum, which is a Base64 SHA1 HMAC string
-      encoded using your private secret key.
-
-    ### Step 3
-
-      For testing, verify that if you pass `application/json,,/account,Wed, 02 Nov 2016 17:26:52 GMT` to your checksum function and use `verify-secret` as secret key, it should return `nLet/JEZG9CRXHScwaQ/na4vsKQ=`. See checksum verification [example](https://gist.github.com/dagosi/c2e7db228a9c15e2f5bcdccd7a056183).
-
-      How to create a checksum in [Bash](https://gist.github.com/dagosi/d85979e364af745750a9dff8c8c5a949):
-
-      ```
-      CURRENT_DATE=`date -Ru | sed 's/+0000/GMT/'`
-      CHECKSUM=$(echo -n "application/json,,/account,$CURRENT_DATE" \
-        | openssl dgst -sha1 -binary -hmac "your-secret-key" \
-        | base64)
-      ```
-
-    ---
-
-    ## How to use the Checksum
+    * ### How to use the Checksum
 
       Now that you have a checksum, you can add it to your headers using the `Authorization` header as we previously mentioned. As an example, let’s assume that your api-key is `f0253d2a6a76ed12499e7878d7803ffb` and that your checksum is `nLet/JEZG9CRXHScwaQ/na4vsKQ=`. Now, you can add this header to your request.
 
       `-H Authorization: APIAuth f0253d2a6a76ed12499e7878d7803ffb:nLet/JEZG9CRXHScwaQ/na4vsKQ=`
 
+    ___
+
+    # Glossary
+
+    * Item: A set of credentials at a financial institution; each Item can have many Accounts, and some Accounts have Transactions associated with them
+    * client_id and secret: two private API keys; used in conjunction with an access_token to access data for an Item
+    * public_key: a public API identifier; used to initialize Link and identify Items you create or update via Link
+    * access_token: A rotatable token unique to a single Item; used to access data for that Item
+    * public_token: A short-lived token that can be exchanged for an access_token or used to initialize Link in update mode for an Item
+
+    ___
+
     # Webhooks
 
-      Regalii offers webhooks which can be used to notify you when there are updates to a bill or
-      transaction.
+    Arcus offers webhooks which can be used to notify you when there are updates to a bill or
+    transaction.
 
-      ___
+    You can set up a webhook URL with Arcus by contacting us.
 
-      ## Bills
+    * ## Bills' Webhook
+      Webhooks return the same data offered in the bill status.
 
       * The bill finishes updating and now requires password entry (error 420); waiting; or has data ready since updated
       * A long-running fetch has completed
-      * The bill has been re-run by Regalii due to an earlier error or outage
+      * The bill has been re-run by Arcus due to an earlier error or outage
       * It is the client's responsibility to trigger bills to refresh under normal operation.
 
-      ___
+    # Tools for Testing
 
-      ## How to Register a Webhook
+    It is recommended that you first test a couple of endpoints and get familiarezed with their responses. This will give you an idea of how to properly construct requests in your application (and save you coding time).
 
-      You can set up a webhook URL with Regalii by contacting us
+    You can do so by using the following dynamic sections of this documentation.
 
-      ___
+    Additionally, you can use any of the following tools:
 
-      ## Data in Webhook
+      * [Paw](https://paw.cloud/)
+      * [Postman Chrome](https://www.getpostman.com/)
+      * [Insomnia](https://insomnia.rest/)
 
-      Webhooks return the same data offered in the bill status.
+    <div class="panel panel-danger">
+      <div class="panel-body">
+        <h4><strong>REMEMBER:</strong> Never send real credentials to the Sandbox.</h4>
+      </div>
+    </div>
 
 servers:
   - url: https://apix.casiregalii.com
@@ -250,10 +165,10 @@ paths:
     get:
       tags:
         - Common
-      summary: Returns the properties of your Regalii account.
+      summary: Returns the properties of your Arcus account.
       operationId: getAccount
       description: >-
-        Returns the properties of your Regalii account. This includes the name of your company,
+        Returns the properties of your Arcus account. This includes the name of your company,
         the current balance you owe, and the maximum amount of credit allowed to your account
         in the currency specified.
 
@@ -379,6 +294,78 @@ paths:
       operationId: createBills
       description: |
         This endpoint creates a bill for billers with credentials bill identifier. When you send credentials to create a bill, the bill object is created and we then attempt to fetch the bill from the biller. Thus no matter what happens (MFA, wrong credentials, biller down, etc), the bill object is created. The request may take up to 59 seconds to return. If an error or MFA is returned, update the bill to resolve the issue.
+
+        ## For testing purposes
+        The Sandbox accepts any credentials (we remind you never to send real credentials). However, you can use the following login suffixes when creating a Bill to force a certain response (just the @{state}.ii is the required part; email and password can be anything).
+
+          <table class="table table-hover">
+             <tr>
+              <td><strong>Login</strong></td>
+              <td><strong>Status</strong></td>
+              <td><strong>Error Code</strong></td>
+            </tr>
+             <tr>
+              <td>email@fetching.ii</td>
+              <td>updating</td>
+              <td></td>
+            </tr>
+             <tr>
+              <td>email@mfa_code.ii</td>
+              <td>waiting</td>
+              <td></td>
+            </tr>
+             <tr>
+              <td>email@mfa_question.ii</td>
+              <td>waiting</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>email@mfa_choice.ii</td>
+              <td>waiting</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>email@mfa_image.ii</td>
+              <td>waiting</td>
+              <td></td>
+            </tr>
+             <tr>
+              <td>email@mfa_image_choice.ii</td>
+              <td>waiting</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>email@successful.ii</td>
+              <td>updated</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>email@unavailable.ii</td>
+              <td></td>
+              <td>R122</td>
+            </tr>
+            <tr>
+              <td>email@input.ii</td>
+              <td></td>
+              <td>R121</td>
+            </tr>
+            <tr>
+              <td>email@credentials.ii</td>
+              <td></td>
+              <td>R120</td>
+            </tr>
+            <tr>
+              <td>email@exception.ii</td>
+              <td></td>
+              <td>R121</td>
+            </tr>
+             <tr>
+              <td>email@timeout.ii</td>
+              <td></td>
+              <td>R121</td>
+            </tr>
+          </table>
+
       requestBody:
         description: Within the request body the parameters sent are a biller_id, login and password
         required: true
@@ -669,8 +656,8 @@ paths:
       tags:
         - xPay
       description: |
-        This endpoint provides the list of RPPS billers
-      summary: This endpoint provides the list of RPPS billers
+        This endpoint provides the list of xPay billers
+      summary: This endpoint provides the list of xPay billers
       operationId: getRppsBillers
       parameters:
         - $ref: '#/components/parameters/DateParam'
@@ -793,13 +780,13 @@ paths:
       tags:
         - xPay
       description: |
-        With this endpoint you can create a new transaction by passing an RPPS Biller ID and information
+        With this endpoint you can create a new transaction by passing an xPay Biller ID and information
         about the payment and the person (client) who is making the payment (see parameters below).
 
-        Once the transactions are created in Regalii’s system, it takes 2-3 days to process the
+        Once the transactions are created in Arcus’ system, it takes 2-3 days to process the
         transaction. After that time, the transaction’s status will be updated. You can always check the
         transaction status by making a request to the Get transaction endpoint.
-      summary: Create a new transaction by passing an RPPS Biller ID and information about the payment
+      summary: Create a new transaction by passing an xPay Biller ID and information about the payment
       operationId: postTransactions
       parameters:
         - $ref: '#/components/parameters/DateParam'
@@ -807,7 +794,7 @@ paths:
       requestBody:
         description: Within the request body the parameters sent are an `account_number`, `amount`, `currency`, `rpps_biller_id`, `phone_number`, `client_number`, `payer_born_on`, `first_name`, `last_name` and an optional `address` object.
          <br/><br/>
-         You have to make sure the account_number matches one of the mask_formats of the RPPS Biller.
+         You have to make sure the account_number matches one of the mask_formats of the xPay Biller.
         required: true
         content:
           application/json:
@@ -838,7 +825,7 @@ paths:
                   example: "USD"
                 rpps_biller_id:
                   type: string
-                  description: RPPS Biller identifier
+                  description: xPay Biller identifier
                   example: "692b45ea-7369-4232-bdd6-2bd662fe1ebd"
                 phone_number:
                   type: string
@@ -889,8 +876,8 @@ paths:
       tags:
         - xPay
       description: |
-        This endpoint returns the list of transactions that Regalii has processed for you.
-      summary: Returns the list of transactions that Regalii has processed for you
+        This endpoint returns the list of transactions that Arcus has processed for you.
+      summary: Returns the list of transactions that Arcus has processed for you
       operationId: getAllTransactions
       parameters:
         - in: query
