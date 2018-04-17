@@ -2,42 +2,48 @@ openapi: 3.0.0
 
 info:
   version: '3.2'
-  title: Arcus API Documentation
+  title: arcus API Documentation
   description: |
     # Introduction
 
-    Welcome to Arcus! Here you’ll find detailed information for integrating with our API endpoints. We’ve tried to make this documentation as user-friendly and example-filled as possible, but if you have any questions, please head to our Help Center.
+    Welcome to arcus! Here you’ll find detailed information for integrating with our API endpoints. We’ve tried to make this documentation as user-friendly and example-filled as possible, but if you have any questions, please head to our Help Center.
 
     Integration happens in six easy steps:
-    <ol>
-      <li>Sign NDA</li>
-      <li>Receive staging (sandbox) API keys</li>
-      <li>Complete compliance approval</li>
-      <li>Sign commercial contract</li>
-      <li>Receive production API keys</li>
-      <li>Get certified</li>
-    </ol>
+
+    1. Sign NDA
+    2. Receive staging (sandbox) API keys
+    3. Complete compliance approval
+    4. Sign commercial contract
+    5. Receive production API keys
+    6. Get certified
 
     ---
 
     # Our products
 
     * ## xData
+      Access the data of thousands of services through a unique format
     * ## xPay
+      Pay bills online for any biller in the USA directly from arcus
     * ## xChange
+      Update the payment information of your customers on their behalf.
 
     ---
 
     # Environments
 
-    Arcus will provide you with separate API keys for our two existing environments:
+    arcus will provide you with separate API keys for our two existing environments:
 
-    * Sandbox. Arcus maintains a Sandbox which allows developers to test the API using mocked data. We recommend keeping in mind the following:
+    * __Sandbox__. arcus maintains a Sandbox which allows developers to test the API using mocked data. We recommend keeping in mind the following:
 
         * The list of billers is not in sync with the billers in production
         * Do not send real credentials to the Sandbox
 
-    * Production. Once you have completed all the necessary tests on the sandbox, contact us to receive your production keys and endpoint.
+      To make requests to the sandbox environment, use the following URL: `https://apix.casiregalii.com`
+
+    * __Production__. Once you have completed all the necessary tests on the sandbox, contact us to receive your production keys.
+
+      To make requests to the production environment, use the following URL: `https://apix.regalii.com`
 
     ---
 
@@ -59,9 +65,9 @@ info:
       </div>
     </div>
 
-    > Arcus uses an api-key and a secret-key for authentication that we generate and will provide to you, one for each environment.
+    > arcus uses an api-key and a secret-key for authentication that we generate and will provide to you, one for each environment.
 
-    > Arcus expects for the api-key to be included in all API requests to the server in the ‘Authorization’ header, combined with a checksum which we will describe later on:
+    > arcus expects for the api-key to be included in all API requests to the server in the ‘Authorization’ header, combined with a checksum which we will describe later on:
 
     > __Authorization:__ `APIAuth <your-api-key>:<checksum>`
 
@@ -91,7 +97,6 @@ info:
               | openssl dgst -sha1 -binary -hmac "your-secret-key" \
               | base64)
             ```
-    ---
 
     * ### How to use the Checksum
 
@@ -103,27 +108,28 @@ info:
 
     # Glossary
 
-    * Item: A set of credentials at a financial institution; each Item can have many Accounts, and some Accounts have Transactions associated with them
-    * client_id and secret: two private API keys; used in conjunction with an access_token to access data for an Item
-    * public_key: a public API identifier; used to initialize Link and identify Items you create or update via Link
-    * access_token: A rotatable token unique to a single Item; used to access data for that Item
-    * public_token: A short-lived token that can be exchanged for an access_token or used to initialize Link in update mode for an Item
+    * api-key
+    * secret-key
+    * Biller
+    * Bill
+    * Credentials
+    * external_bill_id
 
     ___
 
     # Webhooks
 
-    Arcus offers webhooks which can be used to notify you when there are updates to a bill or
+    arcus offers webhooks which can be used to notify you when there are updates to a bill or
     transaction.
 
-    You can set up a webhook URL with Arcus by contacting us.
+    You can set up a webhook URL with arcus by contacting us.
 
     * ## Bills' Webhook
       Webhooks return the same data offered in the bill status.
 
       * The bill finishes updating and now requires password entry (error 420); waiting; or has data ready since updated
       * A long-running fetch has completed
-      * The bill has been re-run by Arcus due to an earlier error or outage
+      * The bill has been re-run by arcus due to an earlier error or outage
       * It is the client's responsibility to trigger bills to refresh under normal operation.
 
     # Tools for Testing
@@ -143,6 +149,47 @@ info:
         <h4><strong>REMEMBER:</strong> Never send real credentials to the Sandbox.</h4>
       </div>
     </div>
+
+    # Errors
+
+    Responses will use standard HTTP error codes to convey basic error status information.
+
+    Unless you obtain a successful response (code 200), you may encounter any of the following:
+
+    <table>
+      <tr>
+        <th>Error Code</th>
+        <th>Meaning</th>
+      </tr>
+      <tr>
+        <td>400</td>
+        <td>Bad Request</td>
+      </tr>
+      <tr>
+        <td>401</td>
+        <td>Unauthorized -- Your API key or checksum is wrong</td>
+      </tr>
+      <tr>
+        <td>403</td>
+        <td>Forbidden -- You are not authorized to access the resource requested</td>
+      </tr>
+      <tr>
+        <td>404</td>
+        <td>Not Found -- The specified resource could not be found</td>
+      </tr>
+      <tr>
+        <td>429</td>
+        <td>Too Many Requests -- You're sending too many requests! Slow down!</td>
+      </tr>
+      <tr>
+        <td>500</td>
+        <td>Internal Server Error -- We had a problem with our server. Try again later.</td>
+      </tr>
+      <tr>
+        <td>503</td>
+        <td>Service Unavailable -- Please try again later.</td>
+      </tr>
+    </table>
 
 servers:
   - url: https://apix.casiregalii.com
@@ -165,10 +212,10 @@ paths:
     get:
       tags:
         - Common
-      summary: Returns the properties of your Arcus account.
+      summary: Returns the properties of your arcus account.
       operationId: getAccount
       description: >-
-        Returns the properties of your Arcus account. This includes the name of your company,
+        Returns the properties of your arcus account. This includes the name of your company,
         the current balance you owe, and the maximum amount of credit allowed to your account
         in the currency specified.
 
@@ -294,6 +341,10 @@ paths:
       operationId: createBills
       description: |
         This endpoint creates a bill for billers with credentials bill identifier. When you send credentials to create a bill, the bill object is created and we then attempt to fetch the bill from the biller. Thus no matter what happens (MFA, wrong credentials, biller down, etc), the bill object is created. The request may take up to 59 seconds to return. If an error or MFA is returned, update the bill to resolve the issue.
+
+        ## Handling Multi-factor Authentication
+
+        Some billers require more than just a username/password to log in. In those situations, arcus will associate one or more MFA challenges with a bill. An MFA challenge can be a verification code sent to a phone, a secret question, an image, a list of images to choose from, or different choices which only the user would know the answer to. When arcus refreshes a bill, it will be set into a status of waiting, which means that the customer must answer a challenge. Go to `PATCH /bills/{id}` to see how to reply to a challenge.
 
         ## For testing purposes
         The Sandbox accepts any credentials (we remind you never to send real credentials). However, you can use the following login suffixes when creating a Bill to force a certain response (just the @{state}.ii is the required part; email and password can be anything).
@@ -515,9 +566,21 @@ paths:
     patch:
       tags:
         - xData
-      description: This endpoint updates a specific bill
+      description: |
+        This endpoint allows you to update a specific bill's credentials and/or answer MFA challenges.
+
+        ## Replying to MFA Challenges
+
+        In order to answer MFA challenges, you must provide the credentials and an array named 'mfa_challenges', containing one or more objects (depending on how many challenges the biller provided) with the following attributes: id, type and response. Make sure that the id and type match the mfa_challenge. For more detailed information refer to the MFA_Response Model.
+
+        ### Bill's status changes
+
+        * Once the challenge has been answered, arcus will be able to update the bill's balance. The bill's status will be set to 'updating'.
+        * Once the bill balance has been updated, the bill's status will be set to 'updated'.
+        * If the response of an mfa_challenge is incorrect OR the response is provided after `expires_at` time, then an error will be given and the bill's status will be set to 'failed'.
+
       operationId: updateBill
-      summary: This endpoint updates a specific bill
+      summary: Allows you to update a specific bill's credentials and/or answer MFA challenges
       parameters:
         - name: id
           in: path
@@ -544,16 +607,9 @@ paths:
                   description: The password credential
                 mfa_challenges:
                   type: array
-                  description: Challenge information
+                  description: Challenges information
                   items:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                        description: The id of the challenge that is being answered
-                      response:
-                        type: string
-                        description: The response to the challenge
+                    $ref: '#/components/schemas/MFA_Response'
               required:
                   - login
                   - password
@@ -783,7 +839,7 @@ paths:
         With this endpoint you can create a new transaction by passing an xPay Biller ID and information
         about the payment and the person (client) who is making the payment (see parameters below).
 
-        Once the transactions are created in Arcus’ system, it takes 2-3 days to process the
+        Once the transactions are created in arcus’ system, it takes 2-3 days to process the
         transaction. After that time, the transaction’s status will be updated. You can always check the
         transaction status by making a request to the Get transaction endpoint.
       summary: Create a new transaction by passing an xPay Biller ID and information about the payment
@@ -876,8 +932,8 @@ paths:
       tags:
         - xPay
       description: |
-        This endpoint returns the list of transactions that Arcus has processed for you.
-      summary: Returns the list of transactions that Arcus has processed for you
+        This endpoint returns the list of transactions that arcus has processed for you.
+      summary: Returns the list of transactions that arcus has processed for you
       operationId: getAllTransactions
       parameters:
         - in: query
@@ -1373,7 +1429,8 @@ components:
           type: array
           items:
             oneOf:
-              - $ref: '#/components/schemas/MFA_Challenge_Simple'
+              - $ref: '#/components/schemas/MFA_Challenge_Question'
+              - $ref: '#/components/schemas/MFA_Challenge_Code'
               - $ref: '#/components/schemas/MFA_Challenge_Image'
               - $ref: '#/components/schemas/MFA_Challenge_Image_Choices'
               - $ref: '#/components/schemas/MFA_Challenge_Choices'
@@ -1410,7 +1467,7 @@ components:
           description: The type of challenge (question, code, image, image_choice)
         response:
           type: string
-          description: Response to the challenge
+          description: In the case of type 'code' or 'question', the answer to the challenge. In the case of type 'image', the size of the image. In the case of 'image_choice' and '?', the ID (index) of the correct choice.
 
     MFA_Challenge:
       description: Shared information of MFA Challenges
@@ -1426,7 +1483,7 @@ components:
           description: The type of challenge (question, code, image, image_choice)
         id:
           type: integer
-          description: The ID of the challenge
+          description: The ID of the challenge [deprecated]
         uuid:
           type: string
           description: The UUID of the challenge
@@ -1435,8 +1492,8 @@ components:
           format: date-time
           description: The delay of expiration; after this date the answer will be rejected. It can be null
 
-    MFA_Challenge_Simple:
-      description: Structure of an MFA Challenge of type 'question' or 'code'
+    MFA_Challenge_Question:
+      description: Structure of an MFA Challenge of type 'question'. Secret questions are often asked in addition to a user's password.
       allOf:
         - $ref: '#/components/schemas/MFA_Challenge'
         - type: object
@@ -1447,6 +1504,19 @@ components:
               type: string
               description: The question to show to the owner of the account
               example: What is 4 + 4?
+
+    MFA_Challenge_Code:
+      description: Structure of an MFA Challenge of type 'code'. Verification codes are sometimes sent to a customer’s mobile phone before they are able to log in. Verification codes cannot be re-used.
+      allOf:
+        - $ref: '#/components/schemas/MFA_Challenge'
+        - type: object
+          required:
+            - prompt
+          properties:
+            prompt:
+              type: string
+              description: The instructions to show to the owner of the account
+              example: Please provide the code sent on your phone.
 
     MFA_Challenge_Image:
       description: Structure of an MFA Challenge of type 'image'
@@ -1483,7 +1553,7 @@ components:
                 properties:
                   id:
                     type: integer
-                    description: The ID of the proposition (basically the index of the array)
+                    description: The ID of the option (basically the index of the array)
                   type:
                     type: string
                     description: "The type of the image: url or uri"
@@ -1507,12 +1577,12 @@ components:
                 properties:
                   id:
                     type: integer
-                    description: The ID of the proposition (basically the index of the array)
+                    description: The ID of the option (basically the index of the array)
                   category:
                     type: string
-                    description: ALlowing to group proposition, can be null, if present, the value can be present at least twice, in different categories
+                    description: Defines the category to which the value belongs (e.g. Phone, Text, E-mail). It can be null.
                     example: Phone
                   value:
                     type: string
-                    description: The proposition
+                    description: A phone number or e-mail address. The same value can be present in different categories
                     example: "+1234567890"
