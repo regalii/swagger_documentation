@@ -6,6 +6,17 @@ info:
   description: |
     # Introduction
 
+    <div class="panel panel-danger">
+      <div class="panel-body">
+        <h4><strong>Important:</strong> We are currently working on implementing
+        our Authentication method within this dynamic documentation, so that the
+        'Try it out' buttons located on each endpoint work as expected. However,
+        they can still be useful to show the basic Curl structure of the
+        requests, to which you would need to manually add the proper
+        Authentication header in order to obtain a successful response.</h4>
+      </div>
+    </div>
+
     Welcome to arcus! Here you’ll find detailed information for integrating with our API endpoints. We’ve tried to make this documentation as user-friendly and example-filled as possible, but if you have any questions, please [contact us](mailto:support@Regalii.com).
 
     Integration happens in six easy steps:
