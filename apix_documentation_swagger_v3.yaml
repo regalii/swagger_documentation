@@ -34,7 +34,7 @@ info:
 
     arcus will provide you with separate API keys for our two existing environments:
 
-    * __Sandbox__. arcus maintains a Sandbox which allows developers to test the API using mocked data. We recommend keeping in mind the following:
+    * __Sandbox__. arcus maintains a Sandbox which allows developers to test the API using mock data. We recommend keeping in mind the following:
 
         * The list of billers is not in sync with the billers in production
         * Do not send real credentials to the Sandbox
@@ -106,17 +106,6 @@ info:
 
     ___
 
-    # Glossary
-
-    * api-key
-    * secret-key
-    * Biller
-    * Bill
-    * Credentials
-    * external_bill_id
-
-    ___
-
     # Webhooks
 
     arcus offers webhooks which can be used to notify you when there are updates to a bill or
@@ -134,7 +123,7 @@ info:
 
     # Tools for Testing
 
-    It is recommended that you first test a couple of endpoints and get familiarezed with their responses. This will give you an idea of how to properly construct requests in your application (and save you coding time).
+    It is recommended that you first test a couple of endpoints and get familiarized with their responses. This will give you an idea of how to properly construct requests in your application (and save you coding time).
 
     You can do so by using the following dynamic sections of this documentation.
 
@@ -203,7 +192,7 @@ info:
 
 servers:
   - url: https://apix.casiregalii.com
-    description: Sandbox, Mocked Credentials; Mocked Data
+    description: Sandbox, Mock Credentials; Mock Data
   - url: https://apix.regalii.com
     description: Production, Real Credentials; Real Data
 
