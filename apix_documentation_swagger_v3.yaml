@@ -837,7 +837,7 @@ paths:
       description: |
         With this endpoint you can create a new transaction by passing an xPay Biller ID and information
         about the payment and the person (client) who is making the payment (see parameters below).
-
+        <br/><br/>
         Once the transactions are created in arcus’ system, it takes 2-3 days to process the
         transaction. After that time, the transaction’s status will be updated. You can always check the
         transaction status by making a request to the Get transaction endpoint.
@@ -847,9 +847,9 @@ paths:
         - $ref: '#/components/parameters/DateParam'
         - $ref: '#/components/parameters/ContentMD5Param'
       requestBody:
-        description: Within the request body the parameters sent are an `account_number`, `amount`, `currency`, `rpps_biller_id`, `phone_number`, `client_number`, `payer_born_on`, `first_name`, `last_name` and an optional `address` object.
+        description: Within the request body the required parameters to be sent are an `account_number`, `amount`, `currency`, `rpps_biller_id`, `payer_born_on`, `first_name`, `last_name` and an `address` object with required information for `city` and `state`.
          <br/><br/>
-         You have to make sure the account_number matches one of the mask_formats of the xPay Biller.
+         You have to make sure the `account_number` matches one of the masks' `mask_format` of the xPay Biller.
         required: true
         content:
           application/json:
@@ -860,11 +860,10 @@ paths:
                 - amount
                 - currency
                 - rpps_biller_id
-                - phone_number
-                - client_number
                 - payer_born_on
                 - first_name
                 - last_name
+                - address
               properties:
                 account_number:
                   type: string
@@ -906,6 +905,9 @@ paths:
                 address:
                   type: object
                   description: Address of the person who makes the payment.
+                  required:
+                    - city
+                    - state
                   properties:
                     street:
                       type: string
