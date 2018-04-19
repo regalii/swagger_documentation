@@ -230,9 +230,6 @@ paths:
         case you're an xPay client, the current balance you have available to
         make transactions.
 
-      parameters:
-        - $ref: '#/components/parameters/DateParam'
-        - $ref: '#/components/parameters/ContentMD5Param'
       responses:
         200:
           description: successful response
@@ -278,8 +275,6 @@ paths:
           description: page index for returned information.
           schema:
             type: integer
-        - $ref: '#/components/parameters/DateParam'
-        - $ref: '#/components/parameters/ContentMD5Param'
       responses:
         200:
           description: successful response
@@ -473,9 +468,6 @@ paths:
                 - biller_id
                 - login
                 - password
-      parameters:
-        - $ref: '#/components/parameters/DateParam'
-        - $ref: '#/components/parameters/ContentMD5Param'
       responses:
         200:
           description: successful response
@@ -525,8 +517,6 @@ paths:
               type: string
               items:
                 type: string
-        - $ref: '#/components/parameters/DateParam'
-        - $ref: '#/components/parameters/ContentMD5Param'
       responses:
         200:
           description: successful response
@@ -586,8 +576,6 @@ paths:
           required: true
           schema:
             type: integer
-        - $ref: '#/components/parameters/DateParam'
-        - $ref: '#/components/parameters/ContentMD5Param'
       responses:
         200:
           description: successful response
@@ -632,8 +620,6 @@ paths:
           required: true
           schema:
             type: integer
-        - $ref: '#/components/parameters/DateParam'
-        - $ref: '#/components/parameters/ContentMD5Param'
       requestBody:
         description: Within the request body the parameters sent are a login, password and
           an array of mfa_challenges objects
@@ -677,8 +663,6 @@ paths:
           required: true
           schema:
             type: integer
-        - $ref: '#/components/parameters/DateParam'
-        - $ref: '#/components/parameters/ContentMD5Param'
       responses:
         200:
           description: successful response
@@ -702,8 +686,6 @@ paths:
           required: true
           schema:
             type: integer
-        - $ref: '#/components/parameters/DateParam'
-        - $ref: '#/components/parameters/ContentMD5Param'
       responses:
         200:
           description: successful response
@@ -722,9 +704,6 @@ paths:
         `GET /bills` endpoint.
 
       operationId: bulk_refreshBill
-      parameters:
-        - $ref: '#/components/parameters/DateParam'
-        - $ref: '#/components/parameters/ContentMD5Param'
       requestBody:
         description: Within the request body the parameters sent are a biller_id, login and password
         required: true
@@ -762,8 +741,6 @@ paths:
         properties.
       operationId: getRppsBillers
       parameters:
-        - $ref: '#/components/parameters/DateParam'
-        - $ref: '#/components/parameters/ContentMD5Param'
         - name: q[biller_type_eq]
           in: query
           required: false
@@ -892,9 +869,6 @@ paths:
         be updated. You can always check the transaction's status by making a
         request to the `GET /transactions/{id}` endpoint.
       operationId: postTransactions
-      parameters:
-        - $ref: '#/components/parameters/DateParam'
-        - $ref: '#/components/parameters/ContentMD5Param'
       requestBody:
         description: Within the request body the required parameters to be sent are an `account_number`, `amount`, `currency`, `rpps_biller_id`, `payer_born_on`, `first_name`, `last_name` and an `address` object with required information for `city` and `state`.
          <br/><br/>
@@ -984,7 +958,7 @@ paths:
       summary: Returns the list of transactions that arcus has processed for you
       description: |
         This endpoint returns the list of transactions that arcus has processed
-        for you.      
+        for you.
       operationId: getAllTransactions
       parameters:
         - in: query
@@ -1035,8 +1009,6 @@ paths:
             type: array
             items:
               type: string
-        - $ref: '#/components/parameters/DateParam'
-        - $ref: '#/components/parameters/ContentMD5Param'
       responses:
         200:
           description: successful response
@@ -1078,8 +1050,6 @@ paths:
           description: Id of the transaction
           schema:
             type: integer
-        - $ref: '#/components/parameters/DateParam'
-        - $ref: '#/components/parameters/ContentMD5Param'
       responses:
         200:
           description: successful response
@@ -1107,8 +1077,6 @@ paths:
           description: Id of the transaction
           schema:
             type: integer
-        - $ref: '#/components/parameters/DateParam'
-        - $ref: '#/components/parameters/ContentMD5Param'
       responses:
         200:
           description: successful response
@@ -1125,9 +1093,6 @@ paths:
       description: |
         Use this endpoint to replace the payment method on the biller’s website.
       operationId: postMigrations
-      parameters:
-        - $ref: '#/components/parameters/DateParam'
-        - $ref: '#/components/parameters/ContentMD5Param'
       requestBody:
         description: Within the request body the parameters sent are `biller_id`, `login` for the account, `password`, the `name`, `last name`, `country`, `card number`, `brand of the card`, `expiry year`, `expiry month`, `address`, `city`, `state`, `zipcode`, card `type` if it is credit or debit and the `cvv` of three or four numbers
         required: true
@@ -1239,8 +1204,6 @@ paths:
           required: false
           schema:
             type: integer
-        - $ref: '#/components/parameters/DateParam'
-        - $ref: '#/components/parameters/ContentMD5Param'
       responses:
         200:
           description: successful response
@@ -1279,8 +1242,6 @@ paths:
           required: true
           schema:
             type: integer
-        - $ref: '#/components/parameters/DateParam'
-        - $ref: '#/components/parameters/ContentMD5Param'
       responses:
         200:
           description: successful response
@@ -1304,8 +1265,6 @@ paths:
           required: true
           schema:
             type: integer
-        - $ref: '#/components/parameters/DateParam'
-        - $ref: '#/components/parameters/ContentMD5Param'
       requestBody:
         description: Within the request body the parameters sent are login and password
         required: true
@@ -1337,22 +1296,6 @@ paths:
                 $ref: '#/components/schemas/Migration'
 
 components:
-  parameters:
-    DateParam:
-      name: Date
-      in: header
-      description: Today's date (e.g. Wed, 11 Apr 2018 17:34:23 GMT)
-      required: true
-      schema:
-        type: string
-        format: date-time
-    ContentMD5Param:
-      name: Content-MD5
-      in: header
-      description: Content-MD5
-      required: false
-      schema:
-        type: string
   schemas:
     Transaction:
       type: object
