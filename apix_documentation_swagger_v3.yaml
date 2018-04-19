@@ -217,6 +217,9 @@ tags:
   - name: xChange
     description: Access to xChange documentation
 
+security:
+  - hmacAuth: []
+
 paths:
   /account:
     get:
@@ -1337,6 +1340,10 @@ paths:
                 $ref: '#/components/schemas/Migration'
 
 components:
+  securitySchemes:
+    hmacAuth:
+      type: http
+      scheme: hmac-sha1
   parameters:
     DateParam:
       name: Date
