@@ -263,8 +263,7 @@ paths:
     get:
       tags:
         - Common
-      summary: Provides the current list of billers and their associated
-        properties.
+      summary: Provides the current list of billers
       operationId: getBillersCredentials
       description: |
         This endpoint provides the current list of billers and their associated
@@ -352,7 +351,6 @@ paths:
       tags:
         - xData
       summary: Creates a bill for a specific biller
-        identifier
       operationId: createBills
       description: |
         This endpoint creates a bill for a specific biller.
@@ -366,7 +364,7 @@ paths:
 
         If an error or MFA is returned, update the bill to resolve the issue.
 
-        ## Handling Multi-factor Authentication
+        ## Handling Multi-factor Authentication (MFA)
 
         Some billers require more than just a username/password to log in. In
         those situations, arcus will associate one or more MFA challenges with a
@@ -379,9 +377,9 @@ paths:
 
         ## For testing purposes
         The Sandbox accepts any credentials (we remind you never to send real
-        credentials). However, you can use the following login suffixes when
-        creating a bill to force a certain response (just the @{state}.ii is the
-        required part; email can be anything).
+        credentials to it), however, you can use the following login suffixes
+        when creating a bill to force a certain response (just the @{state}.ii
+        is the required part; email can be anything).
 
           <table class="table table-hover">
              <tr>
@@ -720,7 +718,7 @@ paths:
       summary: Receives an array of bill ids and refreshes them
       description: |
         This endpoint receives an array of bill ids as a parameter and refreshes
-        them. Updated bills can be eventually pulled by passing id_in to the
+        them. Updated bills can be eventually pulled by passing `id_in` to the
         `GET /bills` endpoint.
 
       operationId: bulk_refreshBill
@@ -760,7 +758,8 @@ paths:
         - xPay
       summary: Provides the list of xPay billers
       description: |
-        This endpoint provides the list of xPay billers.
+        This endpoint provides the list of xPay billers and their associated
+        properties.
       operationId: getRppsBillers
       parameters:
         - $ref: '#/components/parameters/DateParam'
@@ -982,9 +981,10 @@ paths:
     get:
       tags:
         - xPay
-      description: |
-        This endpoint returns the list of transactions that arcus has processed for you.
       summary: Returns the list of transactions that arcus has processed for you
+      description: |
+        This endpoint returns the list of transactions that arcus has processed
+        for you.      
       operationId: getAllTransactions
       parameters:
         - in: query
