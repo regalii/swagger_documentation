@@ -214,9 +214,10 @@ paths:
       summary: Returns the properties of your arcus account.
       operationId: getAccount
       description: >-
-        Returns the properties of your arcus account. This includes the name of your company,
-        the current balance you owe, and the maximum amount of credit allowed to your account
-        in the currency specified.
+        This endpoint returns the properties of your arcus account, which
+        include the name of your company, the currency you work with and, in
+        case you're an xPay client, the current balance you have available to
+        make transactions.
 
       parameters:
         - $ref: '#/components/parameters/DateParam'
@@ -231,31 +232,35 @@ paths:
                 properties:
                   name:
                     type: string
-                    description: the name of the company
+                    description: the name of your company
                   balance:
                     type: number
-                    description: the current balance of the company
+                    description: the current balance your company has available
+                      to make transactions
                   minimum_balance:
                     type: number
-                    description: is the maximum debit balance that the company could have
+                    description: "[deprecated]"
                   currency:
                     type: string
-                    description: the currency type for the company
+                    description: the balance's currency
                 example:
                   name: ACME Company
-                  balance: 537.5
-                  minimum_balance: -30000
+                  balance: 7000.00
+                  minimum_balance: 5000.00
                   currency: USD
   /billers:
     get:
       tags:
         - Common
-      summary: Provides the current list of billers and their associated properties.
+      summary: Provides the current list of billers and their associated
+        properties.
       operationId: getBillersCredentials
       description: |
-        Provides the current list of billers and their associated properties.
-        To ensure that your customers are able to leverage the enhancements that we make
-        over time, you are required to cache the full list of billers and update it on a weekly basis.
+        This endpoint provides the current list of billers and their associated
+        properties.
+        To ensure that your end users are able to leverage the enhancements that
+        we make over time, you are required to cache the full list of billers
+        and update it on a weekly basis.
       parameters:
         - in: path
           name: page
@@ -335,18 +340,37 @@ paths:
     post:
       tags:
         - xData
-      summary: Creates a bill for billers with credentials bill
+      summary: Creates a bill for a specific biller
         identifier
       operationId: createBills
       description: |
-        This endpoint creates a bill for billers with credentials bill identifier. When you send credentials to create a bill, the bill object is created and we then attempt to fetch the bill from the biller. Thus no matter what happens (MFA, wrong credentials, biller down, etc), the bill object is created. The request may take up to 59 seconds to return. If an error or MFA is returned, update the bill to resolve the issue.
+        This endpoint creates a bill for a specific biller.
+
+        When you send the credentials and biller_id to create a bill, the bill
+        object is created and we then attempt to fetch the bill from the biller.
+        Thus no matter what happens (MFA, wrong credentials, biller down, etc),
+        the bill object is created.
+
+        Take into account that the request may take up to 59 seconds to return.
+
+        If an error or MFA is returned, update the bill to resolve the issue.
 
         ## Handling Multi-factor Authentication
 
-        Some billers require more than just a username/password to log in. In those situations, arcus will associate one or more MFA challenges with a bill. An MFA challenge can be a verification code sent to a phone, a secret question, an image, a list of images to choose from, or different choices which only the user would know the answer to. When arcus refreshes a bill, it will be set into a status of waiting, which means that the customer must answer a challenge. Go to `PATCH /bills/{id}` to see how to reply to a challenge.
+        Some billers require more than just a username/password to log in. In
+        those situations, arcus will associate one or more MFA challenges with a
+        bill. An MFA challenge can be a verification code sent to a phone, a
+        secret question, an image, a list of images to choose from, or different
+        choices which only the end user would know the answer to. When arcus
+        refreshes a bill, it will be set into a status of waiting, which means
+        that the customer must answer a challenge. Go to `PATCH /bills/{id}` to
+        see how to reply to a challenge.
 
         ## For testing purposes
-        The Sandbox accepts any credentials (we remind you never to send real credentials). However, you can use the following login suffixes when creating a Bill to force a certain response (just the @{state}.ii is the required part; email and password can be anything).
+        The Sandbox accepts any credentials (we remind you never to send real
+        credentials). However, you can use the following login suffixes when
+        creating a bill to force a certain response (just the @{state}.ii is the
+        required part; email can be anything).
 
           <table class="table table-hover">
              <tr>
@@ -453,10 +477,10 @@ paths:
     get:
       tags:
         - xData
-      summary: This endpoint retrieves all the bills.
+      summary: Retrieves all your bills
       operationId: getBills
       description: |
-        This endpoint retrieves all the bills
+        This endpoint retrieves all your bills.
       parameters:
         - in: query
           name: page
@@ -541,7 +565,7 @@ paths:
     get:
       tags:
         - xData
-      summary: This endpoint retrieves a specific bill’s cached data.
+      summary: Retrieves a specific bill’s cached data
       operationId: getBill
       description: |
         This endpoint retrieves a specific bill’s cached data. To pull fresh
@@ -565,21 +589,33 @@ paths:
     patch:
       tags:
         - xData
+      summary: Allows you to update a specific bill's credentials and/or answer
+        MFA challenges
       description: |
-        This endpoint allows you to update a specific bill's credentials and/or answer MFA challenges.
+        This endpoint allows you to update a specific bill's credentials and/or
+        answer MFA challenges.
 
         ## Replying to MFA Challenges
 
-        In order to answer MFA challenges, you must provide the credentials and an array named 'mfa_challenges', containing one or more objects (depending on how many challenges the biller provided) with the following attributes: id, type and response. Make sure that the id and type match the mfa_challenge. For more detailed information refer to the MFA_Response Model.
+        In order to answer MFA challenges, you must provide the credentials and
+        an array named 'mfa_challenges', containing one or more objects
+        (depending on how many challenges the biller provided) with the
+        following attributes: id, type and response. Make sure that the id and
+        type match the mfa_challenge. For more detailed information refer to the
+        MFA_Response Model.
 
         ### Bill's status changes
 
-        * Once the challenge has been answered, arcus will be able to update the bill's balance. The bill's status will be set to 'updating'.
-        * Once the bill balance has been updated, the bill's status will be set to 'updated'.
-        * If the response of an mfa_challenge is incorrect OR the response is provided after `expires_at` time, then an error will be given and the bill's status will be set to 'failed'.
+        * Once the challenge has been answered, arcus will be able to update the
+          bill's balance. The bill's status will be set to 'updating'.
+        * Once the bill balance has been updated, the bill's status will be set
+          to 'updated'.
+        * If the response of an mfa_challenge is incorrect OR the response is
+          provided after `expires_at` time, then an error will be given and the
+          bill's status will be set to 'failed'.
 
       operationId: updateBill
-      summary: Allows you to update a specific bill's credentials and/or answer MFA challenges
+
       parameters:
         - name: id
           in: path
@@ -622,8 +658,8 @@ paths:
     delete:
       tags:
         - xData
+      summary: Deletes a specific bill
       description: This endpoint deletes a specific bill
-      summary: This endpoint deletes a specific bill
       operationId: deleteBill
       parameters:
         - name: id
@@ -645,10 +681,10 @@ paths:
     post:
       tags:
         - xData
+      summary: Refreshes a specific bill by polling the biller
       description: |
         This endpoint refreshes a specific bill by polling the biller. It
-        responds with the same structure as <create bill>.
-      summary: Refreshes a specific bill by polling the biller
+        responds with the same structure as `POST /bills`.
       operationId: refreshBill
       parameters:
         - name: id
@@ -670,11 +706,12 @@ paths:
     post:
       tags:
         - xData
+      summary: Receives an array of bill ids and refreshes them
       description: |
         This endpoint receives an array of bill ids as a parameter and refreshes
         them. Updated bills can be eventually pulled by passing id_in to the
-        <list bills> endpoint.
-      summary: Receives an array of bill ids as a parameter and refreshes them.
+        `GET /bills` endpoint.
+
       operationId: bulk_refreshBill
       parameters:
         - $ref: '#/components/parameters/DateParam'
@@ -710,9 +747,9 @@ paths:
     get:
       tags:
         - xPay
+      summary: Provides the list of xPay billers
       description: |
-        This endpoint provides the list of xPay billers
-      summary: This endpoint provides the list of xPay billers
+        This endpoint provides the list of xPay billers.
       operationId: getRppsBillers
       parameters:
         - $ref: '#/components/parameters/DateParam'
@@ -834,14 +871,16 @@ paths:
     post:
       tags:
         - xPay
+      summary: Creates a new transaction
       description: |
-        With this endpoint you can create a new transaction by passing an xPay Biller ID and information
-        about the payment and the person (client) who is making the payment (see parameters below).
+        With this endpoint you can create a new transaction by passing an xPay
+        Biller ID and information about the payment and the end user who is
+        making the payment (see parameters below).
         <br/><br/>
-        Once the transactions are created in arcus’ system, it takes 2-3 days to process the
-        transaction. After that time, the transaction’s status will be updated. You can always check the
-        transaction status by making a request to the Get transaction endpoint.
-      summary: Create a new transaction by passing an xPay Biller ID and information about the payment
+        Once the transactions are created in arcus’ system, it takes 2-3 days to
+        process the transaction. After that time, the transaction’s status will
+        be updated. You can always check the transaction's status by making a
+        request to the `GET /transactions/{id}` endpoint.
       operationId: postTransactions
       parameters:
         - $ref: '#/components/parameters/DateParam'
@@ -1012,13 +1051,14 @@ paths:
     get:
       tags:
         - xPay
-      description: |
-        This endpoint returns the details of a specific transaction. If the payment was successful, you
-        would see the transaction status is __linked__. If there is any problem with the payment, you
-        would see the __error_code__ and __error_message__ in the transaction’s response. The possible
-        values for transaction’s status are `initialized`, `pending`, `linked`, `confirmed` and
-        `rejected`.
       summary: Returns the details of a specific transaction
+      description: |
+        This endpoint returns the details of a specific transaction. If the
+        payment was successful, you would see the transaction status is
+        __linked__. If there is any problem with the payment, you would see the
+        __error_code__ and __error_message__ in the transaction’s response. The
+        possible values for transaction’s status are `initialized`, `pending`,
+        `linked`, `confirmed` and `rejected`.
       operationId: getTransactions
       parameters:
         - in: path
@@ -1040,12 +1080,14 @@ paths:
     delete:
       tags:
         - xPay
-      description: |
-        Deletes the transaction that corresponds to the `:id` sent. It’s only possible to delete a
-        transaction if the processing of the transaction payment hasn’t started, i.e., if it’s still in
-        the __initialized__ state. If you make a request to delete an already processing transaction,
-        then you would get a __unprocessable_entity__ HTTP response.
       summary: Deletes a specific transaction
+      description: |
+        Deletes the transaction that corresponds to the `id` sent. It’s only
+        possible to delete a transaction if the processing of the transaction's
+        payment hasn’t started, i.e., if it’s still in the __initialized__
+        state. If you make a request to delete an already processing
+        transaction, then you would get an __unprocessable_entity__ HTTP
+        response.
       operationId: getTransactions
       parameters:
         - in: path
@@ -1068,9 +1110,9 @@ paths:
     post:
       tags:
         - xChange
+      summary: Replaces the payment method on the biller’s website
       description: |
         Use this endpoint to replace the payment method on the biller’s website.
-      summary: Replaces the payment method on the biller’s website
       operationId: postMigrations
       parameters:
         - $ref: '#/components/parameters/DateParam'
@@ -1175,9 +1217,9 @@ paths:
     get:
       tags:
         - xChange
+      summary: Gets all your attempted migrations
       description: |
-        This endpoint is used to get all attempted migrations
-      summary: Get all attempted migrations
+        This endpoint is used to get all your attempted migrations.
       operationId: getMigrations
       parameters:
         - name: page
@@ -1215,9 +1257,9 @@ paths:
     get:
       tags:
         - xChange
+      summary: Gets the last migration attempt of a bill
       description: >-
-        Get last migration attempt of a bill
-      summary: Get last migration attempt of a bill
+        This endpoint gets the last migration attempt of a bill.
       operationId: getMigration
       parameters:
         - name: id
@@ -1239,9 +1281,10 @@ paths:
     patch:
       tags:
         - xChange
-      description: |
-        Allows the resolution of an MFA challenge
       summary: Allows the resolution of an MFA challenge
+      description: |
+        This endpoint allows the resolution of an MFA challenge associated with
+        the bill whose migration was requested.
       operationId: updateMigration
       parameters:
         - name: id
