@@ -243,17 +243,17 @@ paths:
                 properties:
                   name:
                     type: string
-                    description: the name of your company
+                    description: Your company's name
                   balance:
                     type: number
-                    description: the current balance your company has available
+                    description: Current balance that your company has available
                       to make transactions
                   minimum_balance:
                     type: number
                     description: "[deprecated]"
                   currency:
                     type: string
-                    description: the balance's currency
+                    description: Balance's currency
                 example:
                   name: ACME Company
                   balance: 7000.00
@@ -275,7 +275,7 @@ paths:
         - in: path
           name: page
           required: true
-          description: page index for returned information.
+          description: It allows you to display any page of the billers' list
           schema:
             type: integer
       responses:
@@ -289,51 +289,54 @@ paths:
                 properties:
                   type:
                     type: string
-                    description: a set value of 'biller'
+                    description: A fixed value of 'biller'
                   id:
                     type: integer
-                    description: the ID of the biller [deprecated]
+                    description: ID of the biller [deprecated]
                   uuid:
                     type: string
-                    description: the unique identifier (UUID) of the biller
+                    description: Unique identifier (UUID) of the biller
                   name:
                     type: string
-                    description: the biller's name
+                    description: Biller's name
                   country:
                     type: string
-                    description: the biller’s ISO 2 digit country code
+                    description: Biller’s ISO 2 digit country code
                   currency:
                     type: string
-                    description: the 3 digit ISO currency code of the biller’s
+                    description: 3 digit ISO currency code of the biller’s
                       country
                   biller_type:
                     type: string
-                    description: a short description of the type of biller (e.g.
+                    description: Short description of the biller's type (e.g.
                       Television/Internet, electricity, etc.)
                   bill_type:
                     type: string
-                    description: specifies the bill identifier that is used to
+                    description: Specifies the bill identifier that is used to
                       perform queries and payments
                   required_parameters:
                     type: array
-                    description: the list of parameters required to create a
-                      bill with this biller
+                    description: List of parameters required to create a bill
+                      with this biller
                     items:
                       type: string
                   returned_parameters:
-                    description: the list of returned parameters on a bill by
-                      this biller
+                    description: List of returned parameters on a bill by this
+                      biller
                     type: array
                     items:
                       type: string
                   can_migrate:
-                    description: can use xChange
+                    description: Determines whether you can use xChange with
+                      this biller
                     type: boolean
                   charge_user:
-                    description: "[deprecated]"
+                    description: [deprecated; will be removed in future
+                      versions]
                     type: boolean
                   has_xdata:
-                    description: "[deprecated]"
+                    description: Determines whether you can use xData with this
+                      biller
                     type: boolean
                 example:
                   type: biller
@@ -465,7 +468,7 @@ paths:
               properties:
                 biller_id:
                   type: string
-                  description: The UUID of the biller.
+                  description: Biller's UUID
                   example: "0282369b-acd1-4e44-a894-c2a10ea5f8e3"
               required:
                 - biller_id
@@ -489,7 +492,7 @@ paths:
         - in: query
           name: page
           required: false
-          description: It allows you to display any page of the bills's list
+          description: It allows you to display any page of your bills's list
           schema:
             type: integer
         - in: query
@@ -638,7 +641,7 @@ paths:
               properties:
                 mfa_challenges:
                   type: array
-                  description: Challenges information
+                  description: Responses to MFA Challenges
                   items:
                     $ref: '#/components/schemas/MFA_Response'
       responses:
@@ -774,35 +777,35 @@ paths:
                 type: object
                 properties:
                   id:
-                    description: Id of the xPay biller
+                    description: xPay biller's ID
                     type: integer
                   name:
-                    description: name of the xPay biller
+                    description: xPay biller's name
                     type: integer
                   biller_type:
-                    description: the type of biller
+                    description: xPay biller's type
                     type: string
                   biller_class:
-                    description: the classification of the biller
+                    description: xPay biller's classification
                     type: string
                   country:
-                    description: the country that the xPay biller belongs to
+                    description: xPay biller's country
                     type: string
                   state:
-                    description: the state that the xPay biller belongs to
+                    description: State to which the xPay biller belongs
                     type: string
                   territory_code:
-                    description: set to 'National' for US billers
+                    description: Set to 'National' for US billers
                     type: string
                   currency:
-                    description: the currency supported by the xPay biller
+                    description: Currency supported by the xPay biller
                     type: string
                   address:
-                    description: the address of the xPay biller
+                    description: xPay biller's address
                     type: array
                   masks:
-                    description: this array of objects describes the different
-                      formats that an account_number of this biller should have
+                    description: This array of objects describes the different
+                      formats that an account_number of this biller can have
                     type: array
                     items:
                       type: object
@@ -918,7 +921,7 @@ paths:
               properties:
                 account_number:
                   type: string
-                  description: Account number where the payment is directed to.
+                  description: Account number where the payment is directed to
                   example: "1234-56"
                 amount:
                   type: integer
@@ -930,15 +933,15 @@ paths:
                   example: "USD"
                 rpps_biller_id:
                   type: string
-                  description: xPay biller identifier
+                  description: xPay biller's UUID
                   example: "692b45ea-7369-4232-bdd6-2bd662fe1ebd"
                 phone_number:
                   type: string
-                  description: Phone number of the end user
+                  description: End user's phone number
                   example: "(714) 202-5081"
                 client_number:
                   type: string
-                  description: Client number of the end user
+                  description: End user's client number
                   example: "805-612-0442"
                 payer_born_on:
                   type: string
@@ -1075,7 +1078,7 @@ paths:
         - in: path
           name: id
           required: true
-          description: Id of the transaction
+          description: ID of the transaction you wish to obtain
           schema:
             type: integer
       responses:
@@ -1102,7 +1105,7 @@ paths:
         - in: path
           name: id
           required: true
-          description: Id of the transaction to be deleted
+          description: ID of the transaction to be deleted
           schema:
             type: integer
       responses:
@@ -1147,7 +1150,7 @@ paths:
               properties:
                 biller_id:
                   type: string
-                  description: The ID of the biller.
+                  description: Biller's ID.
                   example: "6ab564f9-4e9d-4b03-96d6-dd9f2c39ec53"
                 cc_first_name:
                   type: string
@@ -1258,7 +1261,8 @@ paths:
       parameters:
         - name: id
           in: path
-          description: ID of the bill
+          description: ID of the bill whose migration information you wish to
+            obtain
           required: true
           schema:
             type: integer
@@ -1281,7 +1285,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: ID of the bill
+          description: ID of the bill you wish to update
           required: true
           schema:
             type: integer
@@ -1298,7 +1302,7 @@ paths:
               properties:
                 mfa_challenges:
                   type: array
-                  description: Challenges information
+                  description: MFA Challenges' responses
                   items:
                     $ref: '#/components/schemas/MFA_Response'
       responses:
@@ -1321,28 +1325,28 @@ components:
         - $ref: '#/components/schemas/Error_Info'
       properties:
         id:
-          description: the generated transaction id
+          description: Transaction's ID
           type: integer
         status:
-          description: the status of the transaction
+          description: Transaction's status
           type: string
         bill_id:
-          description: id of the bill related with the transaction
+          description: ID of the bill related to the transaction
           type: string
         account_number:
-          description: account number related with the transaction
-          type: string
-        currency:
-          description: currency of the transaction
+          description: Account number related to the transaction
           type: string
         amount:
-          description: transaction's amount
+          description: Transaction's amount
           type: number
+        currency:
+          description: Amount's currency
+          type: string
         created_at:
-          description: timestamp of when the transaction was created
+          description: Timestamp of when the transaction was created
           type: string
         updated_at:
-          description: timestamp of when the transaction was last updated
+          description: Timestamp of when the transaction was last updated
           type: string
 
       example:
@@ -1363,16 +1367,16 @@ components:
         - $ref: '#/components/schemas/Error_Info'
       properties:
         id:
-          description: id of the generated migration
+          description: ID of the bill whose migration was requested
           type: string
         status:
-          description: status of the generated migration
+          description: Migration's status
           type: string
         requested_at:
-          description: timestamp of when the migration was requested
+          description: Timestamp of when the migration was requested
           type: string
         migrated_at:
-          description: timestamp of when the migration succeeded
+          description: Timestamp of when the migration succeeded
           type: string
       example:
         error_code: null
@@ -1392,45 +1396,45 @@ components:
           description: bill
         id:
           type: integer
-          description: the ID of the bill [deprecated]
+          description: Bill's ID [deprecated]
         uuid:
           type: string
-          description: the UUID of the bill
+          description: Bill's UUID
         biller_id:
           type: integer
-          description: the ID of the biller [deprecated]
+          description: Biller's ID [deprecated]
         biller_uuid:
           type: string
-          description: the UUID of the biller
+          description: Biller's UUID
         account_number:
           type: string
-          description: the bill's account number
+          description: Bill's account number
         name_on_account:
           type: string
-          description: the name asociated with the account number
+          description: Name asociated with the account number
         due_date:
           type: string
-          description: the deadline to pay the bill
+          description: Deadline to pay the bill
           format: date
         balance:
           type: number
-          description: the returned balance
+          description: Bill's balance
         balance_currency:
           type: string
-          description: the balance's currency
+          description: Balance's currency
         balance_updated_at:
           type: string
-          description: timestamp of when the balance was last updated
+          description: Timestamp of when the balance was last updated
           format: date-time
         status:
           type: string
-          description: bill's status
+          description: Bill's status
         migrated_at:
           type: string
           format: date-time
         mfa_challenges:
-          description: multi-factor authentication challenges associated to the
-            bill; the array can be empty
+          description: Multi-factor authentication (MFA) challenges associated
+            with the bill; the array can be empty
           type: array
           items:
             oneOf:
@@ -1466,11 +1470,10 @@ components:
       properties:
         id:
           type: string
-          description: The ID or UUID of the challenge that is being answered
+          description: ID or UUID of the challenge that is being answered
         type:
           type: string
-          description: The type of challenge (question, code, image,
-            image_choice)
+          description: Type of challenge (question, code, image, image_choice)
         response:
           type: string
           description: In the case of type 'code' or 'question', the answer to
@@ -1489,23 +1492,22 @@ components:
       properties:
         type:
           type: string
-          description: The type of challenge (question, code, image,
-            image_choice)
+          description: Challenge's type (question, code, image, image_choice)
         id:
           type: integer
-          description: The ID of the challenge [deprecated]
+          description: Challenge's ID [deprecated]
         uuid:
           type: string
-          description: The UUID of the challenge
+          description: Challenge's UUID
         expires_at:
           type: string
           format: date-time
-          description: The delay of expiration; after this date the answer will
+          description: Delay of expiration; after this timestamp the answer will
             be rejected. It can be null.
 
     MFA_Challenge_Question:
       description: Structure of an MFA Challenge of type 'question'. Secret
-        questions are often asked in addition to a user's password.
+        questions are often asked in addition to an end user's password.
       allOf:
         - $ref: '#/components/schemas/MFA_Challenge'
         - type: object
@@ -1628,9 +1630,9 @@ components:
       type: object
       properties:
         error_code:
-          description: error code; null if the request was successful
-          type: string          
+          description: Error code; null if the request was successful
+          type: string
         error_message:
-          description: description of the error encountered; null if the request
+          description: Description of the error encountered; null if the request
             was successful
           type: string
