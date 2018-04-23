@@ -289,35 +289,40 @@ paths:
                 properties:
                   type:
                     type: string
-                    description: biller
+                    description: a set value of 'biller'
                   id:
                     type: integer
                     description: the ID of the biller [deprecated]
                   uuid:
                     type: string
-                    description: the UUID of the biller
+                    description: the unique identifier (UUID) of the biller
                   name:
                     type: string
-                    description: the name of the biller
+                    description: the biller's name
                   country:
                     type: string
-                    description: country of the biller
+                    description: the biller’s ISO 2 digit country code
                   currency:
                     type: string
-                    description: currency of the biller
+                    description: the 3 digit ISO currency code of the biller’s
+                      country
                   biller_type:
                     type: string
-                    description: is the type of biller
+                    description: a short description of the type of biller (e.g.
+                      Television/Internet, electricity, etc.)
                   bill_type:
                     type: string
-                    description: the type of bill, that can be for example water, internet, cable and so on
+                    description: specifies the bill identifier that is used to
+                      perform queries and payments
                   required_parameters:
                     type: array
-                    description: the login and password required parameters
+                    description: the list of parameters required to create a
+                      bill with this biller
                     items:
                       type: string
                   returned_parameters:
-                    description: the returned parameters by the bill
+                    description: the list of returned parameters on a bill by
+                      this biller
                     type: array
                     items:
                       type: string
@@ -325,10 +330,10 @@ paths:
                     description: can use xChange
                     type: boolean
                   charge_user:
-                    description: can charge user
+                    description: "[deprecated]"
                     type: boolean
                   has_xdata:
-                    description: can use xData
+                    description: "[deprecated]"
                     type: boolean
                 example:
                   type: biller
@@ -448,29 +453,22 @@ paths:
           </table>
 
       requestBody:
-        description: Within the request body the parameters sent are a biller_id, login and password
+        description: Within the request body the parameters sent are a
+          `biller_id`, `login` and `password
         required: true
         content:
           application/json:
             schema:
+              allOf:
+                - $ref: '#/components/schemas/Basic_Credentials'
               type: object
               properties:
                 biller_id:
                   type: string
-                  description: The ID of the biller.
+                  description: The UUID of the biller.
                   example: "0282369b-acd1-4e44-a894-c2a10ea5f8e3"
-                login:
-                  type: string
-                  description: The account login.
-                  example: "jdoe@successful.ii"
-                password:
-                  type: string
-                  description: The account password
-                  example: "HeLl0o1!"
               required:
                 - biller_id
-                - login
-                - password
       responses:
         200:
           description: successful response
@@ -484,12 +482,14 @@ paths:
       summary: Retrieves all your bills
       operationId: getBills
       description: |
-        This endpoint retrieves all your bills.
+        This endpoint retrieves all your bills, paginated on batches of 50
+        entries per request. If you send any of the q[] parameters, it will
+        return a set of bills that meet the criteria specified.
       parameters:
         - in: query
           name: page
           required: false
-          description: If set, it allows you to display any page of bills.
+          description: It allows you to display any page of the bills's list
           schema:
             type: integer
         - in: query
@@ -500,11 +500,13 @@ paths:
               type: string
               format: date-time
           required: false
-          description: If set, it’ll return results after the specified timestamp.
+          description: It will return those bills created after the specified
+            timestamp
         - in: query
           name: q[created_at_lteq]
           required: false
-          description: If set, it’ll return results before the specified timestamp.
+          description: It will return those bills created before the specified
+            timestamp
           schema:
             type: string
             items:
@@ -513,7 +515,7 @@ paths:
         - in: query
           name: q[id_in][]
           required: false
-          description: If set, it’ll return the bills for the specified bill ids.
+          description: It will return the bills whose ids have been specified
           schema:
             type: array
             items:
@@ -575,7 +577,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: ID of bill to return
+          description: ID or UUID of the bill you wish to obtain
           required: true
           schema:
             type: integer
@@ -619,33 +621,26 @@ paths:
       parameters:
         - name: id
           in: path
-          description: ID of bill to return
+          description: ID or UUID of the bill you wish to update
           required: true
           schema:
             type: integer
       requestBody:
-        description: Within the request body the parameters sent are a login, password and
-          an array of mfa_challenges objects
+        description: Within the request body the parameters sent are a `login`,
+          `password` and an array of MFA_Response objects.
         required: true
         content:
           application/json:
             schema:
+              allOf:
+                - $ref: '#/components/schemas/Basic_Credentials'
               type: object
               properties:
-                login:
-                  type: string
-                  description: The username/email address/identifier credential
-                password:
-                  type: string
-                  description: The password credential
                 mfa_challenges:
                   type: array
                   description: Challenges information
                   items:
                     $ref: '#/components/schemas/MFA_Response'
-              required:
-                  - login
-                  - password
       responses:
         200:
           description: successful response
@@ -662,7 +657,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: ID of bill to return
+          description: ID or UUID of the bill to be deleted
           required: true
           schema:
             type: integer
@@ -685,7 +680,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: ID of bill to return
+          description: ID or UUID of the bill to be refreshed
           required: true
           schema:
             type: integer
@@ -708,7 +703,6 @@ paths:
 
       operationId: bulk_refreshBill
       requestBody:
-        description: Within the request body the parameters sent are a biller_id, login and password
         required: true
         content:
           application/json:
@@ -717,7 +711,7 @@ paths:
               properties:
                 bill_ids:
                   type: array
-                  description: Array of bill ids.
+                  description: Array of bills' IDs or UUIDs to be refreshed
                   items:
                     type: string
               required:
@@ -741,25 +735,34 @@ paths:
       summary: Provides the list of xPay billers
       description: |
         This endpoint provides the list of xPay billers and their associated
-        properties.
+        properties, paginated on batches of 50 entries per request. If you send
+        any of the q[] parameters, it will return a set of billers that meet the
+        criteria specified.
       operationId: getRppsBillers
       parameters:
+        - in: query
+          name: page
+          required: false
+          description: Allows you to obtain a specific page of the list
+          schema:
+            type: integer
         - name: q[biller_type_eq]
           in: query
           required: false
-          description: Only returns rpps billers of that biller type
+          description: Only returns xPay billers of the specified type
           schema:
             type: string
         - name: q[name_eq]
           in: query
           required: false
-          description: Only returns rpps billers of that biller name
+          description: Only returns xPay billers whose name matches the value
+            sent
           schema:
             type: string
         - name: q[country_eq]
           in: query
           required: false
-          description: Only returns rpps billers of that country
+          description: Only returns xPay billers of the specified country
           schema:
             type: string
       responses:
@@ -771,35 +774,52 @@ paths:
                 type: object
                 properties:
                   id:
-                    description: Id of the rpps biller
+                    description: Id of the xPay biller
                     type: integer
                   name:
-                    description: name of the rpps biller
+                    description: name of the xPay biller
                     type: integer
                   biller_type:
                     description: the type of biller
                     type: string
                   biller_class:
-                    description: the biller class belongs
+                    description: the classification of the biller
                     type: string
                   country:
-                    description: the country that the rpps biller belongs
+                    description: the country that the xPay biller belongs to
                     type: string
                   state:
-                    description: the state that the rpps biller belongs
+                    description: the state that the xPay biller belongs to
                     type: string
                   territory_code:
-                    description: the territory code that the rpps biller belongs
+                    description: set to 'National' for US billers
                     type: string
                   currency:
-                    description: the currency supported by the rpps biller
+                    description: the currency supported by the xPay biller
                     type: string
                   address:
-                    description: the address of the rpps biller
+                    description: the address of the xPay biller
                     type: array
                   masks:
-                    description: the masks of the rpps biller
+                    description: this array of objects describes the different
+                      formats that an account_number of this biller should have
                     type: array
+                    items:
+                      type: object
+                      properties:
+                        length:
+                          type: string
+                        eff_date:
+                          type: string
+                          format: date
+                        exception:
+                          type: boolean
+                        external_id:
+                          type: string
+                        mask_format:
+                          type: string
+                        descriptions:
+                          type: array
                 example:
                   rpps_billers:
                     - id: 692b45ea-7369-4232-bdd6-2bd662fe1ebd
@@ -873,9 +893,14 @@ paths:
         request to the `GET /transactions/{id}` endpoint.
       operationId: postTransactions
       requestBody:
-        description: Within the request body the required parameters to be sent are an `account_number`, `amount`, `currency`, `rpps_biller_id`, `payer_born_on`, `first_name`, `last_name` and an `address` object with required information for `city` and `state`.
-         <br/><br/>
-         You have to make sure the `account_number` matches one of the masks' `mask_format` of the xPay Biller.
+        description: |
+          Within the request body the required parameters to be sent are an
+          `account_number`, `amount`, `currency`, `rpps_biller_id`,
+          `payer_born_on`, `first_name`, `last_name` and an `address` object
+          with required information for `city` and `state`.
+          <br/><br/>
+          You have to make sure the `account_number` matches one of the masks'
+          `mask_format` of the xPay Biller.
         required: true
         content:
           application/json:
@@ -905,32 +930,32 @@ paths:
                   example: "USD"
                 rpps_biller_id:
                   type: string
-                  description: xPay Biller identifier
+                  description: xPay biller identifier
                   example: "692b45ea-7369-4232-bdd6-2bd662fe1ebd"
                 phone_number:
                   type: string
-                  description: Phone number of the person who makes the payment
+                  description: Phone number of the end user
                   example: "(714) 202-5081"
                 client_number:
                   type: string
-                  description: Client number of the person who makes the payment
+                  description: Client number of the end user
                   example: "805-612-0442"
                 payer_born_on:
                   type: string
                   format: date
-                  description: Date of birth of the payer of the transaction
+                  description: End user's date of birth
                   example: "1983-09-03"
                 first_name:
                   type: string
-                  description: First name of the person who makes the payment
+                  description: End user's first name
                   example: "John"
                 last_name:
                   type: string
-                  description: Last name of the person who makes the payment
+                  description: End user's last name
                   example: "Doe"
                 address:
                   type: object
-                  description: Address of the person who makes the payment.
+                  description: End user's address
                   required:
                     - city
                     - state
@@ -961,26 +986,23 @@ paths:
       summary: Returns the list of transactions that arcus has processed for you
       description: |
         This endpoint returns the list of transactions that arcus has processed
-        for you.
+        for you. If you send any of the q[] parameters, it will return a set of
+        transactions that meet the criteria specified.
       operationId: getAllTransactions
       parameters:
         - in: query
-          name: page
-          required: false
-          description: Allows you to obtain a specific page of the transactions’ list
-          schema:
-            type: integer
-        - in: query
           name: q[created_at_gteq]
           required: false
-          description: Returns those transactions that were created after the timestamp provided
+          description: Returns those transactions that were created after the
+            timestamp provided
           schema:
             type: string
             format: date-time
         - in: query
           name: q[created_at_lteq]
           required: false
-          description: Returns those transactions that were created before the timestamp provided
+          description: Returns those transactions that were created before the
+            timestamp provided
           schema:
             type: string
             format: date-time
@@ -993,13 +1015,15 @@ paths:
         - in: query
           name: q[bill_id_eq]
           required: false
-          description: Query transactions using the external_id you supplied
+          description: Returns the transactions whose bill_id matches the
+            specified value
           schema:
             type: string
         - in: query
           name: q[biller_id_in][]
           required: false
-          description: Returns the transactions of the billers whose ids are provided
+          description: Returns the transactions of the billers whose ids are
+            provided
           schema:
             type: array
             items:
@@ -1007,7 +1031,8 @@ paths:
         - in: query
           name: q[bill_id_in][]
           required: false
-          description: Returns the transactions of the bills whose ids are provided
+          description: Returns the transactions whose bill's ids match any of
+            the values provided
           schema:
             type: array
             items:
@@ -1077,7 +1102,7 @@ paths:
         - in: path
           name: id
           required: true
-          description: Id of the transaction
+          description: Id of the transaction to be deleted
           schema:
             type: integer
       responses:
@@ -1097,16 +1122,15 @@ paths:
         Use this endpoint to replace the payment method on the biller’s website.
       operationId: postMigrations
       requestBody:
-        description: Within the request body the parameters sent are `biller_id`, `login` for the account, `password`, the `name`, `last name`, `country`, `card number`, `brand of the card`, `expiry year`, `expiry month`, `address`, `city`, `state`, `zipcode`, card `type` if it is credit or debit and the `cvv` of three or four numbers
         required: true
         content:
           application/json:
             schema:
+              allOf:
+                - $ref: '#/components/schemas/Basic_Credentials'
               type: object
               required:
                 - biller_id
-                - login
-                - password
                 - cc_first_name
                 - cc_last_name
                 - cc_country
@@ -1125,14 +1149,6 @@ paths:
                   type: string
                   description: The ID of the biller.
                   example: "6ab564f9-4e9d-4b03-96d6-dd9f2c39ec53"
-                login:
-                  type: string
-                  description: The username/email address/identifier credential
-                  example: "someone@gmail.com"
-                password:
-                  type: string
-                  description: The password credential
-                  example: "Pwd123!"
                 cc_first_name:
                   type: string
                   description: End user’s first name
@@ -1143,20 +1159,33 @@ paths:
                   example: "Musk"
                 cc_country:
                   type: string
-                  description: Country where card number was issued (US only for the time being)
+                  description: Country where the card was issued (US only for
+                    the time being)
                   example: "US"
                 cc_number:
                   type: string
                   description: Card number
                   example: "5221740002389461"
+                cc_type:
+                  type: string
+                  description: Type of card (credit/debit)
+                  example: "credit"
                 cc_brand:
                   type: string
-                  description: mastercard/visa/american_express
+                  description: Card's brand (mastercard/visa/american_express)
                   example: "visa"
                 cc_expiry_year:
                   type: string
-                  description: 4 number digit
+                  description: Card's expiry year (4 digit number)
                   example: "2021"
+                cc_expiry_month:
+                  type: string
+                  description: Card’s expiry month (2 digit number)
+                  example: "02"
+                cc_security_code:
+                  type: string
+                  description: Card’s security code (3 or 4 digit number)
+                  example: "123"
                 cc_address:
                   type: string
                   description: Street name and number
@@ -1169,22 +1198,10 @@ paths:
                   type: string
                   description: Two letter abbreviation of a US state
                   example: "NY"
-                cc_type:
-                  type: string
-                  description: credit/debit
-                  example: "credit"
                 cc_zip:
                   type: string
                   description: Address’ zipcode
                   example: "10014"
-                cc_security_code:
-                  type: string
-                  description: Card’s security code (3 or 4 digit number)
-                  example: "123"
-                cc_expiry_month:
-                  type: string
-                  description: Card’s expiry month (2 digit number)
-                  example: "02"
 
       responses:
         200:
@@ -1203,7 +1220,7 @@ paths:
       parameters:
         - name: page
           in: query
-          description: If set, it allows you to display any page of the migrations’ list
+          description: It allows you to display any page of the migrations’ list
           required: false
           schema:
             type: integer
@@ -1241,7 +1258,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: ID of bill to return
+          description: ID of the bill
           required: true
           schema:
             type: integer
@@ -1264,32 +1281,26 @@ paths:
       parameters:
         - name: id
           in: path
-          description: ID of bill to return
+          description: ID of the bill
           required: true
           schema:
             type: integer
       requestBody:
-        description: Within the request body the parameters sent are login and password
+        description: Within the request body the parameters sent are `login`,
+          `password` and an array with the responses to MFA challenges.
         required: true
         content:
           application/json:
             schema:
+              allOf:
+                - $ref: '#/components/schemas/Basic_Credentials'
               type: object
               properties:
-                login:
-                  type: string
-                  description: The username/email address/identifier credential
-                password:
-                  type: string
-                  description: The password credential
                 mfa_challenges:
                   type: array
                   description: Challenges information
                   items:
                     $ref: '#/components/schemas/MFA_Response'
-              required:
-                - login
-                - password
       responses:
         200:
           description: successful response
@@ -1306,6 +1317,8 @@ components:
   schemas:
     Transaction:
       type: object
+      allOf:
+        - $ref: '#/components/schemas/Error_Info'
       properties:
         id:
           description: the generated transaction id
@@ -1314,28 +1327,22 @@ components:
           description: the status of the transaction
           type: string
         bill_id:
-          description: related bill with transaction
+          description: id of the bill related with the transaction
           type: string
         account_number:
-          description: related account number with the transaction
+          description: account number related with the transaction
           type: string
         currency:
-          description: currency for the transaction
+          description: currency of the transaction
           type: string
         amount:
-          description: amount of the transaction
+          description: transaction's amount
           type: number
         created_at:
-          description: timestamp of the transaction
+          description: timestamp of when the transaction was created
           type: string
         updated_at:
-          description: timestamp of the transaction update
-          type: string
-        error_code:
-          description: the error code in the case of get one
-          type: string
-        error_message:
-          description: the error message associated to error code in the case of get one
+          description: timestamp of when the transaction was last updated
           type: string
 
       example:
@@ -1352,13 +1359,9 @@ components:
 
     Migration:
       type: object
+      allOf:
+        - $ref: '#/components/schemas/Error_Info'
       properties:
-        error_code:
-          description: the error code in the case of get one
-          type: string
-        error_message:
-          description: the error message associated to error code in the case of get one
-          type: string
         id:
           description: id of the generated migration
           type: string
@@ -1366,10 +1369,10 @@ components:
           description: status of the generated migration
           type: string
         requested_at:
-          description: timestamp of the requested migration
+          description: timestamp of when the migration was requested
           type: string
         migrated_at:
-          description: timestamp of the successful migration
+          description: timestamp of when the migration succeeded
           type: string
       example:
         error_code: null
@@ -1381,6 +1384,8 @@ components:
 
     Bill:
       type: object
+      allOf:
+        - $ref: '#/components/schemas/Error_Info'
       properties:
         type:
           type: string
@@ -1399,10 +1404,10 @@ components:
           description: the UUID of the biller
         account_number:
           type: string
-          description: the bills account number
+          description: the bill's account number
         name_on_account:
           type: string
-          description: the name asociated with the accoun number
+          description: the name asociated with the account number
         due_date:
           type: string
           description: the deadline to pay the bill
@@ -1412,25 +1417,20 @@ components:
           description: the returned balance
         balance_currency:
           type: string
-          description: the bills currency
+          description: the balance's currency
         balance_updated_at:
           type: string
-          description: the date of last balance update
+          description: timestamp of when the balance was last updated
           format: date-time
-        error_code:
-          type: string
-          description: the error code in the case of get one
-        error_message:
-          type: string
-          description: the error message associated to error code in the case of get one
         status:
           type: string
-          description: one of the different posible status associated to the bill
+          description: bill's status
         migrated_at:
           type: string
           format: date-time
         mfa_challenges:
-          description: params for multi-factor authentication challenge
+          description: multi-factor authentication challenges associated to the
+            bill; the array can be empty
           type: array
           items:
             oneOf:
@@ -1469,10 +1469,14 @@ components:
           description: The ID or UUID of the challenge that is being answered
         type:
           type: string
-          description: The type of challenge (question, code, image, image_choice)
+          description: The type of challenge (question, code, image,
+            image_choice)
         response:
           type: string
-          description: In the case of type 'code' or 'question', the answer to the challenge. In the case of type 'image', the size of the image. In the case of 'image_choice' and '?', the ID (index) of the correct choice.
+          description: In the case of type 'code' or 'question', the answer to
+            the challenge. In the case of type 'image', the size of the image.
+            In the case of 'image_choice' and '?', the ID (index) of the correct
+            choice.
 
     MFA_Challenge:
       description: Shared information of MFA Challenges
@@ -1485,7 +1489,8 @@ components:
       properties:
         type:
           type: string
-          description: The type of challenge (question, code, image, image_choice)
+          description: The type of challenge (question, code, image,
+            image_choice)
         id:
           type: integer
           description: The ID of the challenge [deprecated]
@@ -1495,10 +1500,12 @@ components:
         expires_at:
           type: string
           format: date-time
-          description: The delay of expiration; after this date the answer will be rejected. It can be null
+          description: The delay of expiration; after this date the answer will
+            be rejected. It can be null.
 
     MFA_Challenge_Question:
-      description: Structure of an MFA Challenge of type 'question'. Secret questions are often asked in addition to a user's password.
+      description: Structure of an MFA Challenge of type 'question'. Secret
+        questions are often asked in addition to a user's password.
       allOf:
         - $ref: '#/components/schemas/MFA_Challenge'
         - type: object
@@ -1511,7 +1518,9 @@ components:
               example: What is 4 + 4?
 
     MFA_Challenge_Code:
-      description: Structure of an MFA Challenge of type 'code'. Verification codes are sometimes sent to a customer’s mobile phone before they are able to log in. Verification codes cannot be re-used.
+      description: Structure of an MFA Challenge of type 'code'. Verification
+        codes are sometimes sent to an end user's mobile phone before they are
+        able to log in. Verification codes cannot be re-used.
       allOf:
         - $ref: '#/components/schemas/MFA_Challenge'
         - type: object
@@ -1521,7 +1530,7 @@ components:
             prompt:
               type: string
               description: The instructions to show to the owner of the account
-              example: Please provide the code sent on your phone.
+              example: Please provide the code sent to your phone.
 
     MFA_Challenge_Image:
       description: Structure of an MFA Challenge of type 'image'
@@ -1539,7 +1548,8 @@ components:
                   description: "The type of the image: url or uri"
                 value:
                   type: string
-                  description: The URL of the image for url or the content of the image for uri
+                  description: The URL of the image for url or the content of
+                    the image for uri
                   example: http://via.placeholder.com/350x150
 
     MFA_Challenge_Image_Choices:
@@ -1558,13 +1568,15 @@ components:
                 properties:
                   id:
                     type: integer
-                    description: The ID of the option (basically the index of the array)
+                    description: The ID of the option (basically the index of
+                      the array)
                   type:
                     type: string
                     description: "The type of the image: url or uri"
                   value:
                     type: string
-                    description: The URL of the image for url or the content of the image for uri
+                    description: The URL of the image for url or the content of
+                      the image for uri
                     example: http://via.placeholder.com/350x150
     MFA_Challenge_Choices:
       description: Structure of an MFA Challenge of type '?'
@@ -1582,12 +1594,43 @@ components:
                 properties:
                   id:
                     type: integer
-                    description: The ID of the option (basically the index of the array)
+                    description: The ID of the option (basically the index of
+                      the array)
                   category:
                     type: string
-                    description: Defines the category to which the value belongs (e.g. Phone, Text, E-mail). It can be null.
+                    description: Defines the category to which the value belongs
+                      (e.g. Phone, Text, E-mail). It can be null
                     example: Phone
                   value:
                     type: string
-                    description: A phone number or e-mail address. The same value can be present in different categories
+                    description: A phone number or e-mail address. The same
+                      value can be present in different categories
                     example: "+1234567890"
+
+    Basic_Credentials:
+      description: Includes the basic information to access an end user's
+        account
+      type: object
+      properties:
+        login:
+          type: string
+          description: The account's username/email address/identifier
+          example: "jdoe@successful.ii"
+        password:
+          type: string
+          description: The account's password
+          example: "HeLl0o1!"
+      required:
+        - login
+        - password
+
+    Error_Info:
+      type: object
+      properties:
+        error_code:
+          description: error code; null if the request was successful
+          type: string          
+        error_message:
+          description: description of the error encountered; null if the request
+            was successful
+          type: string
