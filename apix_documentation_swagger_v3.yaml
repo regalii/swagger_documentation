@@ -188,6 +188,10 @@ info:
         <td>Not Found -- The specified resource could not be found</td>
       </tr>
       <tr>
+        <td>422</td>
+        <td>Unprocessable Entity -- You will receive more information on the response of what the problem was</td>
+      </tr>
+      <tr>
         <td>429</td>
         <td>Too Many Requests -- You're sending too many requests! Slow down!</td>
       </tr>
@@ -200,6 +204,24 @@ info:
         <td>Service Unavailable -- Please try again later.</td>
       </tr>
     </table>
+
+    ## Unprocessable entity error codes
+
+    Whenever you get a 422 HTTP error code, we will provide you with extra
+    information so that you know what course of action to take in order to
+    obtain a successful response.
+
+    * R120
+      - Invalid username or password
+    * R121
+      - There was a temporary error while connecting, please try again.
+      - Impossible to push the card (migration specific)
+    * R122
+      - Balance not yet available for this biller
+      - Account not eligible for migration (migration specific)
+    * R123
+      - The identification answer answered was incorrect
+      - Invalid MFA answer
 
 servers:
   - url: https://apix.casiregalii.com
@@ -430,27 +452,27 @@ paths:
             </tr>
             <tr>
               <td>email@unavailable.ii</td>
-              <td></td>
+              <td>failed</td>
               <td>R122</td>
             </tr>
             <tr>
               <td>email@input.ii</td>
-              <td></td>
+              <td>failed</td>
               <td>R121</td>
             </tr>
             <tr>
               <td>email@credentials.ii</td>
-              <td></td>
+              <td>failed</td>
               <td>R120</td>
             </tr>
             <tr>
               <td>email@exception.ii</td>
-              <td></td>
+              <td>failed</td>
               <td>R121</td>
             </tr>
              <tr>
               <td>email@timeout.ii</td>
-              <td></td>
+              <td>failed</td>
               <td>R121</td>
             </tr>
           </table>
