@@ -125,6 +125,24 @@ info:
 
       `-H Authorization: APIAuth f0253d2a6a76ed12499e7878d7803ffb:nLet/JEZG9CRXHScwaQ/na4vsKQ=`
 
+    * ### Other headers
+
+      Aside from the Authorization header, you will also have to make sure that
+      your requests include the following headers:
+        * __Content-MD5__ It can be blank or a hash of digest base64.
+
+          `-H 'Content-MD5: 1B2M2Y8AsgTpgAmY7PhCfg=='`
+        * __Date__ It requires the same format used in the generation of the
+          checksum.
+
+          `-H 'Date: Tue, 24 Apr 2018 21:04:28 GMT'`
+        * __Content-Type__ Always should be application/json
+
+          `-H 'Content-Type: application/json'`
+        * __Accept__ Always should be application/vnd.regalii.v3.2+json
+
+          `-H 'Accept: application/vnd.regalii.v3.2+json'`
+
     ___
 
     # Webhooks
