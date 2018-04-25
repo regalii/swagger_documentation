@@ -65,7 +65,7 @@ info:
       </div>
     </div>
 
-    > ## Authentication    
+    > ## Authentication
 
     > arcus uses an api-key and a secret-key for authentication that we generate
     and will provide to you, one for each environment.
@@ -857,10 +857,24 @@ paths:
             sent
           schema:
             type: string
+        - name: q[name_cont]
+          in: query
+          required: false
+          description: Only returns xPay billers whose name contains the value
+            sent
+          schema:
+            type: string
         - name: q[country_eq]
           in: query
           required: false
           description: Only returns xPay billers of the specified country
+          schema:
+            type: string
+        - name: q[biller_class_cont]
+          in: query
+          required: false
+          description: Only returns xPay billers whose biller_class contains the
+            value sent
           schema:
             type: string
       responses:
