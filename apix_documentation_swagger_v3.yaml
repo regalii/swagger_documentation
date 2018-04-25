@@ -17,7 +17,10 @@ info:
       </div>
     </div>
 
-    Welcome to arcus! Here you’ll find detailed information for integrating with our API endpoints. We’ve tried to make this documentation as user-friendly and example-filled as possible, but if you have any questions, please [contact us](mailto:support@Regalii.com).
+    Welcome to arcus! Here you’ll find detailed information for integrating with
+    our API endpoints. We’ve tried to make this documentation as user-friendly
+    and example-filled as possible, but if you have any questions, please
+    [contact us](mailto:support@Regalii.com).
 
     Integration happens in six easy steps:
 
@@ -32,39 +35,44 @@ info:
 
     # Our products
 
-    * ## xData
-      Access the data of thousands of services through a unique format
-    * ## xPay
-      Pay bills online for any biller in the USA directly from arcus
-    * ## xChange
-      Update the payment information of your customers on their behalf.
+    * __xData__ Pull real-time data from billers
+    * __xPay__ Push payments (via ACH) to billers
+    * __xChange__ Push card-on-file updates to billers
 
     ---
 
     # Environments
 
-    arcus will provide you with separate API keys for our two existing environments:
+    arcus will provide you with separate API keys for our two existing
+    environments:
 
-    * __Sandbox__. arcus maintains a Sandbox which allows developers to test the API using mock data. We recommend keeping in mind the following:
+    * __Sandbox__. arcus maintains a Sandbox which allows developers to test the
+    API using mock data. We recommend keeping in mind the following:
 
         * The list of billers is not in sync with the billers in production
         * Do not send real credentials to the Sandbox
 
-      To make requests to the sandbox environment, use the following URL: `https://apix.casiregalii.com`
+      To make requests to the sandbox environment, use the following URL:
+        `https://apix.casiregalii.com`
 
-    * __Production__. Once you have completed all the necessary tests on the sandbox, contact us to receive your production keys.
+    * __Production__. Once you have completed all the necessary tests on the
+    sandbox, contact us to receive your production keys.
 
-      To make requests to the production environment, use the following URL: `https://apix.regalii.com`
+      To make requests to the production environment, use the following URL:
+        `https://apix.regalii.com`
 
     ---
 
     # Security
 
-    To make requests to our endpoints, you must use the `https` protocol, regardless of the environment you're using.
+    To make requests to our endpoints, you must use the `https` protocol,
+    regardless of the environment you're using.
 
     <div class="panel panel-danger">
       <div class="panel-body">
-        <h4><strong>Note:</strong> For security reasons, our API doesn't support the TLS V1.0 anymore; we recommend you to use TLS v1.2 for better security.</h4>
+        <h4><strong>Note:</strong> For security reasons, our API doesn't support
+        the TLS V1.0 anymore; we recommend you to use TLS v1.2 for better
+        security.</h4>
       </div>
     </div>
 
@@ -72,35 +80,55 @@ info:
 
     <div class="panel panel-danger">
       <div class="panel-body">
-        <h4><strong>Note:</strong> We are currently working on implementing our Authentication method within this dynamic documentation, so that you no longer have to worry about calculating the checksum and manually adding the header. In the meantime, you can try out the endpoints to receive the basic Curl structure, to which you will have to add the proper Authentication header to make a successful request.</h4>
+        <h4><strong>Note:</strong> We are currently working on implementing our
+        Authentication method within this dynamic documentation, so that you no
+        longer have to worry about calculating the checksum and manually adding
+        the header. In the meantime, you can try out the endpoints to receive
+        the basic Curl structure, to which you will have to add the proper
+        Authentication header to make a successful request.</h4>
       </div>
     </div>
 
-    > arcus uses an api-key and a secret-key for authentication that we generate and will provide to you, one for each environment.
+    > arcus uses an api-key and a secret-key for authentication that we generate
+    and will provide to you, one for each environment.
 
-    > arcus expects for the api-key to be included in all API requests to the server in the ‘Authorization’ header, combined with a checksum which we will describe later on:
+    > arcus expects for the api-key to be included in all API requests to the
+    server in the ‘Authorization’ header, combined with a checksum which we will
+    describe later on:
 
     > __Authorization:__ `APIAuth <your-api-key>:<checksum>`
 
     * ### Calculating the Checksum
 
-        1. A checksum string needs to be created first by using your HTTP headers containing the `Content-Type`, `Content-MD5`, `Endpoint` and today's `Timestamp`.
+        1. A checksum string needs to be created first by using your HTTP
+        headers containing the `Content-Type`, `Content-MD5`, `Endpoint` and
+        today's `Timestamp`.
 
             The checksum string is computed as follows:
 
             checksum_string = `content-type`,`content-md5`,`endpoint`,`timestamp`
 
-              - __Note:__ The ‘Endpoint’ is simply the URL you are sending the request to, excluding the server and including the parameters. For instance, if you
-              want to obtain a bill's data by requesting a get to `https://apix.casiregalii.com/bills/1`, your
-              checksum string should look like this:
+              - __Note:__ The ‘Endpoint’ is simply the URL you are sending the
+              request to, excluding the server and including the parameters. For
+              instance, if you want to obtain a bill's data by requesting a get
+              to `https://apix.casiregalii.com/bills/1`, your checksum string
+              should look like this:
               `application/json,,/bills/1,Wed, 10 Jan 2017 16:53:15 GMT`
-              - __Note:__ Please notice the timestamp format. In UNIX-based systems you could obtain it by running: <b>echo \`date -Ru | sed 's/+0000/GMT/'`</b> in your terminal.
+              - __Note:__ Please notice the timestamp format. In UNIX-based
+              systems you could obtain it by running:
+                <b>echo \`date -Ru | sed 's/+0000/GMT/'`</b> in your terminal.
 
-        2. The checksum string is then used to create the checksum, which is a Base64 SHA1 HMAC string encoded using your private secret key.
+        2. The checksum string is then used to create the checksum, which is a
+        Base64 SHA1 HMAC string encoded using your private secret key.
 
-        3. For testing, verify that if you pass `application/json,,/account,Wed, 02 Nov 2016 17:26:52 GMT` to your checksum function and use `verify-secret` as secret key, it should return `nLet/JEZG9CRXHScwaQ/na4vsKQ=`. See checksum verification [example](https://gist.github.com/dagosi/c2e7db228a9c15e2f5bcdccd7a056183).
+        3. For testing, verify that if you pass
+        `application/json,,/account,Wed, 02 Nov 2016 17:26:52 GMT` to your
+        checksum function and use `verify-secret` as secret key, it should
+        return `nLet/JEZG9CRXHScwaQ/na4vsKQ=`. See checksum verification
+        [example](https://gist.github.com/dagosi/c2e7db228a9c15e2f5bcdccd7a056183).
 
-            How to create a checksum in [Bash](https://gist.github.com/dagosi/d85979e364af745750a9dff8c8c5a949):
+            How to create a checksum in
+            [Bash](https://gist.github.com/dagosi/d85979e364af745750a9dff8c8c5a949):
 
             ```
             CURRENT_DATE=`date -Ru | sed 's/+0000/GMT/'`
@@ -111,7 +139,11 @@ info:
 
     * ### How to use the Checksum
 
-      Now that you have a checksum, you can add it to your headers using the `Authorization` header as we previously mentioned. As an example, let’s assume that your api-key is `f0253d2a6a76ed12499e7878d7803ffb` and that your checksum is `nLet/JEZG9CRXHScwaQ/na4vsKQ=`. Now, you can add this header to your request.
+      Now that you have a checksum, you can add it to your headers using the
+      `Authorization` header as we previously mentioned. As an example, let’s
+      assume that your api-key is `f0253d2a6a76ed12499e7878d7803ffb` and that
+      your checksum is `nLet/JEZG9CRXHScwaQ/na4vsKQ=`. Now, you can add this
+      header to your request.
 
       `-H Authorization: APIAuth f0253d2a6a76ed12499e7878d7803ffb:nLet/JEZG9CRXHScwaQ/na4vsKQ=`
 
@@ -119,22 +151,26 @@ info:
 
     # Webhooks
 
-    arcus offers webhooks which can be used to notify you when there are updates to a bill or
-    transaction.
+    arcus offers webhooks which can be used to notify you when there are updates
+    to a bill or transaction.
 
     You can set up a webhook URL with arcus by contacting us.
 
     * ## Bills' Webhook
       Webhooks return the same data offered in the bill status.
 
-      * The bill finishes updating and now requires password entry (error 420); waiting; or has data ready since updated
+      * The bill finishes updating and now requires password entry (error 420);
+      waiting; or has data ready since updated
       * A long-running fetch has completed
       * The bill has been re-run by arcus due to an earlier error or outage
-      * It is the client's responsibility to trigger bills to refresh under normal operation.
+      * It is the client's responsibility to trigger bills to refresh under
+      normal operation.
 
     # Tools for Testing
 
-    It is recommended that you first test a couple of endpoints and get familiarized with their responses. This will give you an idea of how to properly construct requests in your application (and save you coding time).
+    It is recommended that you first test a couple of endpoints and get
+    familiarized with their responses. This will give you an idea of how to
+    properly construct requests in your application (and save you coding time).
 
     You can do so by using the following dynamic sections of this documentation.
 
@@ -146,7 +182,8 @@ info:
 
     # Language bindings
 
-      We have created libraries in multiple languages that will make it easier for you to use our API:
+      We have created libraries in multiple languages that will make it easier
+      for you to use our API:
 
       * [Ruby](https://github.com/regalii/regaliator)
       * [Java](https://github.com/regalii/regaliator_java)
@@ -156,15 +193,18 @@ info:
 
     <div class="panel panel-danger">
       <div class="panel-body">
-        <h4><strong>REMEMBER:</strong> Never send real credentials to the Sandbox.</h4>
+        <h4><strong>REMEMBER:</strong> Never send real credentials to the
+        Sandbox.</h4>
       </div>
     </div>
 
     # Errors
 
-    Responses will use standard HTTP error codes to convey basic error status information.
+    Responses will use standard HTTP error codes to convey basic error status
+    information.
 
-    Unless you obtain a successful response (code 200), you may encounter any of the following:
+    Unless you obtain a successful response (code 200), you may encounter any of
+    the following:
 
     <table>
       <tr>
@@ -181,7 +221,9 @@ info:
       </tr>
       <tr>
         <td>403</td>
-        <td>Forbidden -- You are not authorized to access the resource requested</td>
+        <td>
+          Forbidden -- You are not authorized to access the resource requested
+        </td>
       </tr>
       <tr>
         <td>404</td>
@@ -189,15 +231,23 @@ info:
       </tr>
       <tr>
         <td>422</td>
-        <td>Unprocessable Entity -- You will receive more information on the response of what the problem was</td>
+        <td>
+          Unprocessable Entity -- You will receive more information on the
+          response of what the problem was
+        </td>
       </tr>
       <tr>
         <td>429</td>
-        <td>Too Many Requests -- You're sending too many requests! Slow down!</td>
+        <td>
+          Too Many Requests -- You're sending too many requests! Slow down!
+        </td>
       </tr>
       <tr>
         <td>500</td>
-        <td>Internal Server Error -- We had a problem with our server. Try again later.</td>
+        <td>
+          Internal Server Error -- We had a problem with our server. Try again
+          later.
+        </td>
       </tr>
       <tr>
         <td>503</td>
@@ -211,17 +261,62 @@ info:
     information so that you know what course of action to take in order to
     obtain a successful response.
 
-    * R120
-      - Invalid username or password
-    * R121
-      - There was a temporary error while connecting, please try again.
-      - Impossible to push the card (migration specific)
-    * R122
-      - Balance not yet available for this biller
-      - Account not eligible for migration (migration specific)
-    * R123
-      - The identification answer answered was incorrect
-      - Invalid MFA answer
+    <table>
+      <tr>
+        <th>Error Code</th>
+        <th>Message(s) returned</th>
+        <th>Recommended action</th>
+      </tr>
+      <tr>
+        <td>R120</td>
+        <td>Invalid username or password</td>
+        <td>Please review your credentials and try again</td>
+      </tr>
+      <tr>
+        <td>R121</td>
+        <td>
+          There was a temporary error while connecting, please try again
+        </td>
+        <td>
+          Try again later
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+          The card information was declined by the biller
+        </td>
+        <td>
+          Please review the card's information and try again
+        </td>
+      </tr>
+      <tr>
+        <td>R122</td>
+        <td>
+          Balance not yet available for this biller
+        </td>
+        <td>
+          xData is not available for this biller        
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+          Account not eligible for migration
+        </td>
+        <td>
+          It's not possible for us to make changes to this account
+        </td>
+      </tr>
+      <tr>
+        <td>R123</td>
+        <td>
+          The identification answer answered was incorrect <br/>
+          Invalid MFA answer
+        </td>
+        <td>Please review your responses and try again</td>
+      </tr>
+    </table>
 
 servers:
   - url: https://apix.casiregalii.com
@@ -353,8 +448,8 @@ paths:
                       this biller
                     type: boolean
                   charge_user:
-                    description: [deprecated; will be removed in future
-                      versions]
+                    description: "[deprecated; will be removed in future
+                      versions]"
                     type: boolean
                   has_xdata:
                     description: Determines whether you can use xData with this
