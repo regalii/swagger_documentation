@@ -6,17 +6,6 @@ info:
   description: |
     # Introduction
 
-    <div class="panel panel-danger">
-      <div class="panel-body">
-        <h4><strong>Important:</strong> We are currently working on implementing
-        our Authentication method within this dynamic documentation, so that the
-        'Try it out' buttons located on each endpoint work as expected. However,
-        they can still be useful to show the basic Curl structure of the
-        requests, to which you would need to manually add the proper
-        Authentication header in order to obtain a successful response.</h4>
-      </div>
-    </div>
-
     Welcome to arcus! Here you’ll find detailed information for integrating with
     our API endpoints. We’ve tried to make this documentation as user-friendly
     and example-filled as possible, but if you have any questions, please
@@ -76,18 +65,7 @@ info:
       </div>
     </div>
 
-    > ## Authentication
-
-    <div class="panel panel-danger">
-      <div class="panel-body">
-        <h4><strong>Note:</strong> We are currently working on implementing our
-        Authentication method within this dynamic documentation, so that you no
-        longer have to worry about calculating the checksum and manually adding
-        the header. In the meantime, you can try out the endpoints to receive
-        the basic Curl structure, to which you will have to add the proper
-        Authentication header to make a successful request.</h4>
-      </div>
-    </div>
+    > ## Authentication    
 
     > arcus uses an api-key and a secret-key for authentication that we generate
     and will provide to you, one for each environment.
@@ -296,7 +274,7 @@ info:
           Balance not yet available for this biller
         </td>
         <td>
-          xData is not available for this biller        
+          xData is not available for this biller
         </td>
       </tr>
       <tr>
