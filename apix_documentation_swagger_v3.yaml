@@ -65,7 +65,7 @@ info:
       </div>
     </div>
 
-    > ## Authentication    
+    > ## Authentication
 
     > arcus uses an api-key and a secret-key for authentication that we generate
     and will provide to you, one for each environment.
@@ -367,9 +367,9 @@ paths:
         we make over time, you are required to cache the full list of billers
         and update it on a weekly basis.
       parameters:
-        - in: path
+        - in: query
           name: page
-          required: true
+          required: false
           description: It allows you to display any page of the billers' list
           schema:
             type: integer
