@@ -106,11 +106,8 @@ info:
 
     * ### Calculating the Checksum
 
-        1. A checksum string needs to be created first by using your HTTP
-        headers containing the `Content-Type`, `Content-MD5`, `Endpoint` and
-        today's `Timestamp`.
-
-            The checksum string is computed as follows:
+        1. A checksum string needs to be created first by concatenating the
+        `Content-Type`, `Content-MD5`, `Endpoint` and today's `Timestamp`:
 
             checksum_string = `content-type`,`content-md5`,`endpoint`,`timestamp`
 
@@ -125,7 +122,7 @@ info:
                 <b>echo \`date -Ru | sed 's/+0000/GMT/'`</b> in your terminal.
 
         2. The checksum string is then used to create the checksum, which is a
-        Base64 SHA1 HMAC string encoded using your private secret key.
+        Base64 SHA1 HMAC string encoded using your secret-key.
 
         3. For testing, verify that if you pass
         `application/json,,/account,Wed, 02 Nov 2016 17:26:52 GMT` to your
@@ -145,11 +142,11 @@ info:
 
     * ### How to use the Checksum
 
-      Now that you have a checksum, you can add it to your headers using the
-      `Authorization` header as we previously mentioned. As an example, let’s
-      assume that your api-key is `f0253d2a6a76ed12499e7878d7803ffb` and that
-      your checksum is `nLet/JEZG9CRXHScwaQ/na4vsKQ=`. Now, you can add this
-      header to your request.
+      Now that you have a checksum, you can add it to the `Authorization` header
+      as we previously mentioned. As an example, let’s assume that your api-key
+      is `f0253d2a6a76ed12499e7878d7803ffb` and that your checksum is
+      `nLet/JEZG9CRXHScwaQ/na4vsKQ=`. Now, you can add the following header to
+      your request:
 
       `-H Authorization: APIAuth f0253d2a6a76ed12499e7878d7803ffb:nLet/JEZG9CRXHScwaQ/na4vsKQ=`
 
@@ -187,8 +184,9 @@ info:
       waiting; or has data ready since updated
       * A long-running fetch has completed
       * The bill has been re-run by arcus due to an earlier error or outage
-      * It is the client's responsibility to trigger bills to refresh under
-      normal operation.
+
+      __NOTE:__ It is the client's responsibility to trigger bills to refresh
+      under normal operation.
 
     # Tools for Testing
 
@@ -197,8 +195,19 @@ info:
     properly construct requests in your application (and save you coding time).
 
     You can do so by using the following dynamic sections of this documentation.
+    In order for the endpoints to work properly, first you have to click on the
+    `Authorize` button (located before the endpoints, to the right) and enter
+    your api-key and secret-key corresponding to the environment you wish to use
+    (make sure that the correct environment is selected on the `Server` combo
+    box located below and to the left of the `Authorize` button). Alternatively,
+    you can click on the 'lock' icon located on each endpoint to enter your
+    keys.
 
-    Additionally, you can use any of the following tools:
+    Once you have authenticated, you can now click on each endpoint's
+    `Try it out` button, which will let you enter the parameters' values (if
+    any) and display a big blue `Execute` button.
+
+    Additionally, you can use any of the following API-testing tools:
 
       * [Paw](https://paw.cloud/)
       * [Postman](https://www.getpostman.com/)
@@ -519,7 +528,7 @@ paths:
         secret question, an image, a list of images to choose from, or different
         choices which only the end user would know the answer to. When arcus
         refreshes a bill, it will be set into a status of waiting, which means
-        that the customer must answer a challenge. Go to `PATCH /bills/{id}` to
+        that the end user must answer a challenge. Go to `PATCH /bills/{id}` to
         see how to reply to a challenge.
 
         ## For testing purposes
@@ -1249,12 +1258,12 @@ paths:
         - xPay
       summary: Deletes a specific transaction
       description: |
-        Deletes the transaction that corresponds to the `id` sent. It’s only
-        possible to delete a transaction if the processing of the transaction's
-        payment hasn’t started, i.e., if it’s still in the __initialized__
-        state. If you make a request to delete an already processing
-        transaction, then you would get an __unprocessable_entity__ HTTP
-        response.
+        This endpoint deletes the transaction that corresponds to the `id` sent.
+        It’s only possible to delete a transaction if the processing of the
+        transaction's payment hasn’t started, i.e., if it’s still in the
+        __initialized__ state. If you make a request to delete an already
+        processing transaction, then you would get an __unprocessable_entity__
+        HTTP response.
       operationId: getTransactions
       parameters:
         - in: path
@@ -1277,7 +1286,7 @@ paths:
         - xChange
       summary: Replaces the payment method on the biller’s website
       description: |
-        Use this endpoint to replace the payment method on the biller’s website.
+        This endpoint replaces the payment method on the biller’s website.
       operationId: postMigrations
       requestBody:
         required: true
