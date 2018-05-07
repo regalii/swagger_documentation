@@ -199,7 +199,9 @@ info:
     `Authorize` button (located before the endpoints, to the right) and enter
     your api-key and secret-key corresponding to the environment you wish to use
     (make sure that the correct environment is selected on the `Server` combo
-    box located below and to the left of the `Authorize` button).
+    box located below and to the left of the `Authorize` button). Alternatively,
+    you can click on the 'lock' icon located on each endpoint to enter your
+    keys.
 
     Once you have authenticated, you can now click on each endpoint's
     `Try it out` button, which will let you enter the parameters' values (if
