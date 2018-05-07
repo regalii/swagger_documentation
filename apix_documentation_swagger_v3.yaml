@@ -30,6 +30,34 @@ info:
 
     ---
 
+    # Glossary
+
+    * __ACH__ Stands for Automated Clearing House. It is an electronic network
+      for financial transactions in the United States. ACH processes large
+      volumes of credit (direct deposit, payroll, vendor payments) and debit
+      (consumer payments on insurance premiums, mortgage loans, and other kinds
+      of bills) transactions in batches.
+    * __api-key__ It allows arcus to uniquely identify the client making any
+      requests to the APIx.
+    * __secret-key__ You will be given this key to generate a unique signature
+      (checksum) to your requests, thus guaranteeing their authenticity. Make
+      sure never to share it.
+    * __Bill__ Expenses owed by an end user to a biller which need to be paid on
+      a recurring basis.
+    * __Biller__ Any merchant that offers an end user a service (e.g.: Verizon,
+      Uber, Time Warner)
+    * __Credentials__ A set of values that gives an end user access to a
+      biller's website and/or app. E.g.: username + password.
+    * __MFA__ Stands for Multi-factor Authentication. Some billers require more
+      than just a username/password to log in. In those situations, one or more
+      MFA challenges have to be answered. An MFA challenge can be a verification
+      code sent to a phone, a secret question, an image, a list of images to
+      choose from, or different choices which only the end user would know the
+      answer to.
+    * __Migration__ It is the act of changing a bill's credit card number.
+
+    ---
+
     # Environments
 
     arcus will provide you with separate API keys for our two existing
