@@ -428,6 +428,30 @@ paths:
           description: It allows you to display any page of the billers' list
           schema:
             type: integer
+        - in: query
+          name: biller_type_eq
+          required: false
+          description: It allows you to display the billers list by type
+          schema:
+            type: string
+        - in: query
+          name: country_eq
+          required: false
+          description: It allows you to display the billers list by country
+          schema:
+            type: string
+        - in: query
+          name: name_eq
+          required: false
+          description: It allows you to display the info by the billers name
+          schema:
+            type: string
+        - in: query
+          name: type_eq
+          required: false
+          description: It allows you to display the info by the billers type
+          schema:
+            type: string
       responses:
         200:
           description: successful response
