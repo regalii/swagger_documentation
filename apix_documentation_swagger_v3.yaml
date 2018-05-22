@@ -431,25 +431,19 @@ paths:
         - in: query
           name: biller_type_eq
           required: false
-          description: It allows you to display the billers list by type
+          description: Only returns billers whose type matches the value sent
           schema:
             type: string
         - in: query
           name: country_eq
           required: false
-          description: It allows you to display the billers list by country
+          description: Only returns billers whose country matches the value sent
           schema:
             type: string
         - in: query
           name: name_eq
           required: false
-          description: It allows you to display the info by the billers name
-          schema:
-            type: string
-        - in: query
-          name: type_eq
-          required: false
-          description: It allows you to display the info by the billers type
+          description: Only returns billers whose name matches the value sent
           schema:
             type: string
       responses:
