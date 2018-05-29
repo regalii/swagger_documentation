@@ -429,19 +429,19 @@ paths:
           schema:
             type: integer
         - in: query
-          name: biller_type_eq
+          name: q[biller_type_eq]
           required: false
           description: Only returns billers whose type matches the value sent
           schema:
             type: string
         - in: query
-          name: country_eq
+          name: q[country_eq]
           required: false
           description: Only returns billers whose country matches the value sent
           schema:
             type: string
         - in: query
-          name: name_eq
+          name: q[name_eq]
           required: false
           description: Only returns billers whose name matches the value sent
           schema:
