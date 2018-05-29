@@ -429,6 +429,13 @@ paths:
           schema:
             type: integer
         - in: query
+          name: product
+          required: false
+          description: Only returns billers that have been activated for a 
+            specific product (xchange, xdata)
+          schema:
+            type: string
+        - in: query
           name: q[biller_type_eq]
           required: false
           description: Only returns billers whose type matches the value sent
