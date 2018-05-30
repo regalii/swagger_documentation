@@ -431,7 +431,7 @@ paths:
         - in: query
           name: product
           required: false
-          description: Only returns billers that have been activated for a 
+          description: Only returns billers that have been activated for a
             specific product (xchange, xdata)
           schema:
             type: string
@@ -1429,16 +1429,31 @@ paths:
                   migrations:
                     - error_code: null
                       error_message: null
-                      id: de2a19ff-91d1-4c45-b6c4-cb4abfaa4077
-                      status: updating
-                      requested_at: 2018-04-06T18:18:36.144Z
-                      migrated_at: null
-                    - error_code: null
-                      error_message: null
-                      id: d13efe0e-d79c-4770-9a56-1487504ce4b0
-                      status: updating
-                      requested_at: 2018-04-06T18:16:00.033Z
-                      migrated_at: null
+                      id: f06a92d9-d752-470f-b53c-90be4152bf4b
+                      status: updated
+                      requested_at: '2018-05-30T17:46:01.838Z'
+                      migrated_at: '2018-05-30T17:46:02.134Z'
+                    - error_code: R120
+                      error_message: Invalid username or password
+                      id: 1c32b482-df80-4dc9-9049-f349ae170c26
+                      status: failed
+                      requested_at: '2018-05-30T17:02:46.028Z'
+                      migrated_at: '2018-05-30T17:03:00.606Z'
+                    - error_code: R121
+                      error_message: There was a temporary error while
+                        connecting, please try again.
+                      id: a73b5831-33dc-4582-9591-d6fdaf95aab5
+                      status: failed
+                      requested_at: '2018-05-30T17:19:42.688Z'
+                      migrated_at: '2018-05-30T17:21:18.382Z'
+                    - error_code: R121
+                      error_message: The card information was declined by the
+                        biller
+                      id: e2ea35dc-8abc-4d77-a494-44d30fa1471d
+                      status: failed
+                      requested_at: '2018-05-30T15:42:33.430Z'
+                      migrated_at: '2018-05-30T15:42:54.358Z'
+
   /migrations/{id}:
     get:
       tags:
