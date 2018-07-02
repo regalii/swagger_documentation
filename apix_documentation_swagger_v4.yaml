@@ -571,7 +571,35 @@ paths:
           content:
             application/vnd.regalii.v4.0+json:
               schema:
-                $ref: '#/components/schemas/Migration'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Migration'
+                allOf:
+                  - $ref: '#/components/schemas/MetaData'
+                  - $ref: '#/components/schemas/NavigationLinks'
+
+                example:
+                  data:
+                    - id: b4aa7d78-6f16-4ddd-887d-9f5c0b730a26
+                      type: migration
+                      attributes:
+                        status: failed
+                        requested_at: '2018-06-15 14:16:16 UTC'
+                        migrated_at: '2018-06-15 16:34:54 UTC'
+                        error:
+                          code: InvalidCredentials
+                          detail: Invalid login or password
+                  meta:
+                    total: 23
+                    total-pages: 1
+                  links:
+                    self: "http://localhost:3000/migrations?page=1"
+                    next: null
+                    prev: null
+
     get:
       tags:
         - xChange
@@ -734,27 +762,24 @@ components:
     Migration:
       type: object
       allOf:
-        - $ref: '#/components/schemas/Error_Info'
+        - $ref: '#/components/schemas/GenericData'
       properties:
-        id:
-          description: ID of the bill whose migration was requested
-          type: string
-        status:
-          description: Migration's status
-          type: string
-        requested_at:
-          description: Timestamp of when the migration was requested
-          type: string
-        migrated_at:
-          description: Timestamp of when the migration succeeded
-          type: string
-      example:
-        error_code: null
-        error_message: null
-        id: de2a19ff-91d1-4c45-b6c4-cb4abfaa4077
-        status: updating
-        requested_at: '2018-04-06T18:18:36.144Z'
-        migrated_at: null
+        attributes:
+          type: object
+          properties:
+            status:
+              description: Migration's status
+              type: string
+            requested_at:
+              description: Timestamp of when the migration was requested
+              type: string
+            migrated_at:
+              description: Timestamp of when the migration succeeded
+              type: string
+            error:
+              type: object
+              allOf:
+                - $ref: '#/components/schemas/Error_Info'
 
     Basic_Credentials:
       description: Includes the basic information to access an end user's
@@ -776,10 +801,10 @@ components:
     Error_Info:
       type: object
       properties:
-        error_code:
+        code:
           description: Error code; null if the request was successful
           type: string
-        error_message:
+        detail:
           description: Description of the error encountered; null if the request
             was successful
           type: string
