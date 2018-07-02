@@ -658,7 +658,23 @@ paths:
           content:
             application/vnd.regalii.v4.0+json:
               schema:
-                $ref: '#/components/schemas/Migration'
+                type: object
+                properties:
+                  data:
+                    allOf:
+                      - $ref: '#/components/schemas/Migration'
+
+                example:
+                  data:
+                    id: b4aa7d78-6f16-4ddd-887d-9f5c0b730a26
+                    type: migration
+                    attributes:
+                      status: failed
+                      requested_at: '2018-06-15 14:16:16 UTC'
+                      migrated_at: '2018-06-15 16:34:54 UTC'
+                      error:
+                        code: InvalidCredentials
+                        detail: Invalid login or password
 
 components:
   securitySchemes:
