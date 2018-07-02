@@ -676,6 +676,62 @@ paths:
                         code: InvalidCredentials
                         detail: Invalid login or password
 
+  /migrations/{id}/challenges:
+    get:
+      tags:
+        - xChange
+      summary: Gets all challenges associated with a specific migration
+      description: |
+        If the migration requires the end user to answer some challenges, the
+        customer can request the challenges associated to one specific
+        migration by using this endpoint.
+      operationId: getMigrationsChallenges
+      parameters:
+        - name: id
+          in: path
+          description: ID of the migration whose challenges you wish to obtain
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      anyOf:
+                        - $ref: '#/components/schemas/MFA_Challenge_Question'
+                        # - $ref: '#/components/schemas/MFA_Challenge_Code'
+                        # - $ref: '#/components/schemas/MFA_Challenge_Image'
+                        # - $ref: '#/components/schemas/MFA_Challenge_Image_Choices'
+                        # - $ref: '#/components/schemas/MFA_Challenge_Choices'
+                allOf:
+                  - $ref: '#/components/schemas/MetaData'
+                  - $ref: '#/components/schemas/NavigationLinks'
+
+                example:
+                  data:
+                    - id: 3a798711-d352-4ee5-b35d-383fd23e7edc
+                      type: challenge
+                      attributes:
+                        kind: question
+                        created_at: '2018-06-15 14:16:16 UTC'
+                        expires_at: null
+                        prompt: What is 4 + 4?
+                  # TODO: Include examples of different challenges
+                  meta:
+                    total: 1
+                    total-pages: 1
+                  links:
+                    self: "http://localhost:3000/migrations/59b9fdac-e5fd-4ef2-bd98-b4eef3b5fb6a/challenges?page=1"
+                    next: null
+                    prev: null
+
 components:
   securitySchemes:
     hmacAuth:
@@ -691,6 +747,7 @@ components:
         id:
           type: string
           description: Unique identifier (UUID) of the entity
+
     Merchant:
       type: object
       allOf:
@@ -736,6 +793,7 @@ components:
               type: string
               format: date-time
               description: ""
+
     MetaData:
       type: object
       properties:
@@ -759,6 +817,7 @@ components:
               type: string
             prev:
               type: string
+
     Migration:
       type: object
       allOf:
@@ -808,3 +867,43 @@ components:
           description: Description of the error encountered; null if the request
             was successful
           type: string
+
+    MFA_Challenge:
+      description: Shared information of MFA Challenges
+      type: object
+      required:
+        - kind
+        - created_at
+        - expires_at
+      properties:
+        kind:
+          type: string
+          description: Challenge's type (question, code, image, image_choice)
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp of when the challenge was created
+        expires_at:
+          type: string
+          format: date-time
+          description: Delay of expiration; after this timestamp the answer will
+            be rejected. It can be null.
+
+    MFA_Challenge_Question:
+      description: Structure of an MFA Challenge of type 'question'. Secret
+        questions are often asked in addition to an end user's password.
+      allOf:
+        - $ref: '#/components/schemas/GenericData'
+      properties:
+        attributes:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/MFA_Challenge'
+            - type: object
+              required:
+                - prompt
+              properties:
+                prompt:
+                  type: string
+                  description: The question to show to the owner of the account
+                  example: What is 4 + 4?
