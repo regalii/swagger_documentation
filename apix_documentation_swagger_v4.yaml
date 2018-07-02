@@ -1315,56 +1315,52 @@ paths:
                   type: string
                   description: Merchant's ID.
                   example: "6ab564f9-4e9d-4b03-96d6-dd9f2c39ec53"
-                cc_first_name:
+                card_first_name:
                   type: string
                   description: End user’s first name
                   example: "Elon"
-                cc_last_name:
+                card_last_name:
                   type: string
                   description: End user’s last name
                   example: "Musk"
-                cc_country:
+                card_country:
                   type: string
                   description: Country where the card was issued (US only for
                     the time being)
                   example: "US"
-                cc_number:
+                card_number:
                   type: string
                   description: Card number
                   example: "5221740002389461"
-                cc_type:
+                card_type:
                   type: string
                   description: Type of card (credit/debit)
                   example: "credit"
-                cc_brand:
+                card_brand:
                   type: string
                   description: Card's brand (mastercard/visa/american_express)
                   example: "visa"
-                cc_expiry_year:
+                card_expiration:
                   type: string
-                  description: Card's expiry year (4 digit number)
-                  example: "2021"
-                cc_expiry_month:
-                  type: string
-                  description: Card’s expiry month (2 digit number)
-                  example: "02"
-                cc_security_code:
+                  description: Card's expiration date
+                  example: "12/2018"
+                card_verification_code:
                   type: string
                   description: Card’s security code (3 or 4 digit number)
                   example: "123"
-                cc_address:
+                card_address:
                   type: string
                   description: Street name and number
                   example: "351 W 14th St Apt L"
-                cc_city:
+                card_city:
                   type: string
                   description: City
                   example: "New York"
-                cc_state:
+                card_state:
                   type: string
                   description: Two letter abbreviation of a US state
                   example: "NY"
-                cc_zip:
+                card_zip_code:
                   type: string
                   description: Address’ zipcode
                   example: "10014"
@@ -1444,45 +1440,6 @@ paths:
           required: true
           schema:
             type: integer
-      responses:
-        200:
-          description: successful response
-          content:
-            application/vnd.regalii.v4.0+json:
-              schema:
-                $ref: '#/components/schemas/Migration'
-
-    patch:
-      tags:
-        - xChange
-      summary: Allows the resolution of an MFA challenge
-      description: |
-        This endpoint allows the resolution of an MFA challenge associated with
-        the bill whose migration was requested.
-      operationId: updateMigration
-      parameters:
-        - name: id
-          in: path
-          description: ID of the bill you wish to update
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        description: Within the request body the parameters sent are `login`,
-          `password` and an array with the responses to MFA challenges.
-        required: true
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: '#/components/schemas/Basic_Credentials'
-              type: object
-              properties:
-                mfa_challenges:
-                  type: array
-                  description: MFA Challenges' responses
-                  items:
-                    $ref: '#/components/schemas/MFA_Response'
       responses:
         200:
           description: successful response
