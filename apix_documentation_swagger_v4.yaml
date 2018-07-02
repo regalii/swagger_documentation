@@ -574,31 +574,17 @@ paths:
                 type: object
                 properties:
                   data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Migration'
-                allOf:
-                  - $ref: '#/components/schemas/MetaData'
-                  - $ref: '#/components/schemas/NavigationLinks'
+                    allOf:
+                      - $ref: '#/components/schemas/Migration'
 
                 example:
                   data:
-                    - id: b4aa7d78-6f16-4ddd-887d-9f5c0b730a26
-                      type: migration
-                      attributes:
-                        status: failed
-                        requested_at: '2018-06-15 14:16:16 UTC'
-                        migrated_at: '2018-06-15 16:34:54 UTC'
-                        error:
-                          code: InvalidCredentials
-                          detail: Invalid login or password
-                  meta:
-                    total: 23
-                    total-pages: 1
-                  links:
-                    self: "http://localhost:3000/migrations?page=1"
-                    next: null
-                    prev: null
+                    id: 59b9fdac-e5fd-4ef2-bd98-b4eef3b5fb6a
+                    type: migration
+                    attributes:
+                      status: updating
+                      requested_at: '2018-06-22 21:23:26 UTC'
+                      migrated_at: null
 
     get:
       tags:
@@ -620,37 +606,35 @@ paths:
           content:
             application/vnd.regalii.v4.0+json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Migration'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Migration'
+                allOf:
+                  - $ref: '#/components/schemas/MetaData'
+                  - $ref: '#/components/schemas/NavigationLinks'
+
                 example:
-                  migrations:
-                    - error_code: null
-                      error_message: null
-                      id: f06a92d9-d752-470f-b53c-90be4152bf4b
-                      status: updated
-                      requested_at: '2018-05-30T17:46:01.838Z'
-                      migrated_at: '2018-05-30T17:46:02.134Z'
-                    - error_code: R120
-                      error_message: Invalid username or password
-                      id: 1c32b482-df80-4dc9-9049-f349ae170c26
-                      status: failed
-                      requested_at: '2018-05-30T17:02:46.028Z'
-                      migrated_at: '2018-05-30T17:03:00.606Z'
-                    - error_code: R121
-                      error_message: There was a temporary error while
-                        connecting, please try again.
-                      id: a73b5831-33dc-4582-9591-d6fdaf95aab5
-                      status: failed
-                      requested_at: '2018-05-30T17:19:42.688Z'
-                      migrated_at: '2018-05-30T17:21:18.382Z'
-                    - error_code: R121
-                      error_message: The card information was declined by the
-                        merchant
-                      id: e2ea35dc-8abc-4d77-a494-44d30fa1471d
-                      status: failed
-                      requested_at: '2018-05-30T15:42:33.430Z'
-                      migrated_at: '2018-05-30T15:42:54.358Z'
+                  data:
+                    - id: b4aa7d78-6f16-4ddd-887d-9f5c0b730a26
+                      type: migration
+                      attributes:
+                        status: failed
+                        requested_at: '2018-06-15 14:16:16 UTC'
+                        migrated_at: '2018-06-15 16:34:54 UTC'
+                        error:
+                          code: InvalidCredentials
+                          detail: Invalid login or password
+                  # TODO: Include examples of different statuses and error codes
+                  meta:
+                    total: 23
+                    total-pages: 1
+                  links:
+                    self: "http://localhost:3000/migrations?page=1"
+                    next: null
+                    prev: null
 
   /migrations/{id}:
     get:
