@@ -305,9 +305,11 @@ info:
     </table>
 
 servers:
-  - url: https://apix.staging.arcusapi.com
+  - url: https://apix.casiregalii.com
+  #- url: https://apix.staging.arcusapi.com
     description: Sandbox, Mock Credentials; Mock Data
-  - url: https://apix.arcusapi.com
+  - url: https://apix.regalii.com
+  #- url: https://apix.arcusapi.com
     description: Production, Real Credentials; Real Data
 
 tags:
