@@ -42,10 +42,10 @@ info:
     * __secret-key__ You will be given this key to generate a unique signature
       (checksum) to your requests, thus guaranteeing their authenticity. Make
       sure never to share it.
-    * __Bill__ Expenses owed by an end user to a merchant which need to be paid on
-      a recurring basis.
-    * __Merchant__ Any merchant that offers an end user a service (e.g.: Verizon,
-      Uber, Time Warner)
+    * __Bill__ Expenses owed by an end user to a merchant which need to be paid
+      on a recurring basis.
+    * __Merchant__ Any merchant that offers an end user a service (e.g.:
+      Verizon, Uber, Time Warner)
     * __Credentials__ A set of values that gives an end user access to a
       merchant's website and/or app. E.g.: username + password.
     * __Challenge__ Stands for Multi-factor Authentication. Some merchants
@@ -116,8 +116,8 @@ info:
               - __Note:__ The ‘Endpoint’ is simply the URL you are sending the
               request to, excluding the server and including the parameters. For
               instance, if you want to obtain a bill's data by requesting a get
-              to `https://apix.staging.arcusapi.com/bills/1`, your checksum string
-              should look like this:
+              to `https://apix.staging.arcusapi.com/bills/1`, your checksum
+              string should look like this:
               `GET,application/json,,/bills/1,Wed, 10 Jan 2017 16:53:15 GMT`
               - __Note:__ Please notice the timestamp format. In UNIX-based
               systems you could obtain it by running:
@@ -342,7 +342,8 @@ paths:
         - in: query
           name: q[category]
           required: false
-          description: Check if the parameter is equal to the merchant's category
+          description: Check if the parameter is equal to the merchant's
+            category
           schema:
             type: string
         - in: query
@@ -354,37 +355,43 @@ paths:
         - in: query
           name: q[country]
           required: false
-          description: Check if the parameter is equal to the merchant's category
+          description: Check if the parameter is equal to the merchant's
+            category
           schema:
             type: string
         - in: query
           name: q[currency]
           required: false
-          description: Check if the parameter is equal to the merchant's category
+          description: Check if the parameter is equal to the merchant's
+            category
           schema:
             type: string
         - in: query
           name: q[created_at_gt]
           required: false
-          description: Check if the parameter is greater than to the merchant's created at attribute
+          description: Check if the parameter is greater than to the merchant's
+            created at attribute
           schema:
             type: string
         - in: query
           name: q[created_at_lt]
           required: false
-          description: Check if the parameter is less than to the merchant's created at attribute
+          description: Check if the parameter is less than to the merchant's
+            created at attribute
           schema:
             type: string
         - in: query
           name: q[updated_at_gt]
           required: false
-          description: Check if the parameter is greater than to the merchant's updated at attribute
+          description: Check if the parameter is greater than to the merchant's
+            updated at attribute
           schema:
             type: string
         - in: query
           name: q[updated_at_lt]
           required: false
-          description: Check if the parameter is less than to the merchant's updated at attribute
+          description: Check if the parameter is less than to the merchant's
+            updated at attribute
           schema:
             type: string
         - in: query
@@ -706,10 +713,10 @@ paths:
                     items:
                       anyOf:
                         - $ref: '#/components/schemas/MFA_Challenge_Question'
-                        # - $ref: '#/components/schemas/MFA_Challenge_Code'
-                        # - $ref: '#/components/schemas/MFA_Challenge_Image'
-                        # - $ref: '#/components/schemas/MFA_Challenge_Image_Choices'
-                        # - $ref: '#/components/schemas/MFA_Challenge_Choices'
+                        - $ref: '#/components/schemas/MFA_Challenge_Code'
+                        - $ref: '#/components/schemas/MFA_Challenge_Image'
+                        - $ref: '#/components/schemas/MFA_Challenge_Image_Choices'
+                        - $ref: '#/components/schemas/MFA_Challenge_Choices'
                 allOf:
                   - $ref: '#/components/schemas/MetaData'
                   - $ref: '#/components/schemas/NavigationLinks'
@@ -907,3 +914,115 @@ components:
                   type: string
                   description: The question to show to the owner of the account
                   example: What is 4 + 4?
+
+    MFA_Challenge_Code:
+      description: Structure of an MFA Challenge of type 'code'. Verification
+        codes are sometimes sent to an end user's mobile phone before they are
+        able to log in. Verification codes cannot be re-used.
+      allOf:
+        - $ref: '#/components/schemas/GenericData'
+      properties:
+        attributes:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/MFA_Challenge'
+            - type: object
+              required:
+                - prompt
+              properties:
+                prompt:
+                  type: string
+                  description: The instructions to show to the owner of the
+                    account
+                  example: Please provide the code sent to your phone.
+
+    MFA_Challenge_Image:
+      description: Structure of an MFA Challenge of type 'image'
+      allOf:
+        - $ref: '#/components/schemas/GenericData'
+      properties:
+        attributes:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/MFA_Challenge'
+            - type: object
+              required:
+                - prompt
+              properties:
+                prompt:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      description: "The type of the image: url or uri"
+                    value:
+                      type: string
+                      description: The URL of the image for url or the content
+                        of the image for uri
+                      example: http://via.placeholder.com/350x150
+
+    MFA_Challenge_Image_Choices:
+      description: Structure of an MFA Challenge of type 'image_choice'
+      allOf:
+        - $ref: '#/components/schemas/GenericData'
+      properties:
+        attributes:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/MFA_Challenge'
+            - type: object
+              required:
+                - prompt
+              properties:
+                prompt:
+                  type: array
+                  description: An array of images
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: The ID of the option (basically the index
+                          of the array)
+                      type:
+                        type: string
+                        description: "The type of the image: url or uri"
+                      value:
+                        type: string
+                        description: The URL of the image for url or the content
+                          of the image for uri
+                        example: http://via.placeholder.com/350x150
+
+    MFA_Challenge_Choices:
+      description: Structure of an MFA Challenge of type '?'
+      allOf:
+        - $ref: '#/components/schemas/GenericData'
+      properties:
+        attributes:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/MFA_Challenge'
+            - type: object
+              required:
+                - prompt
+              properties:
+                prompt:
+                  type: array
+                  description: An array of choices
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: The ID of the option (basically the index
+                          of the array)
+                      category:
+                        type: string
+                        description: Defines the category to which the value
+                          belongs (e.g. Phone, Text, E-mail). It can be null
+                        example: Phone
+                      value:
+                        type: string
+                        description: A phone number or e-mail address. The same
+                          value can be present in different categories
+                        example: "+1234567890"
