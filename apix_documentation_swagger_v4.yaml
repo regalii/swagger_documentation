@@ -315,6 +315,8 @@ tags:
     description: Common endpoints
   - name: xChange
     description: Access to xChange documentation
+  - name: Challenges
+    description: Documentation regarding usage of MFA challenges
 
 security:
   - hmacAuth: []
@@ -452,7 +454,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: ID or UUID of the merchant you wish to obtain
+          description: UUID of the merchant you wish to obtain
           required: true
           schema:
             type: string
@@ -686,7 +688,7 @@ paths:
   /migrations/{id}/challenges:
     get:
       tags:
-        - xChange
+        - Challenges
       summary: Gets all challenges associated with a specific migration
       description: |
         If the migration requires the end user to answer some challenges, the
@@ -726,10 +728,10 @@ paths:
                     - id: 3a798711-d352-4ee5-b35d-383fd23e7edc
                       type: challenge
                       attributes:
-                        kind: question
+                        kind: code
                         created_at: '2018-06-15 14:16:16 UTC'
                         expires_at: null
-                        prompt: What is 4 + 4?
+                        prompt: Please provide the code sent to your phone.
                   # TODO: Include examples of different challenges
                   meta:
                     total: 1
