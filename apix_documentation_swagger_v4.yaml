@@ -721,7 +721,7 @@ paths:
             obtain
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         200:
           description: successful response
@@ -762,7 +762,7 @@ paths:
           description: ID of the migration whose challenges you wish to obtain
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         200:
           description: successful response
@@ -857,6 +857,9 @@ components:
   schemas:
     GenericData:
       type: object
+      required:
+        - type
+        - id
       properties:
         type:
           type: string
@@ -867,11 +870,19 @@ components:
 
     Merchant:
       type: object
+      required:
+        - attributes
       allOf:
         - $ref: '#/components/schemas/GenericData'
       properties:
         attributes:
           type: object
+          required:
+            - name
+            - country
+            - currency
+            - created_at
+            - updated_at
           properties:
             name:
               type: string
@@ -913,9 +924,14 @@ components:
 
     MetaData:
       type: object
+      required:
+        - meta
       properties:
         meta:
           type: object
+          required:
+            - total
+            - total-pages
           properties:
             total:
               type: integer
@@ -924,9 +940,13 @@ components:
 
     NavigationLinks:
       type: object
+      required:
+        - links
       properties:
         links:
           type: object
+          required:
+            - self
           properties:
             self:
               type: string
@@ -936,12 +956,17 @@ components:
               type: string
 
     Migration:
-      type: object
       allOf:
         - $ref: '#/components/schemas/GenericData'
+      type: object
+      required:
+        - attributes
       properties:
         attributes:
           type: object
+          required:
+            - status
+            - requested_at
           properties:
             status:
               description: Migration's status
@@ -976,6 +1001,9 @@ components:
 
     Error_Info:
       type: object
+      required:
+        - code
+        - detail
       properties:
         code:
           description: Error code
@@ -985,6 +1013,8 @@ components:
           type: string
         source:
           type: object
+          required:
+            - parameter
           properties:
             parameter:
               type: string
@@ -995,7 +1025,6 @@ components:
       required:
         - kind
         - created_at
-        - expires_at
       properties:
         kind:
           type: string
@@ -1015,6 +1044,9 @@ components:
         questions are often asked in addition to an end user's password.
       allOf:
         - $ref: '#/components/schemas/GenericData'
+      type: object
+      required:
+        - attributes
       properties:
         attributes:
           type: object
@@ -1035,6 +1067,9 @@ components:
         able to log in. Verification codes cannot be re-used.
       allOf:
         - $ref: '#/components/schemas/GenericData'
+      type: object
+      required:
+        - attributes
       properties:
         attributes:
           type: object
@@ -1054,6 +1089,9 @@ components:
       description: Structure of an MFA Challenge of type 'image'
       allOf:
         - $ref: '#/components/schemas/GenericData'
+      type: object
+      required:
+        - attributes
       properties:
         attributes:
           type: object
@@ -1079,6 +1117,9 @@ components:
       description: Structure of an MFA Challenge of type 'image_choice'
       allOf:
         - $ref: '#/components/schemas/GenericData'
+      type: object
+      required:
+        - attributes
       properties:
         attributes:
           type: object
@@ -1111,6 +1152,9 @@ components:
       description: Structure of an MFA Challenge of type '?'
       allOf:
         - $ref: '#/components/schemas/GenericData'
+      type: object
+      required:
+        - attributes
       properties:
         attributes:
           type: object
