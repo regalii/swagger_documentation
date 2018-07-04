@@ -442,6 +442,25 @@ paths:
                     self: "http://localhost:3000/merchants?page=1"
                     next: null
                     prev: null
+        404:
+          description: resource not found
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error_Info'
+
+                example:
+                  errors:
+                    - source:
+                        parameter: page
+                      code: PageNotFound
+                      # TODO: modify text in APIx
+                      detail: There is none resources for the page requested
 
   /merchants/{id}:
     get:
@@ -486,6 +505,25 @@ paths:
                       logo: null
                       created_at: "2018-06-07 15:02:57 UTC"
                       updated_at: "2018-06-07 15:02:57 UTC"
+
+        404:
+          description: resource not found
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error_Info'
+
+                example:
+                  errors:
+                    - source:
+                        parameter: id
+                      code: NotFound
+                      detail: The resource requested can't be found
 
   /migrations:
     post:
@@ -594,6 +632,29 @@ paths:
                       status: updating
                       requested_at: '2018-06-22 21:23:26 UTC'
                       migrated_at: null
+
+        422:
+          description: unprocessable entity
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error_Info'
+
+                example:
+                  errors:
+                    - source:
+                        parameter: password
+                      code: BlankAttributeError
+                      detail: Password can't be blank
+                    - source:
+                        parameter: card_country
+                      code: InvalidAttributeError
+                      detail: Card country is invalid
 
     get:
       tags:
@@ -917,12 +978,16 @@ components:
       type: object
       properties:
         code:
-          description: Error code; null if the request was successful
+          description: Error code
           type: string
         detail:
-          description: Description of the error encountered; null if the request
-            was successful
+          description: Description of the error encountered
           type: string
+        source:
+          type: object
+          properties:
+            parameter:
+              type: string
 
     MFA_Challenge:
       description: Shared information of MFA Challenges
