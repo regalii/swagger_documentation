@@ -54,7 +54,7 @@ info:
       verification code sent to a phone, a secret question, an image, a list of
       images to choose from, or different choices which only the end user would
       know the answer to.
-    * __Migration__ It is the act of changing a bill's credit card number.
+    * __Migration__ It is the act of changing a bill's credit card information.
     * __Transaction__ It is the act of moving money between 2 points.
 
     ---
@@ -122,6 +122,8 @@ info:
               - __Note:__ Please notice the timestamp format. In UNIX-based
               systems you could obtain it by running:
                 <b>echo \`date -Ru | sed 's/+0000/GMT/'`</b> in your terminal.
+              - __Note:__ Also notice that content-md5 in this case is empty
+              because no body is being sent.
 
         2. The checksum string is then used to create the checksum, which is a
         Base64 SHA1 HMAC string encoded using your secret-key.
@@ -198,7 +200,7 @@ info:
     Responses will use standard HTTP error codes to convey basic error status
     information.
 
-    Unless you obtain a successful response (code 200), you may encounter any of
+    Unless you obtain a successful response (code 2XX), you may encounter any of
     the following:
 
     <table>
@@ -327,7 +329,7 @@ paths:
       tags:
         - Common
       summary: Provides the current list of merchants
-      operationId: getMerchantsCredentials
+      operationId: getMerchants
       description: |
         This endpoint provides the current list of merchants and their
         associated properties.
@@ -344,65 +346,69 @@ paths:
         - in: query
           name: q[category]
           required: false
-          description: Check if the parameter is equal to the merchant's
-            category
+          description: Returns merchants whose category matches the parameter
+            sent
           schema:
             type: string
         - in: query
           name: q[name]
           required: false
-          description: Check if the parameter is contained the merchant's name
+          description: Returns merchants whose name contains the parameter sent
           schema:
             type: string
         - in: query
           name: q[country]
           required: false
-          description: Check if the parameter is equal to the merchant's
-            category
+          description: Returns merchants whose country matches the parameter
+            sent
           schema:
             type: string
         - in: query
           name: q[currency]
           required: false
-          description: Check if the parameter is equal to the merchant's
-            category
+          description: Returns merchants whose currency matches the parameter
+            sent
           schema:
             type: string
         - in: query
           name: q[created_at_gt]
           required: false
-          description: Check if the parameter is greater than to the merchant's
-            created at attribute
+          description: Returns merchants that were created after the timestamp
+            sent
           schema:
             type: string
         - in: query
           name: q[created_at_lt]
           required: false
-          description: Check if the parameter is less than to the merchant's
-            created at attribute
+          description: Returns merchants that were created before the timestamp
+            sent
           schema:
             type: string
         - in: query
           name: q[updated_at_gt]
           required: false
-          description: Check if the parameter is greater than to the merchant's
-            updated at attribute
+          description: Returns merchants that were updated after the timestamp
+            sent
           schema:
             type: string
         - in: query
           name: q[updated_at_lt]
           required: false
-          description: Check if the parameter is less than to the merchant's
-            updated at attribute
+          description: Returns merchants that were updated before the timestamp
+            sent
           schema:
             type: string
         - in: query
           name: q[product]
           required: false
-          description: "Check if the merchant has an active configuration (as
-            integration), the possible values are: xchange, xdata or xpay."
+          description: "Returns merchants that are ready to be used for a
+            specific product."
           schema:
             type: string
+            enum:
+              - xchange
+              - xdata
+              - xpay
       responses:
         200:
           description: successful response
@@ -439,11 +445,11 @@ paths:
                     total: 35
                     total-pages: 1
                   links:
-                    self: "http://localhost:3000/merchants?page=1"
+                    self: "https://apix.staging.arcusapi.com/merchants?page=1"
                     next: null
                     prev: null
         404:
-          description: resource not found
+          description: resources not found
           content:
             application/vnd.regalii.v4.0+json:
               schema:
@@ -543,8 +549,6 @@ paths:
               type: object
               required:
                 - merchant_id
-                - login
-                - password
                 - card_first_name
                 - card_last_name
                 - card_type
@@ -613,7 +617,7 @@ paths:
                   example: "10014"
 
       responses:
-        200:
+        202:
           description: successful response
           content:
             application/vnd.regalii.v4.0+json:
@@ -702,7 +706,7 @@ paths:
                     total: 23
                     total-pages: 1
                   links:
-                    self: "http://localhost:3000/migrations?page=1"
+                    self: "https://apix.staging.arcusapi.com/migrations?page=1"
                     next: null
                     prev: null
 
@@ -791,14 +795,14 @@ paths:
                       attributes:
                         kind: code
                         created_at: '2018-06-15 14:16:16 UTC'
-                        expires_at: null
+                        expires_at: '2018-06-15 14:19:16 UTC'
                         prompt: Please provide the code sent to your phone.
                   # TODO: Include examples of different challenges
                   meta:
                     total: 1
                     total-pages: 1
                   links:
-                    self: "http://localhost:3000/migrations/59b9fdac-e5fd-4ef2-bd98-b4eef3b5fb6a/challenges?page=1"
+                    self: "https://apix.staging.arcusapi.com/migrations/59b9fdac-e5fd-4ef2-bd98-b4eef3b5fb6a/challenges?page=1"
                     next: null
                     prev: null
 
@@ -806,9 +810,9 @@ paths:
     patch:
       tags:
         - Challenges
-      summary: Replies to a challenge
+      summary: Submit answer to a challenge
       description: |
-        Sends the response to a specific challenge
+        Sends the answer to a specific challenge
       operationId: updateChallenge
       parameters:
         - name: id
@@ -900,27 +904,33 @@ components:
                 category (e.g. Television/Internet, electricity, etc.)
             home_url:
               type: string
-              description: ""
+              description: Merchant's homepage
             signup_url:
               type: string
-              description: ""
+              description: URL where the final user registers to the Merchant's
+                site
+            # TODO: what does this stand for?
             password_url:
               type: string
               description: ""
+            # TODO: what does this stand for?
             color:
               type: string
               description: ""
+            # TODO: what does this stand for?
             logo:
               type: string
               description: ""
             created_at:
               type: string
               format: date-time
-              description: ""
+              description: Timestamp of when this merchant was created in arcus'
+                system
             updated_at:
               type: string
               format: date-time
-              description: ""
+              description: Timestamp of when this merchant was last updated in
+                arcus' system
 
     MetaData:
       type: object
@@ -1028,7 +1038,8 @@ components:
       properties:
         kind:
           type: string
-          description: Challenge's type (question, code, image, image_choice)
+          description: Challenge's type (question, code, image, choice,
+            image_choice)
         created_at:
           type: string
           format: date-time
@@ -1100,9 +1111,16 @@ components:
             - type: object
               required:
                 - prompt
+                - image
               properties:
                 prompt:
+                  type: string
+                  example: Please transcript the image as text
+                image:
                   type: object
+                  required:
+                    - type
+                    - value
                   properties:
                     type:
                       type: string
@@ -1111,8 +1129,9 @@ components:
                       type: string
                       description: The URL of the image for url or the content
                         of the image for uri
-                      example: http://via.placeholder.com/350x150
+                      example: "https://www.arcusfi.com/assets/images/arcus_logo_color.png"
 
+    # TODO: Validate structure when Plunderer::Faker::Client supports it
     MFA_Challenge_Image_Choices:
       description: Structure of an MFA Challenge of type 'image_choice'
       allOf:
@@ -1128,8 +1147,12 @@ components:
             - type: object
               required:
                 - prompt
+                - choices
               properties:
                 prompt:
+                  type: string
+                  example: Please select the right image
+                choices:
                   type: array
                   description: An array of images
                   items:
@@ -1148,6 +1171,7 @@ components:
                           of the image for uri
                         example: http://via.placeholder.com/350x150
 
+    # TODO: Validate structure when Plunderer::Faker::Client supports it
     MFA_Challenge_Choices:
       description: Structure of an MFA Challenge of type '?'
       allOf:
@@ -1163,8 +1187,12 @@ components:
             - type: object
               required:
                 - prompt
+                - choices
               properties:
                 prompt:
+                  type: string
+                  example: Please select the right answer
+                choices:
                   type: array
                   description: An array of choices
                   items:
