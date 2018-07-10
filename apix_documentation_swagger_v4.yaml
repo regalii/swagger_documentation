@@ -536,7 +536,7 @@ paths:
       tags:
         - Common
       summary: Obtains the details of a single merchant more securely
-      operationId: getMerchantPOST
+      operationId: getMerchantSecure
       description: |
         This endpoint provides the details of a single merchant.
       requestBody:
@@ -552,7 +552,7 @@ paths:
                   description: UUID of the merchant you wish to obtain
                   type: string
               example:
-                id: "4d09ec4f-0078-4de4-89a5-91db28dd079c"
+                id: 4d09ec4f-0078-4de4-89a5-91db28dd079c
       responses:
         200:
           description: successful response
@@ -796,6 +796,54 @@ paths:
           required: true
           schema:
             type: string
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                      - $ref: '#/components/schemas/Migration'
+
+                example:
+                  data:
+                    id: b4aa7d78-6f16-4ddd-887d-9f5c0b730a26
+                    type: migration
+                    attributes:
+                      status: failed
+                      requested_at: '2018-06-15 14:16:16 UTC'
+                      migrated_at: '2018-06-15 16:34:54 UTC'
+                      error:
+                        code: InvalidCredentials
+                        detail: Invalid login or password
+
+  /migration:
+    post:
+      tags:
+        - xChange
+      summary: Gets the last migration attempt of a bill more securely
+      description: >-
+        This endpoint gets the last migration attempt of a bill.
+      operationId: getMigrationSecure
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+              properties:
+                id:
+                  description: ID of the bill whose migration information you
+                    wish to obtain
+                  type: string
+              example:
+                id: b4aa7d78-6f16-4ddd-887d-9f5c0b730a26
+
       responses:
         200:
           description: successful response
