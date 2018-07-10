@@ -835,6 +835,9 @@ paths:
                   properties:
                     answer:
                       type: string
+              example:
+                challenge:
+                  answer: 12345
 
       responses:
         200:
@@ -852,6 +855,15 @@ paths:
                       - $ref: '#/components/schemas/MFA_Challenge_Image'
                       - $ref: '#/components/schemas/MFA_Challenge_Image_Choices'
                       - $ref: '#/components/schemas/MFA_Challenge_Choices'
+                example:
+                  data:
+                    id: 3a798711-d352-4ee5-b35d-383fd23e7edc
+                    type: challenge
+                    attributes:
+                      kind: code
+                      created_at: '2018-06-15 14:16:16 UTC'
+                      expires_at: '2018-06-15 14:19:16 UTC'
+                      prompt: Please provide the code sent to your phone.
 
 components:
   securitySchemes:
