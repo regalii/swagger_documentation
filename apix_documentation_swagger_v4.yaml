@@ -344,6 +344,26 @@ paths:
           schema:
             type: integer
         - in: query
+          name: order
+          required: false
+          description: Allows you to order the results by certain attributes,
+            descendigly (_desc) or ascendingly (_asc)
+          schema:
+            type: string
+            enum:
+              - category_asc
+              - category_desc
+              - name_asc
+              - name_desc
+              - country_asc
+              - country_desc
+              - currency_asc
+              - currency_desc
+              - created_at_asc
+              - created_at_desc
+              - updated_at_asc
+              - updated_at_desc
+        - in: query
           name: q[category]
           required: false
           description: Returns merchants whose category matches the parameter
@@ -401,8 +421,8 @@ paths:
         - in: query
           name: q[product]
           required: false
-          description: "Returns merchants that are ready to be used for a
-            specific product."
+          description: Returns merchants that are ready to be used for a
+            specific product
           schema:
             type: string
             enum:
