@@ -924,6 +924,71 @@ paths:
                     next: null
                     prev: null
 
+  /migration_challenges:
+    post:
+      tags:
+        - Challenges
+      summary: Gets all challenges associated with a specific migration more
+        securely
+      description: |
+        If the migration requires the end user to answer some challenges, the
+        customer can request the challenges associated to one specific
+        migration by using this endpoint.
+      operationId: getMigrationsChallengesSecure
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - migration_id
+              properties:
+                migration_id:
+                  description: ID of the migration whose challenges you wish to
+                    obtain
+                  type: string
+              example:
+                id: b4aa7d78-6f16-4ddd-887d-9f5c0b730a26
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      anyOf:
+                        - $ref: '#/components/schemas/MFA_Challenge_Question'
+                        - $ref: '#/components/schemas/MFA_Challenge_Code'
+                        - $ref: '#/components/schemas/MFA_Challenge_Image'
+                        - $ref: '#/components/schemas/MFA_Challenge_Image_Choices'
+                        - $ref: '#/components/schemas/MFA_Challenge_Choices'
+                allOf:
+                  - $ref: '#/components/schemas/MetaData'
+                  - $ref: '#/components/schemas/NavigationLinks'
+
+                example:
+                  data:
+                    - id: 3a798711-d352-4ee5-b35d-383fd23e7edc
+                      type: challenge
+                      attributes:
+                        kind: code
+                        created_at: '2018-06-15 14:16:16 UTC'
+                        expires_at: '2018-06-15 14:19:16 UTC'
+                        prompt: Please provide the code sent to your phone.
+                  # TODO: Include examples of different challenges
+                  meta:
+                    total: 1
+                    total-pages: 1
+                  links:
+                    self: "https://apix.staging.arcusapi.com/migrations/59b9fdac-e5fd-4ef2-bd98-b4eef3b5fb6a/challenges?page=1"
+                    next: null
+                    prev: null
+
   /challenges/{id}:
     patch:
       tags:
