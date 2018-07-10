@@ -531,6 +531,76 @@ paths:
                       code: NotFound
                       detail: The resource requested can't be found
 
+  /merchant:
+    post:
+      tags:
+        - Common
+      summary: Obtains the details of a single merchant more securely
+      operationId: getMerchantPOST
+      description: |
+        This endpoint provides the details of a single merchant.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+              properties:
+                id:
+                  description: UUID of the merchant you wish to obtain
+                  type: string
+              example:
+                id: "4d09ec4f-0078-4de4-89a5-91db28dd079c"
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                      - $ref: '#/components/schemas/Merchant'
+
+                example:
+                  data:
+                    id: 4d09ec4f-0078-4de4-89a5-91db28dd079c
+                    type: merchant
+                    attributes:
+                      category: Electricity
+                      name: Gerhold-Doyle
+                      country: US
+                      currency: USD
+                      home_url: null
+                      signup_url: null
+                      password_url: null
+                      color: null
+                      logo: null
+                      created_at: "2018-06-07 15:02:57 UTC"
+                      updated_at: "2018-06-07 15:02:57 UTC"
+
+        404:
+          description: resource not found
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error_Info'
+
+                example:
+                  errors:
+                    - source:
+                        parameter: id
+                      code: NotFound
+                      detail: The resource requested can't be found
+
   /migrations:
     post:
       tags:
