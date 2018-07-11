@@ -447,11 +447,11 @@ paths:
 
                 example:
                   data:
-                    - id: 4d09ec4f-0078-4de4-89a5-91db28dd079c
+                    - id: 653d6b7e-e189-48b1-a102-06dcfbcd35df
                       type: merchant
                       attributes:
-                        category: Electricity
-                        name: Gerhold-Doyle
+                        category: Utility
+                        name: Sprint
                         country: US
                         currency: USD
                         home_url: null
@@ -459,10 +459,24 @@ paths:
                         password_url: null
                         color: null
                         logo: null
-                        created_at: "2018-06-07 15:02:57 UTC"
-                        updated_at: "2018-06-07 15:02:57 UTC"
+                        created_at: "2016-04-20 22:05:32 UTC"
+                        updated_at: "2017-07-28 22:45:25 UTC"
+                    - id: 2affb627-6811-46bd-9716-de14bf7be899
+                      type: merchant
+                      attributes:
+                        category: Utilities
+                        name: Lyft Int
+                        country: US
+                        currency: USD
+                        home_url: null
+                        signup_url: null
+                        password_url: null
+                        color: null
+                        logo: null
+                        created_at: "2018-07-02 22:06:14 UTC"
+                        updated_at: "2018-07-02 22:06:14 UTC"
                   meta:
-                    total: 35
+                    total: 2
                     total-pages: 1
                   links:
                     self: "https://apix.staging.arcusapi.com/merchants?page=1"
@@ -517,11 +531,11 @@ paths:
 
                 example:
                   data:
-                    id: 4d09ec4f-0078-4de4-89a5-91db28dd079c
+                    id: f0e1335e-ab50-4af1-bfe2-89daafa4fe9f
                     type: merchant
                     attributes:
-                      category: Electricity
-                      name: Gerhold-Doyle
+                      category: null
+                      name: Walmart
                       country: US
                       currency: USD
                       home_url: null
@@ -529,8 +543,8 @@ paths:
                       password_url: null
                       color: null
                       logo: null
-                      created_at: "2018-06-07 15:02:57 UTC"
-                      updated_at: "2018-06-07 15:02:57 UTC"
+                      created_at: "2018-01-29 18:06:16 UTC"
+                      updated_at: "2018-01-29 18:06:16 UTC"
 
         404:
           description: resource not found
@@ -587,11 +601,11 @@ paths:
 
                 example:
                   data:
-                    id: 4d09ec4f-0078-4de4-89a5-91db28dd079c
+                    id: 3e72524f-3b53-4017-a207-8d80c4d1db83
                     type: merchant
                     attributes:
-                      category: Electricity
-                      name: Gerhold-Doyle
+                      category: Media
+                      name: Amazon Prime
                       country: US
                       currency: USD
                       home_url: null
@@ -599,8 +613,8 @@ paths:
                       password_url: null
                       color: null
                       logo: null
-                      created_at: "2018-06-07 15:02:57 UTC"
-                      updated_at: "2018-06-07 15:02:57 UTC"
+                      created_at: "2016-06-08 21:36:33 UTC"
+                      updated_at: "2017-07-28 22:45:25 UTC"
 
         404:
           description: resource not found
@@ -655,7 +669,7 @@ paths:
                 merchant_id:
                   type: string
                   description: Merchant's ID.
-                  example: "6ab564f9-4e9d-4b03-96d6-dd9f2c39ec53"
+                  example: 6ab564f9-4e9d-4b03-96d6-dd9f2c39ec53
                 card_first_name:
                   type: string
                   description: End user’s first name
@@ -791,9 +805,43 @@ paths:
                         error:
                           code: InvalidCredentials
                           detail: Invalid login or password
-                  # TODO: Include examples of different statuses and error codes
+                    - id: afbf4892-283f-455e-ab43-4dcdc5e2d915
+                      type: migration
+                      attributes:
+                        status: successful
+                        requested_at: "2018-07-11 15:52:23 UTC"
+                        migrated_at: "2018-07-11 15:53:40 UTC"
+                    - id: b71b8731-db92-411c-bbe0-9eb2fae712d1
+                      type: migration
+                      attributes:
+                        status: failed
+                        requested_at: "2018-07-11 15:42:29 UTC"
+                        migrated_at: "2018-07-11 15:43:23 UTC"
+                        error:
+                          code: CreditCardDeclined
+                          detail: The card information was declined by the
+                            biller
+                    - id: 34c2fcf0-80c2-4121-98c7-46026e1b3ece
+                      type: migration
+                      attributes:
+                        status: failed
+                        requested_at: "2018-07-11 15:29:30 UTC"
+                        migrated_at: "2018-07-11 15:34:38 UTC"
+                        error:
+                          code: InvalidChallengeAnswer
+                          detail: The challenge answer provided is invalid
+                    - id: 4e68d796-8372-47ad-852b-08393b670bb0
+                      type: migration
+                      attributes:
+                        status: failed
+                        requested_at: "2018-07-11 14:23:44 UTC"
+                        migrated_at: "2018-07-11 14:24:11 UTC"
+                        error:
+                          code: TemporaryError
+                          detail: There was a temporary error while connecting,
+                            please try again
                   meta:
-                    total: 23
+                    total: 5
                     total-pages: 1
                   links:
                     self: "https://apix.staging.arcusapi.com/migrations?page=1"
@@ -928,19 +976,19 @@ paths:
 
                 example:
                   data:
-                    - id: 3a798711-d352-4ee5-b35d-383fd23e7edc
+                    - id: afa0b9c8-7fe2-41ee-9f4c-617dac91ca89
                       type: challenge
                       attributes:
-                        kind: code
-                        created_at: '2018-06-15 14:16:16 UTC'
-                        expires_at: '2018-06-15 14:19:16 UTC'
-                        prompt: Please provide the code sent to your phone.
+                        kind: question
+                        created_at: "2018-07-09 21:40:45 UTC"
+                        expires_at: null
+                        prompt: What is the secret word?
                   # TODO: Include examples of different challenges
                   meta:
                     total: 1
                     total-pages: 1
                   links:
-                    self: "https://apix.staging.arcusapi.com/migrations/59b9fdac-e5fd-4ef2-bd98-b4eef3b5fb6a/challenges?page=1"
+                    self: "https://apix.staging.arcusapi.com/migrations/eae8d4c7-b3d9-4fc5-89b6-7ccdd0b4111c/challenges?page=1"
                     next: null
                     prev: null
 
