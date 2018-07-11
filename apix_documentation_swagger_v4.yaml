@@ -170,31 +170,6 @@ info:
 
     ___
 
-    # Tools for Testing
-
-    It is recommended that you first test a couple of endpoints and get
-    familiarized with their responses. This will give you an idea of how to
-    properly construct requests in your application (and save you coding time).
-
-    You can do so by using the following dynamic sections of this documentation.
-    In order for the endpoints to work properly, first you have to click on the
-    `Authorize` button (located before the endpoints, to the right) and enter
-    your api-key and secret-key corresponding to the environment you wish to use
-    (make sure that the correct environment is selected on the `Server` combo
-    box located below and to the left of the `Authorize` button). Alternatively,
-    you can click on the 'lock' icon located on each endpoint to enter your
-    keys.
-
-    Once you have authenticated, you can now click on each endpoint's
-    `Try it out` button, which will let you enter the parameters' values (if
-    any) and display a big blue `Execute` button.
-
-    Additionally, you can use any of the following API-testing tools:
-
-      * [Paw](https://paw.cloud/)
-      * [Postman](https://www.getpostman.com/)
-      * [Insomnia](https://insomnia.rest/)
-
     # Errors
 
     Responses will use standard HTTP error codes to convey basic error status
@@ -305,6 +280,101 @@ info:
         <td>A parameter is provided but its value length is incorrect</td>
       </tr>
     </table>
+
+    ___
+
+    # Tools for Testing
+
+    It is recommended that you first test a couple of endpoints and get
+    familiarized with their responses. This will give you an idea of how to
+    properly construct requests in your application (and save you coding time).
+
+    You can do so by using the following dynamic sections of this documentation.
+    In order for the endpoints to work properly, first you have to click on the
+    `Authorize` button (located before the endpoints, to the right) and enter
+    your api-key and secret-key corresponding to the environment you wish to use
+    (make sure that the correct environment is selected on the `Server` combo
+    box located below and to the left of the `Authorize` button). Alternatively,
+    you can click on the 'lock' icon located on each endpoint to enter your
+    keys.
+
+    Once you have authenticated, you can now click on each endpoint's
+    `Try it out` button, which will let you enter the parameters' values (if
+    any) and display a big blue `Execute` button.
+
+    Additionally, you can use any of the following API-testing tools:
+
+      * [Paw](https://paw.cloud/)
+      * [Postman](https://www.getpostman.com/)
+      * [Insomnia](https://insomnia.rest/)
+
+    ## Forcing errors and MFAs
+
+    Within the Sandbox, we have created a merchant that will allow you to force
+    a failed response as well as test the usage of MFA Challenges:
+      - name: Arcus Faker
+      - ID: 451cc3f4-68c4-4280-9d8a-164891bbd850
+
+    This can be done by using a specific `login` value in those endpoints that
+    create a resource. Following is the list of the possible values:
+
+    <table>
+      <tr>
+        <th>Login value</th>
+        <th>Explanation</th>
+      </tr>
+      <tr>
+        <td>question.the_answer</td>
+        <td>
+          This will associate a new MFA Challenge of type 'question' with the
+          migration attempt. You will have to provide <b>the_answer</b> as
+          <b>answer</b> on the <b>PATCH/challenges</b> endpoint.
+        </td>
+      </tr>
+      <tr>
+        <td>code.the_code</td>
+        <td>
+          This will associate a new MFA Challenge of type 'code' with the
+          migration attempt. You will have to provide <b>the_code</b> as
+          <b>answer</b> on the <b>PATCH/challenges</b> endpoint.
+        </td>
+      </tr>
+      <tr>
+        <td>image_uri</td>
+        <td>
+          This will associate a new MFA Challenge of type 'image_uri' with the
+          migration attempt.
+        </td>
+      </tr>
+      <tr>
+        <td>image_url</td>
+        <td>
+          This will associate a new MFA Challenge of type 'image_url' with the
+          migration attempt.
+        </td>
+      </tr>
+      <tr>
+        <td>input</td>
+        <td>
+          This will return an error code of <b>CreditCardDeclined</b>.
+        </td>
+      </tr>
+      <tr>
+        <td>timeout</td>
+        <td>
+          This will return an error code of <b>TemporaryError</b>.
+        </td>
+      </tr>
+      <tr>
+        <td>credentials</td>
+        <td>
+          This will return an error code of <b>InvalidCredentials</b>.
+        </td>
+      </tr>
+    </table>
+
+    __Note:__ We recommend you use a different `password` everytime you create a
+      resource in the sandbox.
 
 servers:
   - url: https://apix.staging.arcusapi.com
