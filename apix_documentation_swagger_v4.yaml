@@ -1,0 +1,1429 @@
+openapi: 3.0.0
+
+info:
+  version: '4.0'
+  title: arcus API Documentation
+  description: |
+    # Introduction
+
+    Welcome to arcus! Here you’ll find detailed information for integrating with
+    our APIx v4.0 endpoints. We’ve tried to make this documentation as
+    user-friendly and example-filled as possible, but if you have any questions,
+    please [contact us](mailto:support-us@arcusfi.com).
+
+    Integration happens in six easy steps:
+
+    1. Sign NDA
+    2. Receive staging (sandbox) API keys
+    3. Complete compliance approval
+    4. Sign commercial contract
+    5. Receive production API keys
+    6. Get certified
+
+    ---
+
+    # Our products
+
+    * __xData__ Pull real-time data from merchants
+    * __xPay__ Push payments (via ACH) to merchants
+    * __xChange__ Push card-on-file updates to merchants
+
+    ---
+
+    # Glossary
+
+    * __ACH__ Stands for Automated Clearing House. It is an electronic network
+      for financial transactions in the United States. ACH processes large
+      volumes of credit (direct deposit, payroll, vendor payments) and debit
+      (consumer payments on insurance premiums, mortgage loans, and other kinds
+      of bills) transactions in batches.
+    * __api-key__ It allows arcus to uniquely identify the client making any
+      requests to the APIx.
+    * __secret-key__ You will be given this key to generate a unique signature
+      (checksum) to your requests, thus guaranteeing their authenticity. Make
+      sure never to share it.
+    * __Bill__ Expenses owed by an end user to a merchant which need to be paid
+      on a recurring basis.
+    * __Merchant__ Any merchant that offers an end user a service (e.g.:
+      Verizon, Uber, Time Warner)
+    * __Credentials__ A set of values that gives an end user access to a
+      merchant's website and/or app. E.g.: username + password.
+    * __Challenge__ Stands for Multi-factor Authentication. Some merchants
+      require more than just a username/password to log in. In those situations,
+      one or more MFA challenges have to be answered. An MFA challenge can be a
+      verification code sent to a phone, a secret question, an image, a list of
+      images to choose from, or different choices which only the end user would
+      know the answer to.
+    * __Migration__ It is the act of changing a bill's credit card information.
+    * __Transaction__ It is the act of moving money between 2 points.
+
+    ---
+
+    # Environments
+
+    arcus will provide you with separate API keys for our two existing
+    environments:
+
+    * __Sandbox__. arcus maintains a Sandbox which allows developers to test the
+    API using mock data. We recommend keeping in mind the following:
+
+        * The list of merchants is not in sync with the merchants in production
+        * Do not send real credentials to the Sandbox
+
+      To make requests to the sandbox environment, use the following URL:
+        `https://apix.staging.arcusapi.com`
+
+    * __Production__. Once you have completed all the necessary tests on the
+    sandbox, contact us to receive your production keys.
+
+      To make requests to the production environment, use the following URL:
+        `https://apix.arcusapi.com`
+
+    ---
+
+    # Security
+
+    To make requests to our endpoints, you must use the `https` protocol,
+    regardless of the environment you're using.
+
+    <div class="panel panel-danger">
+      <div class="panel-body">
+        <h4>
+          <strong>Note:</strong> For security reasons, our API doesn't support
+          the TLS V1.0 anymore; we ask you to use TLS v1.2 for better security.
+        </h4>
+      </div>
+    </div>
+
+    > ## Authentication
+
+    > arcus uses an api-key and a secret-key for authentication that we generate
+    and will provide to you, one for each environment.
+
+    > arcus expects for the api-key to be included in all API requests to the
+    server in the ‘Authorization’ header, combined with a checksum which we will
+    describe later on:
+
+    > __Authorization:__ `APIAuth <your-api-key>:<checksum>`
+
+    * ### Calculating the Checksum
+
+        1. A checksum string needs to be created first by concatenating the
+        `HTTP Method`, `Content-Type`, `Content-MD5`, `Endpoint` and today's `Timestamp`:
+
+            checksum_string = `http-method`,`content-type`,`content-md5`,`endpoint`,`timestamp`
+
+              - __Note:__ The ‘Endpoint’ is simply the URL you are sending the
+              request to, excluding the server and including the parameters. For
+              instance, if you want to obtain a bill's data by requesting a get
+              to `https://apix.staging.arcusapi.com/bills/1`, your checksum
+              string should look like this:
+              `GET,application/json,,/bills/1,Wed, 10 Jan 2017 16:53:15 GMT`
+              - __Note:__ Please notice the timestamp format. In UNIX-based
+              systems you could obtain it by running:
+                <b>echo \`date -Ru | sed 's/+0000/GMT/'`</b> in your terminal.
+              - __Note:__ Also notice that content-md5 in this case is empty
+              because no body is being sent.
+
+        2. The checksum string is then used to create the checksum, which is a
+        Base64 SHA1 HMAC string encoded using your secret-key.
+
+        3. For testing, verify that if you pass
+        `GET,application/json,,/account,Mon, 02 Jul 2018 00:35:24 GMT` to your
+        checksum function and use `verify-secret` as secret key, it should
+        return `Rp0ZzsD2PODJHuaWoUGalIiTcrM=`.
+
+            ```
+            CURRENT_DATE=`date -Ru | sed 's/+0000/GMT/'`
+            CHECKSUM=$(echo -n "GET,application/json,,/account,$CURRENT_DATE" \
+              | openssl dgst -sha1 -binary -hmac "your-secret-key" \
+              | base64)
+            ```
+
+    * ### How to use the Checksum
+
+      Now that you have a checksum, you can add it to the `Authorization` header
+      as we previously mentioned. As an example, let’s assume that your api-key
+      is `f0253d2a6a76ed12499e7878d7803ffb` and that your checksum is
+      `Rp0ZzsD2PODJHuaWoUGalIiTcrM=`. Now, you can add the following header to
+      your request:
+
+      `-H Authorization: APIAuth f0253d2a6a76ed12499e7878d7803ffb:Rp0ZzsD2PODJHuaWoUGalIiTcrM=`
+
+    * ### Other headers
+
+      Aside from the Authorization header, you will also have to make sure that
+      your requests include the following headers:
+        * __Content-MD5__ It can be blank or a hash of digest base64.
+
+          `-H 'Content-MD5: 1B2M2Y8AsgTpgAmY7PhCfg=='`
+        * __Date__ It requires the same format used in the generation of the
+          checksum.
+
+          `-H 'Date: Mon, 02 Jul 2018 00:35:24 GMT'`
+        * __Content-Type__ Always should be application/json
+
+          `-H 'Content-Type: application/json'`
+        * __Accept__ Always should be application/vnd.regalii.v4.0+json
+
+          `-H 'Accept: application/vnd.regalii.v4.0+json'`
+
+    ___
+
+    # Tools for Testing
+
+    It is recommended that you first test a couple of endpoints and get
+    familiarized with their responses. This will give you an idea of how to
+    properly construct requests in your application (and save you coding time).
+
+    You can do so by using the following dynamic sections of this documentation.
+    In order for the endpoints to work properly, first you have to click on the
+    `Authorize` button (located before the endpoints, to the right) and enter
+    your api-key and secret-key corresponding to the environment you wish to use
+    (make sure that the correct environment is selected on the `Server` combo
+    box located below and to the left of the `Authorize` button). Alternatively,
+    you can click on the 'lock' icon located on each endpoint to enter your
+    keys.
+
+    Once you have authenticated, you can now click on each endpoint's
+    `Try it out` button, which will let you enter the parameters' values (if
+    any) and display a big blue `Execute` button.
+
+    Additionally, you can use any of the following API-testing tools:
+
+      * [Paw](https://paw.cloud/)
+      * [Postman](https://www.getpostman.com/)
+      * [Insomnia](https://insomnia.rest/)
+
+    # Errors
+
+    Responses will use standard HTTP error codes to convey basic error status
+    information.
+
+    Unless you obtain a successful response (code 2XX), you may encounter any of
+    the following:
+
+    <table>
+      <tr>
+        <th>Error Code</th>
+        <th>Meaning</th>
+      </tr>
+      <tr>
+        <td>400</td>
+        <td>Bad Request</td>
+      </tr>
+      <tr>
+        <td>401</td>
+        <td>Unauthorized -- Your API key or checksum is wrong</td>
+      </tr>
+      <tr>
+        <td>403</td>
+        <td>
+          Forbidden -- You are not authorized to access the resource requested
+        </td>
+      </tr>
+      <tr>
+        <td>404</td>
+        <td>Not Found -- The specified resource could not be found</td>
+      </tr>
+      <tr>
+        <td>422</td>
+        <td>
+          Unprocessable Entity -- You will receive more information on the
+          response of what the problem was
+        </td>
+      </tr>
+      <tr>
+        <td>429</td>
+        <td>
+          Too Many Requests -- You're sending too many requests! Slow down!
+        </td>
+      </tr>
+      <tr>
+        <td>500</td>
+        <td>
+          Internal Server Error -- We had a problem with our server. Try again
+          later.
+        </td>
+      </tr>
+      <tr>
+        <td>503</td>
+        <td>Service Unavailable -- Please try again later.</td>
+      </tr>
+    </table>
+
+    ## Unprocessable entity error codes
+
+    Whenever you get a 422 HTTP error code, we will provide you with extra
+    information so that you know what course of action to take in order to
+    obtain a successful response.
+
+    <table>
+      <tr>
+        <th>Error Code</th>
+        <th>Explanation</th>
+      </tr>
+      <tr>
+        <td>NotFound</td>
+        <td>An associated resource couldn't be found (like the Merchant ID)</td>
+      </tr>
+      <tr>
+        <td>MissingParameters</td>
+        <td>A parameter is missing from the request</td>
+      </tr>
+      <tr>
+        <td>BlankAttributeError</td>
+        <td>A parameter is provided but its value is null or empty</td>
+      </tr>
+      <tr>
+        <td>InvalidAttributeError</td>
+        <td>A parameter is provided and its value is invalid</td>
+      </tr>
+      <tr>
+        <td>InclusionAttributeError</td>
+        <td>
+          A parameter is provided and its value is not included in the whitelist
+          (like the US states)
+        </td>
+      </tr>
+      <tr>
+        <td>GreaterThanOrEqualToAttributeError</td>
+        <td>
+          A parameter is provided but its value is greater or equal to the
+          maximum value allowed
+        </td>
+      </tr>
+      <tr>
+        <td>LessThanOrEqualToAttributeError</td>
+        <td>
+          A parameter is provided but its value is less or equal to the maximum
+          value allowed
+        </td>
+      </tr>
+      <tr>
+        <td>WrongLengthAttributeError</td>
+        <td>A parameter is provided but its value length is incorrect</td>
+      </tr>
+    </table>
+
+servers:
+  - url: https://apix.staging.arcusapi.com
+    description: Sandbox, Mock Credentials; Mock Data
+  - url: https://apix.arcusapi.com
+    description: Production, Real Credentials; Real Data
+
+tags:
+  - name: Common
+    description: Common endpoints
+  - name: xChange
+    description: Access to xChange documentation
+  - name: Challenges
+    description: Documentation regarding usage of MFA challenges
+
+security:
+  - hmacAuth: []
+
+paths:
+  /merchants:
+    get:
+      tags:
+        - Common
+      summary: Provides the current list of merchants
+      operationId: getMerchants
+      description: |
+        This endpoint provides the current list of merchants and their
+        associated properties.
+        To ensure that your end users are able to leverage the enhancements that
+        we make over time, you are required to cache the full list of merchants
+        and update it on a weekly basis.
+      parameters:
+        - in: query
+          name: page
+          required: false
+          description: It allows you to display any page of the merchants' list
+          schema:
+            type: integer
+        - in: query
+          name: order
+          required: false
+          description: Allows you to order the results by certain attributes,
+            descendigly (_desc) or ascendingly (_asc)
+          schema:
+            type: string
+            enum:
+              - category_asc
+              - category_desc
+              - name_asc
+              - name_desc
+              - country_asc
+              - country_desc
+              - currency_asc
+              - currency_desc
+              - created_at_asc
+              - created_at_desc
+              - updated_at_asc
+              - updated_at_desc
+        - in: query
+          name: q[category]
+          required: false
+          description: Returns merchants whose category matches the parameter
+            sent
+          schema:
+            type: string
+        - in: query
+          name: q[name]
+          required: false
+          description: Returns merchants whose name contains the parameter sent
+          schema:
+            type: string
+        - in: query
+          name: q[country]
+          required: false
+          description: Returns merchants whose country matches the parameter
+            sent
+          schema:
+            type: string
+        - in: query
+          name: q[currency]
+          required: false
+          description: Returns merchants whose currency matches the parameter
+            sent
+          schema:
+            type: string
+        - in: query
+          name: q[created_at_gt]
+          required: false
+          description: Returns merchants that were created after the timestamp
+            sent
+          schema:
+            type: string
+        - in: query
+          name: q[created_at_lt]
+          required: false
+          description: Returns merchants that were created before the timestamp
+            sent
+          schema:
+            type: string
+        - in: query
+          name: q[updated_at_gt]
+          required: false
+          description: Returns merchants that were updated after the timestamp
+            sent
+          schema:
+            type: string
+        - in: query
+          name: q[updated_at_lt]
+          required: false
+          description: Returns merchants that were updated before the timestamp
+            sent
+          schema:
+            type: string
+        - in: query
+          name: q[product]
+          required: false
+          description: Returns merchants that are ready to be used for a
+            specific product
+          schema:
+            type: string
+            enum:
+              - xchange
+              - xdata
+              - xpay
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Merchant'
+                allOf:
+                  - $ref: '#/components/schemas/MetaData'
+                  - $ref: '#/components/schemas/NavigationLinks'
+
+                example:
+                  data:
+                    - id: 4d09ec4f-0078-4de4-89a5-91db28dd079c
+                      type: merchant
+                      attributes:
+                        category: Electricity
+                        name: Gerhold-Doyle
+                        country: US
+                        currency: USD
+                        home_url: null
+                        signup_url: null
+                        password_url: null
+                        color: null
+                        logo: null
+                        created_at: "2018-06-07 15:02:57 UTC"
+                        updated_at: "2018-06-07 15:02:57 UTC"
+                  meta:
+                    total: 35
+                    total-pages: 1
+                  links:
+                    self: "https://apix.staging.arcusapi.com/merchants?page=1"
+                    next: null
+                    prev: null
+        404:
+          description: resources not found
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error_Info'
+
+                example:
+                  errors:
+                    - source:
+                        parameter: page
+                      code: PageNotFound
+                      # TODO: modify text in APIx
+                      detail: There is none resources for the page requested
+
+  /merchants/{id}:
+    get:
+      tags:
+        - Common
+      summary: Obtains the details of a single merchant
+      operationId: getMerchant
+      description: |
+        This endpoint provides the details of a single merchant.
+      parameters:
+        - name: id
+          in: path
+          description: UUID of the merchant you wish to obtain
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                      - $ref: '#/components/schemas/Merchant'
+
+                example:
+                  data:
+                    id: 4d09ec4f-0078-4de4-89a5-91db28dd079c
+                    type: merchant
+                    attributes:
+                      category: Electricity
+                      name: Gerhold-Doyle
+                      country: US
+                      currency: USD
+                      home_url: null
+                      signup_url: null
+                      password_url: null
+                      color: null
+                      logo: null
+                      created_at: "2018-06-07 15:02:57 UTC"
+                      updated_at: "2018-06-07 15:02:57 UTC"
+
+        404:
+          description: resource not found
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error_Info'
+
+                example:
+                  errors:
+                    - source:
+                        parameter: id
+                      code: NotFound
+                      detail: The resource requested can't be found
+
+  /merchant:
+    post:
+      tags:
+        - Common
+      summary: Obtains the details of a single merchant more securely
+      operationId: getMerchantSecure
+      description: |
+        This endpoint provides the details of a single merchant.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+              properties:
+                id:
+                  description: UUID of the merchant you wish to obtain
+                  type: string
+              example:
+                id: 4d09ec4f-0078-4de4-89a5-91db28dd079c
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                      - $ref: '#/components/schemas/Merchant'
+
+                example:
+                  data:
+                    id: 4d09ec4f-0078-4de4-89a5-91db28dd079c
+                    type: merchant
+                    attributes:
+                      category: Electricity
+                      name: Gerhold-Doyle
+                      country: US
+                      currency: USD
+                      home_url: null
+                      signup_url: null
+                      password_url: null
+                      color: null
+                      logo: null
+                      created_at: "2018-06-07 15:02:57 UTC"
+                      updated_at: "2018-06-07 15:02:57 UTC"
+
+        404:
+          description: resource not found
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error_Info'
+
+                example:
+                  errors:
+                    - source:
+                        parameter: id
+                      code: NotFound
+                      detail: The resource requested can't be found
+
+  /migrations:
+    post:
+      tags:
+        - xChange
+      summary: Replaces the payment method on the merchant’s website
+      description: |
+        This endpoint replaces the payment method on the merchant’s website.
+      operationId: postMigrations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Basic_Credentials'
+              type: object
+              required:
+                - merchant_id
+                - card_first_name
+                - card_last_name
+                - card_type
+                - card_brand
+                - card_number
+                - card_expiration
+                - card_verification_code
+                - card_address
+                - card_city
+                - card_state
+                - card_zip_code
+                - card_country
+              properties:
+                merchant_id:
+                  type: string
+                  description: Merchant's ID.
+                  example: "6ab564f9-4e9d-4b03-96d6-dd9f2c39ec53"
+                card_first_name:
+                  type: string
+                  description: End user’s first name
+                  example: "Elon"
+                card_last_name:
+                  type: string
+                  description: End user’s last name
+                  example: "Musk"
+                card_country:
+                  type: string
+                  description: Country where the card was issued (US only for
+                    the time being)
+                  example: "US"
+                card_number:
+                  type: string
+                  description: Card number
+                  example: "5221740002389461"
+                card_type:
+                  type: string
+                  description: Type of card (credit/debit)
+                  example: "credit"
+                card_brand:
+                  type: string
+                  description: Card's brand (mastercard/visa/american_express)
+                  example: "visa"
+                card_expiration:
+                  type: string
+                  description: Card's expiration date
+                  example: "12/2018"
+                card_verification_code:
+                  type: string
+                  description: Card’s security code (3 or 4 digit number)
+                  example: "123"
+                card_address:
+                  type: string
+                  description: Street name and number
+                  example: "351 W 14th St Apt L"
+                card_city:
+                  type: string
+                  description: City
+                  example: "New York"
+                card_state:
+                  type: string
+                  description: Two letter abbreviation of a US state
+                  example: "NY"
+                card_zip_code:
+                  type: string
+                  description: Address’ zipcode
+                  example: "10014"
+
+      responses:
+        202:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                      - $ref: '#/components/schemas/Migration'
+
+                example:
+                  data:
+                    id: 59b9fdac-e5fd-4ef2-bd98-b4eef3b5fb6a
+                    type: migration
+                    attributes:
+                      status: updating
+                      requested_at: '2018-06-22 21:23:26 UTC'
+                      migrated_at: null
+
+        422:
+          description: unprocessable entity
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error_Info'
+
+                example:
+                  errors:
+                    - source:
+                        parameter: password
+                      code: BlankAttributeError
+                      detail: Password can't be blank
+                    - source:
+                        parameter: card_country
+                      code: InvalidAttributeError
+                      detail: Card country is invalid
+
+    get:
+      tags:
+        - xChange
+      summary: Gets all your attempted migrations
+      description: |
+        This endpoint is used to get all your attempted migrations.
+      operationId: getMigrations
+      parameters:
+        - name: page
+          in: query
+          description: It allows you to display any page of the migrations’ list
+          required: false
+          schema:
+            type: integer
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Migration'
+                allOf:
+                  - $ref: '#/components/schemas/MetaData'
+                  - $ref: '#/components/schemas/NavigationLinks'
+
+                example:
+                  data:
+                    - id: b4aa7d78-6f16-4ddd-887d-9f5c0b730a26
+                      type: migration
+                      attributes:
+                        status: failed
+                        requested_at: '2018-06-15 14:16:16 UTC'
+                        migrated_at: '2018-06-15 16:34:54 UTC'
+                        error:
+                          code: InvalidCredentials
+                          detail: Invalid login or password
+                  # TODO: Include examples of different statuses and error codes
+                  meta:
+                    total: 23
+                    total-pages: 1
+                  links:
+                    self: "https://apix.staging.arcusapi.com/migrations?page=1"
+                    next: null
+                    prev: null
+
+  /migrations/{id}:
+    get:
+      tags:
+        - xChange
+      summary: Gets the last migration attempt of a bill
+      description: >-
+        This endpoint gets the last migration attempt of a bill.
+      operationId: getMigration
+      parameters:
+        - name: id
+          in: path
+          description: ID of the bill whose migration information you wish to
+            obtain
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                      - $ref: '#/components/schemas/Migration'
+
+                example:
+                  data:
+                    id: b4aa7d78-6f16-4ddd-887d-9f5c0b730a26
+                    type: migration
+                    attributes:
+                      status: failed
+                      requested_at: '2018-06-15 14:16:16 UTC'
+                      migrated_at: '2018-06-15 16:34:54 UTC'
+                      error:
+                        code: InvalidCredentials
+                        detail: Invalid login or password
+
+  /migration:
+    post:
+      tags:
+        - xChange
+      summary: Gets the last migration attempt of a bill more securely
+      description: >-
+        This endpoint gets the last migration attempt of a bill.
+      operationId: getMigrationSecure
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+              properties:
+                id:
+                  description: ID of the bill whose migration information you
+                    wish to obtain
+                  type: string
+              example:
+                id: b4aa7d78-6f16-4ddd-887d-9f5c0b730a26
+
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                      - $ref: '#/components/schemas/Migration'
+
+                example:
+                  data:
+                    id: b4aa7d78-6f16-4ddd-887d-9f5c0b730a26
+                    type: migration
+                    attributes:
+                      status: failed
+                      requested_at: '2018-06-15 14:16:16 UTC'
+                      migrated_at: '2018-06-15 16:34:54 UTC'
+                      error:
+                        code: InvalidCredentials
+                        detail: Invalid login or password
+
+  /migrations/{id}/challenges:
+    get:
+      tags:
+        - Challenges
+      summary: Gets all challenges associated with a specific migration
+      description: |
+        If the migration requires the end user to answer some challenges, the
+        customer can request the challenges associated to one specific
+        migration by using this endpoint.
+      operationId: getMigrationsChallenges
+      parameters:
+        - name: id
+          in: path
+          description: ID of the migration whose challenges you wish to obtain
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      anyOf:
+                        - $ref: '#/components/schemas/MFA_Challenge_Question'
+                        - $ref: '#/components/schemas/MFA_Challenge_Code'
+                        - $ref: '#/components/schemas/MFA_Challenge_Image'
+                        - $ref: '#/components/schemas/MFA_Challenge_Image_Choices'
+                        - $ref: '#/components/schemas/MFA_Challenge_Choices'
+                allOf:
+                  - $ref: '#/components/schemas/MetaData'
+                  - $ref: '#/components/schemas/NavigationLinks'
+
+                example:
+                  data:
+                    - id: 3a798711-d352-4ee5-b35d-383fd23e7edc
+                      type: challenge
+                      attributes:
+                        kind: code
+                        created_at: '2018-06-15 14:16:16 UTC'
+                        expires_at: '2018-06-15 14:19:16 UTC'
+                        prompt: Please provide the code sent to your phone.
+                  # TODO: Include examples of different challenges
+                  meta:
+                    total: 1
+                    total-pages: 1
+                  links:
+                    self: "https://apix.staging.arcusapi.com/migrations/59b9fdac-e5fd-4ef2-bd98-b4eef3b5fb6a/challenges?page=1"
+                    next: null
+                    prev: null
+
+  /migration_challenges:
+    post:
+      tags:
+        - Challenges
+      summary: Gets all challenges associated with a specific migration more
+        securely
+      description: |
+        If the migration requires the end user to answer some challenges, the
+        customer can request the challenges associated to one specific
+        migration by using this endpoint.
+      operationId: getMigrationsChallengesSecure
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - migration_id
+              properties:
+                migration_id:
+                  description: ID of the migration whose challenges you wish to
+                    obtain
+                  type: string
+              example:
+                id: b4aa7d78-6f16-4ddd-887d-9f5c0b730a26
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      anyOf:
+                        - $ref: '#/components/schemas/MFA_Challenge_Question'
+                        - $ref: '#/components/schemas/MFA_Challenge_Code'
+                        - $ref: '#/components/schemas/MFA_Challenge_Image'
+                        - $ref: '#/components/schemas/MFA_Challenge_Image_Choices'
+                        - $ref: '#/components/schemas/MFA_Challenge_Choices'
+                allOf:
+                  - $ref: '#/components/schemas/MetaData'
+                  - $ref: '#/components/schemas/NavigationLinks'
+
+                example:
+                  data:
+                    - id: 3a798711-d352-4ee5-b35d-383fd23e7edc
+                      type: challenge
+                      attributes:
+                        kind: code
+                        created_at: '2018-06-15 14:16:16 UTC'
+                        expires_at: '2018-06-15 14:19:16 UTC'
+                        prompt: Please provide the code sent to your phone.
+                  # TODO: Include examples of different challenges
+                  meta:
+                    total: 1
+                    total-pages: 1
+                  links:
+                    self: "https://apix.staging.arcusapi.com/migrations/59b9fdac-e5fd-4ef2-bd98-b4eef3b5fb6a/challenges?page=1"
+                    next: null
+                    prev: null
+
+  /challenges/{id}:
+    patch:
+      tags:
+        - Challenges
+      summary: Submit answer to a challenge
+      description: |
+        Sends the answer to a specific challenge
+      operationId: updateChallenge
+      parameters:
+        - name: id
+          in: path
+          description: ID of the challenge that is being answered
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                challenge:
+                  type: object
+                  required:
+                    - answer
+                  properties:
+                    answer:
+                      type: string
+              example:
+                challenge:
+                  answer: 12345
+
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    oneOf:
+                      - $ref: '#/components/schemas/MFA_Challenge_Question'
+                      - $ref: '#/components/schemas/MFA_Challenge_Code'
+                      - $ref: '#/components/schemas/MFA_Challenge_Image'
+                      - $ref: '#/components/schemas/MFA_Challenge_Image_Choices'
+                      - $ref: '#/components/schemas/MFA_Challenge_Choices'
+                example:
+                  data:
+                    id: 3a798711-d352-4ee5-b35d-383fd23e7edc
+                    type: challenge
+                    attributes:
+                      kind: code
+                      created_at: '2018-06-15 14:16:16 UTC'
+                      expires_at: '2018-06-15 14:19:16 UTC'
+                      prompt: Please provide the code sent to your phone.
+
+components:
+  securitySchemes:
+    hmacAuth:
+      type: http
+      scheme: hmac-sha1
+  schemas:
+    GenericData:
+      type: object
+      required:
+        - type
+        - id
+      properties:
+        type:
+          type: string
+          description: Describes the type of data that is being returned
+        id:
+          type: string
+          description: Unique identifier (UUID) of the entity
+
+    Merchant:
+      type: object
+      required:
+        - attributes
+      allOf:
+        - $ref: '#/components/schemas/GenericData'
+      properties:
+        attributes:
+          type: object
+          required:
+            - name
+            - country
+            - currency
+            - created_at
+            - updated_at
+          properties:
+            name:
+              type: string
+              description: Merchant's name
+            country:
+              type: string
+              description: Merchant’s ISO 2 digit country code
+            currency:
+              type: string
+              description: 3 digit ISO currency code of the merchant’s
+                country
+            category:
+              type: string
+              description: Short description of the merchant's
+                category (e.g. Television/Internet, electricity, etc.)
+            home_url:
+              type: string
+              description: Merchant's homepage
+            signup_url:
+              type: string
+              description: URL where the final user registers to the Merchant's
+                site
+            # TODO: what does this stand for?
+            password_url:
+              type: string
+              description: ""
+            # TODO: what does this stand for?
+            color:
+              type: string
+              description: ""
+            # TODO: what does this stand for?
+            logo:
+              type: string
+              description: ""
+            created_at:
+              type: string
+              format: date-time
+              description: Timestamp of when this merchant was created in arcus'
+                system
+            updated_at:
+              type: string
+              format: date-time
+              description: Timestamp of when this merchant was last updated in
+                arcus' system
+
+    MetaData:
+      type: object
+      required:
+        - meta
+      properties:
+        meta:
+          type: object
+          required:
+            - total
+            - total-pages
+          properties:
+            total:
+              type: integer
+            total-pages:
+              type: integer
+
+    NavigationLinks:
+      type: object
+      required:
+        - links
+      properties:
+        links:
+          type: object
+          required:
+            - self
+          properties:
+            self:
+              type: string
+            next:
+              type: string
+            prev:
+              type: string
+
+    Migration:
+      allOf:
+        - $ref: '#/components/schemas/GenericData'
+      type: object
+      required:
+        - attributes
+      properties:
+        attributes:
+          type: object
+          required:
+            - status
+            - requested_at
+          properties:
+            status:
+              description: Migration's status
+              type: string
+            requested_at:
+              description: Timestamp of when the migration was requested
+              type: string
+            migrated_at:
+              description: Timestamp of when the migration succeeded
+              type: string
+            error:
+              type: object
+              allOf:
+                - $ref: '#/components/schemas/Error_Info'
+
+    Basic_Credentials:
+      description: Includes the basic information to access an end user's
+        account
+      type: object
+      properties:
+        login:
+          type: string
+          description: The account's username/email address/identifier
+          example: "jdoe@successful.ii"
+        password:
+          type: string
+          description: The account's password
+          example: "HeLl0o1!"
+      required:
+        - login
+        - password
+
+    Error_Info:
+      type: object
+      required:
+        - code
+        - detail
+      properties:
+        code:
+          description: Error code
+          type: string
+        detail:
+          description: Description of the error encountered
+          type: string
+        source:
+          type: object
+          required:
+            - parameter
+          properties:
+            parameter:
+              type: string
+
+    MFA_Challenge:
+      description: Shared information of MFA Challenges
+      type: object
+      required:
+        - kind
+        - created_at
+      properties:
+        kind:
+          type: string
+          description: Challenge's type (question, code, image, choice,
+            image_choice)
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp of when the challenge was created
+        expires_at:
+          type: string
+          format: date-time
+          description: Delay of expiration; after this timestamp the answer will
+            be rejected. It can be null.
+
+    MFA_Challenge_Question:
+      description: Structure of an MFA Challenge of type 'question'. Secret
+        questions are often asked in addition to an end user's password.
+      allOf:
+        - $ref: '#/components/schemas/GenericData'
+      type: object
+      required:
+        - attributes
+      properties:
+        attributes:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/MFA_Challenge'
+            - type: object
+              required:
+                - prompt
+              properties:
+                prompt:
+                  type: string
+                  description: The question to show to the owner of the account
+                  example: What is 4 + 4?
+
+    MFA_Challenge_Code:
+      description: Structure of an MFA Challenge of type 'code'. Verification
+        codes are sometimes sent to an end user's mobile phone before they are
+        able to log in. Verification codes cannot be re-used.
+      allOf:
+        - $ref: '#/components/schemas/GenericData'
+      type: object
+      required:
+        - attributes
+      properties:
+        attributes:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/MFA_Challenge'
+            - type: object
+              required:
+                - prompt
+              properties:
+                prompt:
+                  type: string
+                  description: The instructions to show to the owner of the
+                    account
+                  example: Please provide the code sent to your phone.
+
+    MFA_Challenge_Image:
+      description: Structure of an MFA Challenge of type 'image'
+      allOf:
+        - $ref: '#/components/schemas/GenericData'
+      type: object
+      required:
+        - attributes
+      properties:
+        attributes:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/MFA_Challenge'
+            - type: object
+              required:
+                - prompt
+                - image
+              properties:
+                prompt:
+                  type: string
+                  example: Please transcript the image as text
+                image:
+                  type: object
+                  required:
+                    - type
+                    - value
+                  properties:
+                    type:
+                      type: string
+                      description: "The type of the image: url or uri"
+                    value:
+                      type: string
+                      description: The URL of the image for url or the content
+                        of the image for uri
+                      example: "https://www.arcusfi.com/assets/images/arcus_logo_color.png"
+
+    # TODO: Validate structure when Plunderer::Faker::Client supports it
+    MFA_Challenge_Image_Choices:
+      description: Structure of an MFA Challenge of type 'image_choice'
+      allOf:
+        - $ref: '#/components/schemas/GenericData'
+      type: object
+      required:
+        - attributes
+      properties:
+        attributes:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/MFA_Challenge'
+            - type: object
+              required:
+                - prompt
+                - choices
+              properties:
+                prompt:
+                  type: string
+                  example: Please select the right image
+                choices:
+                  type: array
+                  description: An array of images
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: The ID of the option (basically the index
+                          of the array)
+                      type:
+                        type: string
+                        description: "The type of the image: url or uri"
+                      value:
+                        type: string
+                        description: The URL of the image for url or the content
+                          of the image for uri
+                        example: http://via.placeholder.com/350x150
+
+    # TODO: Validate structure when Plunderer::Faker::Client supports it
+    MFA_Challenge_Choices:
+      description: Structure of an MFA Challenge of type '?'
+      allOf:
+        - $ref: '#/components/schemas/GenericData'
+      type: object
+      required:
+        - attributes
+      properties:
+        attributes:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/MFA_Challenge'
+            - type: object
+              required:
+                - prompt
+                - choices
+              properties:
+                prompt:
+                  type: string
+                  example: Please select the right answer
+                choices:
+                  type: array
+                  description: An array of choices
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: The ID of the option (basically the index
+                          of the array)
+                      category:
+                        type: string
+                        description: Defines the category to which the value
+                          belongs (e.g. Phone, Text, E-mail). It can be null
+                        example: Phone
+                      value:
+                        type: string
+                        description: A phone number or e-mail address. The same
+                          value can be present in different categories
+                        example: "+1234567890"
