@@ -453,6 +453,18 @@ paths:
           description: Only returns billers whose name matches the value sent
           schema:
             type: string
+        - in: query
+          name: q[name_cont]
+          required: false
+          description: Only returns billers whose name contains the value sent
+          schema:
+            type: string
+        - in: query
+          name: q[name_start]
+          required: false
+          description: Only returns billers whose name starts with the value sent
+          schema:
+            type: string
       responses:
         200:
           description: successful response
