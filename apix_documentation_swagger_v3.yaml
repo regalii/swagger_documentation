@@ -188,31 +188,6 @@ info:
       __NOTE:__ It is the client's responsibility to trigger bills to refresh
       under normal operation.
 
-    # Tools for Testing
-
-    It is recommended that you first test a couple of endpoints and get
-    familiarized with their responses. This will give you an idea of how to
-    properly construct requests in your application (and save you coding time).
-
-    You can do so by using the following dynamic sections of this documentation.
-    In order for the endpoints to work properly, first you have to click on the
-    `Authorize` button (located before the endpoints, to the right) and enter
-    your api-key and secret-key corresponding to the environment you wish to use
-    (make sure that the correct environment is selected on the `Server` combo
-    box located below and to the left of the `Authorize` button). Alternatively,
-    you can click on the 'lock' icon located on each endpoint to enter your
-    keys.
-
-    Once you have authenticated, you can now click on each endpoint's
-    `Try it out` button, which will let you enter the parameters' values (if
-    any) and display a big blue `Execute` button.
-
-    Additionally, you can use any of the following API-testing tools:
-
-      * [Paw](https://paw.cloud/)
-      * [Postman](https://www.getpostman.com/)
-      * [Insomnia](https://insomnia.rest/)
-
     # Language bindings
 
       We have created libraries in multiple languages that will make it easier
@@ -350,6 +325,121 @@ info:
         <td>Please review your responses and try again</td>
       </tr>
     </table>
+
+    # Tools for Testing
+
+    It is recommended that you first test a couple of endpoints and get
+    familiarized with their responses. This will give you an idea of how to
+    properly construct requests in your application (and save you coding time).
+
+    You can do so by using the following dynamic sections of this documentation.
+    In order for the endpoints to work properly, first you have to click on the
+    `Authorize` button (located before the endpoints, to the right) and enter
+    your api-key and secret-key corresponding to the environment you wish to use
+    (make sure that the correct environment is selected on the `Server` combo
+    box located below and to the left of the `Authorize` button). Alternatively,
+    you can click on the 'lock' icon located on each endpoint to enter your
+    keys.
+
+    Once you have authenticated, you can now click on each endpoint's
+    `Try it out` button, which will let you enter the parameters' values (if
+    any) and display a big blue `Execute` button.
+
+    Additionally, you can use any of the following API-testing tools:
+
+      * [Paw](https://paw.cloud/)
+      * [Postman](https://www.getpostman.com/)
+      * [Insomnia](https://insomnia.rest/)
+
+    ## Handling Multi-factor Authentication (MFA)
+
+    Some billers require more than just a username/password to log in. In
+    those situations, arcus will associate one or more MFA challenges with a
+    bill. An MFA challenge can be a verification code sent to a phone, a
+    secret question, an image, a list of images to choose from, or different
+    choices which only the end user would know the answer to. When arcus
+    refreshes a bill, it will be set into a status of waiting, which means
+    that the end user must answer a challenge.
+
+    ## Forcing errors and MFAs
+
+    Within the Sandbox, we have created a merchant that will allow you to force
+    a failed response as well as test the usage of MFA Challenges:
+      - name: Arcus Faker
+      - ID: 451cc3f4-68c4-4280-9d8a-164891bbd850
+
+    This can be done by using a specific `login` value in those endpoints that
+    create a resource for xData or xChange. If you're testing MFA challenge
+    behavior, depending on which product you're using you will have to provide
+    the fixed answer (see table below) on the corresponding `PATCH` endpoint:
+    <b>PATCH/bills/{id}</b> for xData or <b>PATCH/migrations/{id}</b> for
+    xChange.
+
+    Following is the list of the existing `login` values for testing purposes:
+
+    <table>
+      <tr>
+        <th>Login value</th>
+        <th>Explanation</th>
+      </tr>
+      <tr>
+        <td>question.the_answer</td>
+        <td>
+          This will associate a new MFA Challenge of type 'question' with the
+          bill. Challenge answer: the_answer
+        </td>
+      </tr>
+      <tr>
+        <td>code.the_code</td>
+        <td>
+          This will associate a new MFA Challenge of type 'code' with the
+          migration attempt. Challenge answer: the_code
+        </td>
+      </tr>
+      <tr>
+        <td>image_uri</td>
+        <td>
+          This will associate a new MFA Challenge of type 'uri' with the
+          migration attempt. Challenge answer: arcus fi (you would be able to
+          see this text if you were to convert the base64 content to an image)
+        </td>
+      </tr>
+      <tr>
+        <td>image_url</td>
+        <td>
+          This will associate a new MFA Challenge of type 'url' with the
+          migration attempt. Challenge answer: arcus (you would be able to see
+          this text if you were to open the url provided)
+        </td>
+      </tr>
+      <tr>
+        <td>credentials</td>
+        <td>
+          This will return error code <b>R120</b>, HTTP status 422.
+        </td>
+      </tr>
+      <tr>
+        <td>input</td>
+        <td>
+          This will return error code <b>R121</b>, HTTP status 422.
+        </td>
+      </tr>
+      <tr>
+        <td>exception</td>
+        <td>
+          This will return error code <b>R121</b>, HTTP status 500.
+        </td>
+      </tr>
+      <tr>
+        <td>unavailable</td>
+        <td>
+          This will return error code <b>R122</b>, HTTP status 422.
+        </td>
+      </tr>
+    </table>
+
+    __Note:__ We recommend you use a different `password` everytime you create a
+      resource in the sandbox.
 
 servers:
   - url: https://apix.casiregalii.com
@@ -544,91 +634,6 @@ paths:
         Take into account that the request may take up to 59 seconds to return.
 
         If an error or MFA is returned, update the bill to resolve the issue.
-
-        ## Handling Multi-factor Authentication (MFA)
-
-        Some billers require more than just a username/password to log in. In
-        those situations, arcus will associate one or more MFA challenges with a
-        bill. An MFA challenge can be a verification code sent to a phone, a
-        secret question, an image, a list of images to choose from, or different
-        choices which only the end user would know the answer to. When arcus
-        refreshes a bill, it will be set into a status of waiting, which means
-        that the end user must answer a challenge. Go to `PATCH /bills/{id}` to
-        see how to reply to a challenge.
-
-        ## For testing purposes
-        The Sandbox accepts any credentials (we remind you never to send real
-        credentials to it), however, you can use the following login suffixes
-        when creating a bill to force a certain response (just the @{state}.ii
-        is the required part; email can be anything).
-
-          <table class="table table-hover">
-             <tr>
-              <td><strong>Login</strong></td>
-              <td><strong>Status</strong></td>
-              <td><strong>Error Code</strong></td>
-            </tr>
-             <tr>
-              <td>email@fetching.ii</td>
-              <td>updating</td>
-              <td></td>
-            </tr>
-             <tr>
-              <td>email@mfa_code.ii</td>
-              <td>waiting</td>
-              <td></td>
-            </tr>
-             <tr>
-              <td>email@mfa_question.ii</td>
-              <td>waiting</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>email@mfa_choice.ii</td>
-              <td>waiting</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>email@mfa_image.ii</td>
-              <td>waiting</td>
-              <td></td>
-            </tr>
-             <tr>
-              <td>email@mfa_image_choice.ii</td>
-              <td>waiting</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>email@successful.ii</td>
-              <td>updated</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>email@unavailable.ii</td>
-              <td>failed</td>
-              <td>R122</td>
-            </tr>
-            <tr>
-              <td>email@input.ii</td>
-              <td>failed</td>
-              <td>R121</td>
-            </tr>
-            <tr>
-              <td>email@credentials.ii</td>
-              <td>failed</td>
-              <td>R120</td>
-            </tr>
-            <tr>
-              <td>email@exception.ii</td>
-              <td>failed</td>
-              <td>R121</td>
-            </tr>
-             <tr>
-              <td>email@timeout.ii</td>
-              <td>failed</td>
-              <td>R121</td>
-            </tr>
-          </table>
 
       requestBody:
         description: Within the request body the parameters sent are a
@@ -1481,7 +1486,8 @@ paths:
     patch:
       tags:
         - xChange
-      summary: Allows the resolution of an MFA challenge
+      summary: Allows you to update a specific migration's credentials and/or
+        answer an MFA challenge
       description: |
         This endpoint allows the resolution of an MFA challenge associated with
         the bill whose migration was requested.
