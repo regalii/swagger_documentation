@@ -387,6 +387,11 @@ info:
         <td>
           This will associate a new MFA Challenge of type 'question' with the
           bill. Challenge answer: the_answer
+          Take into account that `the_answer` can actually be any string you
+          want (e.g.: `llama`, `mr alpaca`, `Arcus Fi`, etcetera), just make
+          sure that your answer does not include dots.
+          Once an MFA of this kind is solved, normally it will not be necessary
+          to answer it anymore on subsequent calls with the same credentials.
         </td>
       </tr>
       <tr>
@@ -394,6 +399,10 @@ info:
         <td>
           This will associate a new MFA Challenge of type 'code' with the
           migration attempt. Challenge answer: the_code
+          Take into account that `the_code` can be any number you want, just
+          make sure that it does not include dots.
+          An MFA of this kind will generally be asked each time you send
+          credentials.
         </td>
       </tr>
       <tr>
