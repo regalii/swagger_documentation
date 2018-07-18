@@ -712,6 +712,14 @@ paths:
       summary: Replaces the payment method on the merchant’s website
       description: |
         This endpoint replaces the payment method on the merchant’s website.
+        
+        Following is a description of the statuses that a migration can be in:
+          - initialized: the migration was just created
+          - ongoing: migration process started
+          - waiting: an MFA challenge needs to be answered
+          - failed: something went wrong (more details are given in the error
+            JSON object)
+          - success: the card's information was successfully updated
       operationId: postMigrations
       requestBody:
         required: true
@@ -807,7 +815,7 @@ paths:
                     id: 59b9fdac-e5fd-4ef2-bd98-b4eef3b5fb6a
                     type: migration
                     attributes:
-                      status: updating
+                      status: initialized
                       requested_at: '2018-06-22 21:23:26 UTC'
                       migrated_at: null
 
