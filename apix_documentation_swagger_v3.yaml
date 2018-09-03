@@ -171,14 +171,15 @@ info:
     # Pagination
 
     For those endpoints that return a list of resources, we have added the
-    `X-Pagination` header on the response to make pagination easier. It looks
-    something like this:
+    `X-Pagination` header on the response to make pagination easier. Following
+    is an example of its content:
 
     ```
     X-Pagination: {"total_entries":411,"total_pages":9,"previous_page":null,"current_page":1,"next_page":2}
     ```
 
-    __NOTE:__ This custom header does not appear in the Swagger's response
+    __NOTE:__ This custom header does not appear in the response obtained
+    through this documentation
     ___
 
     # Webhooks
