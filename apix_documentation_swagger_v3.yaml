@@ -779,10 +779,11 @@ paths:
       parameters:
         - name: id
           in: path
-          description: ID or UUID of the bill you wish to obtain
+          description: UUID of the bill you wish to obtain (this version still
+            accepts IDs, but they will be deprecated in future versions)
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         200:
           description: successful response
@@ -823,10 +824,11 @@ paths:
       parameters:
         - name: id
           in: path
-          description: ID or UUID of the bill you wish to update
+          description: UUID of the bill you wish to update (this version still
+            accepts IDs, but they will be deprecated in future versions)
           required: true
           schema:
-            type: integer
+            type: string
       requestBody:
         description: Within the request body the parameters sent are a `login`,
           `password` and an array of MFA_Response objects.
@@ -859,10 +861,11 @@ paths:
       parameters:
         - name: id
           in: path
-          description: ID or UUID of the bill to be deleted
+          description: UUID of the bill to be deleted (this version still
+            accepts IDs, but they will be deprecated in future versions)
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         200:
           description: successful response
@@ -882,10 +885,11 @@ paths:
       parameters:
         - name: id
           in: path
-          description: ID or UUID of the bill to be refreshed
+          description: UUID of the bill to be refreshed (this version still
+            accepts IDs, but they will be deprecated in future versions)
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         200:
           description: successful response
@@ -1293,7 +1297,7 @@ paths:
           required: true
           description: ID of the transaction you wish to obtain
           schema:
-            type: integer
+            type: string
       responses:
         200:
           description: successful response
@@ -1320,7 +1324,7 @@ paths:
           required: true
           description: ID of the transaction to be deleted
           schema:
-            type: integer
+            type: string
       responses:
         200:
           description: successful response
@@ -1493,7 +1497,7 @@ paths:
             obtain
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         200:
           description: successful response
@@ -1517,7 +1521,7 @@ paths:
           description: ID of the bill you wish to update
           required: true
           schema:
-            type: integer
+            type: string
       requestBody:
         description: Within the request body the parameters sent are `login`,
           `password` and an array with the responses to MFA challenges.
