@@ -397,7 +397,7 @@ info:
         <td>code.the_code</td>
         <td>
           This will associate a new MFA Challenge of type 'code' with the
-          migration attempt. Challenge answer: the_code
+          bill. Challenge answer: the_code
           Take into account that `the_code` can be any value you want.
           An MFA of this kind will generally be asked each time you send
           credentials.
@@ -414,9 +414,9 @@ info:
       <tr>
         <td>image_url</td>
         <td>
-          This will associate a new MFA Challenge of type 'url' with the
-          migration attempt. Challenge answer: arcus (you would be able to see
-          this text if you were to open the url provided)
+          This will associate a new MFA Challenge of type 'url' with the bill.
+          Challenge answer: arcus (you would be able to see this text if you
+          were to open the url provided)
         </td>
       </tr>
       <tr>

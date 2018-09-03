@@ -316,7 +316,11 @@ info:
       - ID: 451cc3f4-68c4-4280-9d8a-164891bbd850
 
     This can be done by using a specific `login` value in those endpoints that
-    create a resource. Following is the list of the possible values:
+    create a resource. If you're testing MFA challenge behavior, you will have
+    to provide the fixed answer (see table below) on
+    <b>PATCH/challenges/{id}</b>
+
+    Following is the list of the existing `login` values for testing purposes:
 
     <table>
       <tr>
@@ -327,30 +331,37 @@ info:
         <td>question.the_answer</td>
         <td>
           This will associate a new MFA Challenge of type 'question' with the
-          migration attempt. You will have to provide <b>the_answer</b> as
-          <b>answer</b> on the <b>PATCH/challenges</b> endpoint.
+          migration attempt. Challenge answer: the_answer
+          Take into account that `the_answer` can actually be any string you
+          want (e.g.: `llama`, `mr alpaca`, `Arcus Fi`, etcetera).
+          Once an MFA of this kind is solved, normally it will not be necessary
+          to answer it anymore on subsequent calls with the same credentials.
         </td>
       </tr>
       <tr>
         <td>code.the_code</td>
         <td>
           This will associate a new MFA Challenge of type 'code' with the
-          migration attempt. You will have to provide <b>the_code</b> as
-          <b>answer</b> on the <b>PATCH/challenges</b> endpoint.
+          migration attempt. Challenge answer: the_code
+          Take into account that `the_code` can be any value you want.
+          An MFA of this kind will generally be asked each time you send
+          credentials.
         </td>
       </tr>
       <tr>
         <td>image_uri</td>
         <td>
-          This will associate a new MFA Challenge of type 'image_uri' with the
-          migration attempt.
+          This will associate a new MFA Challenge of type 'uri' with the
+          migration attempt. Challenge answer: arcus fi (you would be able to
+          see this text if you were to convert the base64 content to an image)
         </td>
       </tr>
       <tr>
         <td>image_url</td>
         <td>
-          This will associate a new MFA Challenge of type 'image_url' with the
-          migration attempt.
+          This will associate a new MFA Challenge of type 'url' with the
+          migration attempt. Challenge answer: arcus (you would be able to see
+          this text if you were to open the url provided)
         </td>
       </tr>
       <tr>
@@ -712,7 +723,7 @@ paths:
       summary: Replaces the payment method on the merchant’s website
       description: |
         This endpoint replaces the payment method on the merchant’s website.
-        
+
         Following is a description of the statuses that a migration can be in:
           - initialized: the migration was just created
           - ongoing: migration process started
