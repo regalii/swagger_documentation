@@ -397,7 +397,7 @@ info:
         <td>code.the_code</td>
         <td>
           This will associate a new MFA Challenge of type 'code' with the
-          migration attempt. Challenge answer: the_code
+          bill. Challenge answer: the_code
           Take into account that `the_code` can be any value you want.
           An MFA of this kind will generally be asked each time you send
           credentials.
@@ -414,9 +414,9 @@ info:
       <tr>
         <td>image_url</td>
         <td>
-          This will associate a new MFA Challenge of type 'url' with the
-          migration attempt. Challenge answer: arcus (you would be able to see
-          this text if you were to open the url provided)
+          This will associate a new MFA Challenge of type 'url' with the bill.
+          Challenge answer: arcus (you would be able to see this text if you
+          were to open the url provided)
         </td>
       </tr>
       <tr>
@@ -779,10 +779,11 @@ paths:
       parameters:
         - name: id
           in: path
-          description: ID or UUID of the bill you wish to obtain
+          description: UUID of the bill you wish to obtain (this version still
+            accepts IDs, but they will be deprecated in future versions)
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         200:
           description: successful response
@@ -823,10 +824,11 @@ paths:
       parameters:
         - name: id
           in: path
-          description: ID or UUID of the bill you wish to update
+          description: UUID of the bill you wish to update (this version still
+            accepts IDs, but they will be deprecated in future versions)
           required: true
           schema:
-            type: integer
+            type: string
       requestBody:
         description: Within the request body the parameters sent are a `login`,
           `password` and an array of MFA_Response objects.
@@ -859,10 +861,11 @@ paths:
       parameters:
         - name: id
           in: path
-          description: ID or UUID of the bill to be deleted
+          description: UUID of the bill to be deleted (this version still
+            accepts IDs, but they will be deprecated in future versions)
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         200:
           description: successful response
@@ -882,10 +885,11 @@ paths:
       parameters:
         - name: id
           in: path
-          description: ID or UUID of the bill to be refreshed
+          description: UUID of the bill to be refreshed (this version still
+            accepts IDs, but they will be deprecated in future versions)
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         200:
           description: successful response
@@ -1189,7 +1193,7 @@ paths:
                       type: string
                       example: "NY"
       responses:
-        200:
+        202:
           description: successful response
           content:
             application/vnd.regalii.v3.2+json:
@@ -1280,12 +1284,17 @@ paths:
         - xPay
       summary: Returns the details of a specific transaction
       description: |
-        This endpoint returns the details of a specific transaction. If the
-        payment was successful, you would see the transaction status is
-        __linked__. If there is any problem with the payment, you would see the
-        __error_code__ and __error_message__ in the transaction’s response. The
-        possible values for transaction’s status are `initialized`, `pending`,
-        `linked`, `confirmed` and `rejected`.
+        This endpoint returns the details of a specific transaction, which can
+        show any of the following statuses:
+          * __initialized__ Transaction is waiting to be processed
+          * __pending__ Transaction has been sent to the sponsor bank but no
+            response has been received yet
+          * __on_hold__ This status has to be manually set; transaction will not
+            be processed until it is changed back to initialized
+          * __confirmed__ Payment was successful
+          * __rejected__ There was a problem with the payment; you can get more
+            information by checking the __error_code__ and __error_message__ in
+            the transaction’s response.
       operationId: getTransactions
       parameters:
         - in: path
@@ -1293,7 +1302,7 @@ paths:
           required: true
           description: ID of the transaction you wish to obtain
           schema:
-            type: integer
+            type: string
       responses:
         200:
           description: successful response
@@ -1320,7 +1329,7 @@ paths:
           required: true
           description: ID of the transaction to be deleted
           schema:
-            type: integer
+            type: string
       responses:
         200:
           description: successful response
@@ -1420,7 +1429,7 @@ paths:
                   example: "10014"
 
       responses:
-        200:
+        202:
           description: successful response
           content:
             application/vnd.regalii.v3.2+json:
@@ -1493,7 +1502,7 @@ paths:
             obtain
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         200:
           description: successful response
@@ -1517,7 +1526,7 @@ paths:
           description: ID of the bill you wish to update
           required: true
           schema:
-            type: integer
+            type: string
       requestBody:
         description: Within the request body the parameters sent are `login`,
           `password` and an array with the responses to MFA challenges.
