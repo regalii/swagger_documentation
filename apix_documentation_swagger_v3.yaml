@@ -1193,7 +1193,7 @@ paths:
                       type: string
                       example: "NY"
       responses:
-        200:
+        202:
           description: successful response
           content:
             application/vnd.regalii.v3.2+json:
@@ -1429,7 +1429,7 @@ paths:
                   example: "10014"
 
       responses:
-        200:
+        202:
           description: successful response
           content:
             application/vnd.regalii.v3.2+json:
