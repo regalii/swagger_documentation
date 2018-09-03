@@ -1284,12 +1284,17 @@ paths:
         - xPay
       summary: Returns the details of a specific transaction
       description: |
-        This endpoint returns the details of a specific transaction. If the
-        payment was successful, you would see the transaction status is
-        __linked__. If there is any problem with the payment, you would see the
-        __error_code__ and __error_message__ in the transaction’s response. The
-        possible values for transaction’s status are `initialized`, `pending`,
-        `linked`, `confirmed` and `rejected`.
+        This endpoint returns the details of a specific transaction, which can
+        show any of the following statuses:
+          * __initialized__ Transaction is waiting to be processed
+          * __pending__ Transaction has been sent to the sponsor bank but no
+            response has been received yet
+          * __on_hold__ This status has to be manually set; transaction will not
+            be processed until it is changed back to initialized
+          * __confirmed__ Payment was successful
+          * __rejected__ There was a problem with the payment; you can get more
+            information by checking the __error_code__ and __error_message__ in
+            the transaction’s response.
       operationId: getTransactions
       parameters:
         - in: path
