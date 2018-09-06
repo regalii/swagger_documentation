@@ -200,24 +200,6 @@ info:
       __NOTE:__ It is the client's responsibility to trigger bills to refresh
       under normal operation.
 
-    # Language bindings
-
-      We have created libraries in multiple languages that will make it easier
-      for you to use our API:
-
-      * [Ruby](https://github.com/regalii/regaliator)
-      * [Java](https://github.com/regalii/regaliator_java)
-      * [Node.JS](https://github.com/regalii/regaliator_node)
-      * [Python](https://github.com/regalii/regaliator_python)
-      * [PHP](https://github.com/regalii/regaliator_php)
-
-    <div class="panel panel-danger">
-      <div class="panel-body">
-        <h4><strong>REMEMBER:</strong> Never send real credentials to the
-        Sandbox.</h4>
-      </div>
-    </div>
-
     # Errors
 
     Responses will use standard HTTP error codes to convey basic error status
