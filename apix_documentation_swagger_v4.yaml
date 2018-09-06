@@ -28,7 +28,7 @@ info:
     * __xData__ Pull real-time data from merchants (available on
       [v3.2](https://docx.regalii.com/))
     * __xPay__ Push payments (via ACH) to merchants (available on
-      [v3.2](https://docx.regalii.com/))    
+      [v3.2](https://docx.regalii.com/))
 
     ---
 
@@ -648,76 +648,6 @@ paths:
                       code: NotFound
                       detail: The resource requested can't be found
 
-  /merchant:
-    post:
-      tags:
-        - Common
-      summary: Obtains the details of a single merchant more securely
-      operationId: getMerchantSecure
-      description: |
-        This endpoint provides the details of a single merchant.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - id
-              properties:
-                id:
-                  description: UUID of the merchant you wish to obtain
-                  type: string
-              example:
-                id: 4d09ec4f-0078-4de4-89a5-91db28dd079c
-      responses:
-        200:
-          description: successful response
-          content:
-            application/vnd.regalii.v4.0+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    allOf:
-                      - $ref: '#/components/schemas/Merchant'
-
-                example:
-                  data:
-                    id: 3e72524f-3b53-4017-a207-8d80c4d1db83
-                    type: merchant
-                    attributes:
-                      category: Media
-                      name: Amazon Prime
-                      country: US
-                      currency: USD
-                      home_url: null
-                      signup_url: null
-                      password_url: null
-                      color: null
-                      logo: null
-                      created_at: "2016-06-08 21:36:33 UTC"
-                      updated_at: "2017-07-28 22:45:25 UTC"
-
-        404:
-          description: resource not found
-          content:
-            application/vnd.regalii.v4.0+json:
-              schema:
-                type: object
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Error_Info'
-
-                example:
-                  errors:
-                    - source:
-                        parameter: id
-                      code: NotFound
-                      detail: The resource requested can't be found
-
   /migrations:
     post:
       tags:
@@ -979,54 +909,6 @@ paths:
                         code: InvalidCredentials
                         detail: Invalid login or password
 
-  /migration:
-    post:
-      tags:
-        - xChange
-      summary: Gets the last migration attempt of a bill more securely
-      description: >-
-        This endpoint gets the last migration attempt of a bill.
-      operationId: getMigrationSecure
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - id
-              properties:
-                id:
-                  description: ID of the bill whose migration information you
-                    wish to obtain
-                  type: string
-              example:
-                id: b4aa7d78-6f16-4ddd-887d-9f5c0b730a26
-
-      responses:
-        200:
-          description: successful response
-          content:
-            application/vnd.regalii.v4.0+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    allOf:
-                      - $ref: '#/components/schemas/Migration'
-
-                example:
-                  data:
-                    id: b4aa7d78-6f16-4ddd-887d-9f5c0b730a26
-                    type: migration
-                    attributes:
-                      status: failed
-                      requested_at: '2018-06-15 14:16:16 UTC'
-                      migrated_at: '2018-06-15 16:34:54 UTC'
-                      error:
-                        code: InvalidCredentials
-                        detail: Invalid login or password
-
   /migrations/{id}/challenges:
     get:
       tags:
@@ -1080,71 +962,6 @@ paths:
                     total-pages: 1
                   links:
                     self: "https://apix.staging.arcusapi.com/migrations/eae8d4c7-b3d9-4fc5-89b6-7ccdd0b4111c/challenges?page=1"
-                    next: null
-                    prev: null
-
-  /migration_challenges:
-    post:
-      tags:
-        - Challenges
-      summary: Gets all challenges associated with a specific migration more
-        securely
-      description: |
-        If the migration requires the end user to answer some challenges, the
-        customer can request the challenges associated to one specific
-        migration by using this endpoint.
-      operationId: getMigrationsChallengesSecure
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - migration_id
-              properties:
-                migration_id:
-                  description: ID of the migration whose challenges you wish to
-                    obtain
-                  type: string
-              example:
-                id: b4aa7d78-6f16-4ddd-887d-9f5c0b730a26
-      responses:
-        200:
-          description: successful response
-          content:
-            application/vnd.regalii.v4.0+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      anyOf:
-                        - $ref: '#/components/schemas/MFA_Challenge_Question'
-                        - $ref: '#/components/schemas/MFA_Challenge_Code'
-                        - $ref: '#/components/schemas/MFA_Challenge_Image'
-                        - $ref: '#/components/schemas/MFA_Challenge_Image_Choices'
-                        - $ref: '#/components/schemas/MFA_Challenge_Choices'
-                allOf:
-                  - $ref: '#/components/schemas/MetaData'
-                  - $ref: '#/components/schemas/NavigationLinks'
-
-                example:
-                  data:
-                    - id: 3a798711-d352-4ee5-b35d-383fd23e7edc
-                      type: challenge
-                      attributes:
-                        kind: code
-                        created_at: '2018-06-15 14:16:16 UTC'
-                        expires_at: '2018-06-15 14:19:16 UTC'
-                        prompt: Please provide the code sent to your phone.
-                  # TODO: Include examples of different challenges
-                  meta:
-                    total: 1
-                    total-pages: 1
-                  links:
-                    self: "https://apix.staging.arcusapi.com/migrations/59b9fdac-e5fd-4ef2-bd98-b4eef3b5fb6a/challenges?page=1"
                     next: null
                     prev: null
 
