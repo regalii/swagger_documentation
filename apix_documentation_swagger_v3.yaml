@@ -168,6 +168,8 @@ info:
 
           `-H 'Accept: application/vnd.regalii.v3.2+json'`
 
+    ___
+
     # Pagination
 
     For those endpoints that return a list of resources, we have added the
@@ -180,6 +182,38 @@ info:
 
     __NOTE:__ This custom header does not appear in the response obtained
     through this documentation
+    ___
+
+    # Resources' status
+
+    ## xData
+
+      - __updating__: the process to obtain the bill's information is ongoing
+      - __waiting__: an MFA challenge needs to be answered
+      - __failed__: something went wrong (more details are given in the error
+        JSON object)
+      - __updated__: the bill's information has been successfully fetched
+
+    ## xPay
+
+      - __initialized__ Transaction is waiting to be processed
+      - __pending__ Transaction has been sent to the sponsor bank but no
+        response has been received yet
+      - __on_hold__ This status has to be manually set; transaction will not
+        be processed until it is changed back to `initialized`
+      - __confirmed__ Payment was successful
+      - __rejected__ There was a problem with the payment; you can get more
+        information by checking the __error_code__ and __error_message__ in
+        the transaction’s response.
+
+    ## xChange
+
+      - __updating__: migration process started
+      - __waiting__: an MFA challenge needs to be answered
+      - __failed__: something went wrong (more details are given in the error
+        JSON object)
+      - __updated__: the card's information was successfully updated
+
     ___
 
     # Webhooks
@@ -1278,17 +1312,7 @@ paths:
         - xPay
       summary: Returns the details of a specific transaction
       description: |
-        This endpoint returns the details of a specific transaction, which can
-        show any of the following statuses:
-          * __initialized__ Transaction is waiting to be processed
-          * __pending__ Transaction has been sent to the sponsor bank but no
-            response has been received yet
-          * __on_hold__ This status has to be manually set; transaction will not
-            be processed until it is changed back to initialized
-          * __confirmed__ Payment was successful
-          * __rejected__ There was a problem with the payment; you can get more
-            information by checking the __error_code__ and __error_message__ in
-            the transaction’s response.
+        This endpoint returns the details of a specific transaction.
       operationId: getTransactions
       parameters:
         - in: path
