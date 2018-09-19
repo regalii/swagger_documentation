@@ -172,6 +172,19 @@ info:
 
     ___
 
+    # Migration's status
+
+    Following is a description of the statuses that a migration can be in:
+      - __initialized__: the migration was just created
+      - __waiting__: an MFA challenge needs to be answered
+      - __authenticated__: the merchant has granted access
+      - __ongoing__: migration process started
+      - __failed__: something went wrong (more details are given in the error
+        JSON object)
+      - __successful__: the card's information was successfully updated
+
+    ___
+
     # Errors
 
     Responses will use standard HTTP error codes to convey basic error status
@@ -655,14 +668,6 @@ paths:
       summary: Replaces the payment method on the merchant’s website
       description: |
         This endpoint replaces the payment method on the merchant’s website.
-
-        Following is a description of the statuses that a migration can be in:
-          - initialized: the migration was just created
-          - ongoing: migration process started
-          - waiting: an MFA challenge needs to be answered
-          - failed: something went wrong (more details are given in the error
-            JSON object)
-          - success: the card's information was successfully updated
       operationId: postMigrations
       requestBody:
         required: true
