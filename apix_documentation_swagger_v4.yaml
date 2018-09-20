@@ -543,20 +543,32 @@ paths:
 
                 example:
                   data:
-                    - id: 653d6b7e-e189-48b1-a102-06dcfbcd35df
+                    - id: 7da26c9d-cfd0-4af3-a348-fed5dcbfa5d5
                       type: merchant
                       attributes:
-                        category: Utility
-                        name: Sprint
+                        category: E-Commerce
+                        name: Amazon Prime
                         country: US
                         currency: USD
-                        home_url: null
-                        signup_url: null
-                        password_url: null
-                        color: null
-                        logo: null
-                        created_at: "2016-04-20 22:05:32 UTC"
-                        updated_at: "2017-07-28 22:45:25 UTC"
+                        home_url: "https://www.amazon.com/"
+                        signup_url: "https://www.amazon.com/ap/register"
+                        password_url: "https://www.amazon.com/ap/forgotpassword"
+                        support_phone_number: "+12062662992"
+                        color: "#FF9900"
+                        logos:
+                          - mime_type: image/svg+xml
+                            url: "https://static.staging.arcusapi.com/vector/amazon-prime.svg"
+                          - mime_type: image/png
+                            resolution: 90x34
+                            url: "https://static.staging.arcusapi.com/90x34/amazon-prime.png"
+                          - mime_type: image/png
+                            resolution: 135x51
+                            url: "https://static.staging.arcusapi.com/135x51/amazon-prime.png"
+                          - mime_type: image/png
+                            resolution: 180x68
+                            url: "https://static.staging.arcusapi.com/180x68/amazon-prime.png"
+                        created_at: "2016-06-08 21:36:33 UTC"
+                        updated_at: "2018-08-03 18:50:56 UTC"
                     - id: 2affb627-6811-46bd-9716-de14bf7be899
                       type: merchant
                       attributes:
@@ -568,7 +580,7 @@ paths:
                         signup_url: null
                         password_url: null
                         color: null
-                        logo: null
+                        logos: []
                         created_at: "2018-07-02 22:06:14 UTC"
                         updated_at: "2018-07-02 22:06:14 UTC"
                   meta:
@@ -627,20 +639,32 @@ paths:
 
                 example:
                   data:
-                    id: f0e1335e-ab50-4af1-bfe2-89daafa4fe9f
+                    id: 7da26c9d-cfd0-4af3-a348-fed5dcbfa5d5
                     type: merchant
                     attributes:
-                      category: null
-                      name: Walmart
+                      category: E-Commerce
+                      name: Amazon Prime
                       country: US
                       currency: USD
-                      home_url: null
-                      signup_url: null
-                      password_url: null
-                      color: null
-                      logo: null
-                      created_at: "2018-01-29 18:06:16 UTC"
-                      updated_at: "2018-01-29 18:06:16 UTC"
+                      home_url: "https://www.amazon.com/"
+                      signup_url: "https://www.amazon.com/ap/register"
+                      password_url: "https://www.amazon.com/ap/forgotpassword"
+                      support_phone_number: "+12062662992"
+                      color: "#FF9900"
+                      logos:
+                        - mime_type: image/svg+xml
+                          url: "https://static.staging.arcusapi.com/vector/amazon-prime.svg"
+                        - mime_type: image/png
+                          resolution: 90x34
+                          url: "https://static.staging.arcusapi.com/90x34/amazon-prime.png"
+                        - mime_type: image/png
+                          resolution: 135x51
+                          url: "https://static.staging.arcusapi.com/135x51/amazon-prime.png"
+                        - mime_type: image/png
+                          resolution: 180x68
+                          url: "https://static.staging.arcusapi.com/180x68/amazon-prime.png"
+                      created_at: "2016-06-08 21:36:33 UTC"
+                      updated_at: "2018-08-03 18:50:56 UTC"
 
         404:
           description: resource not found
@@ -1085,18 +1109,21 @@ components:
               type: string
               description: URL where the final user registers to the Merchant's
                 site
-            # TODO: what does this stand for?
             password_url:
               type: string
-              description: ""
+              description: "URL where user can request password reset"
+            support_phone_number:
+              type: string
+              description: Merchant's support phone number
             # TODO: what does this stand for?
             color:
               type: string
               description: ""
-            # TODO: what does this stand for?
-            logo:
-              type: string
-              description: ""
+            logos:
+              type: array
+              description: "Available merchant's logos"
+              items:
+                $ref: '#/components/schemas/Logo'
             created_at:
               type: string
               format: date-time
@@ -1108,6 +1135,21 @@ components:
               description: Timestamp of when this merchant was last updated in
                 arcus' system
 
+    Logo:
+      type: object
+      required:
+        - mime_type
+        - url
+      properties:
+        mime_type:
+          type: string
+          description: Image's mime type
+        url:
+          type: string
+          description: URL where the image is located
+        resolution:
+          type: string
+          description: Image's resolution (width x height)
     MetaData:
       type: object
       required:
