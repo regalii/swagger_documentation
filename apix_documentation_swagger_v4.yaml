@@ -665,7 +665,7 @@ paths:
     post:
       tags:
         - xChange
-      summary: Replaces the payment method on the merchant’s website
+      summary: Updates payment method on file with Merchant
       description: |
         This endpoint replaces the payment method on the merchant’s website.
       operationId: postMigrations
