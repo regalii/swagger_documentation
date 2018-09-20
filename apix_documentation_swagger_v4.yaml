@@ -176,12 +176,12 @@ info:
 
     Following is a description of the statuses that a migration can be in:
       - __initialized__: the migration was just created
+      - __ongoing__: migration process started
       - __waiting__: an MFA challenge needs to be answered
       - __authenticated__: the merchant has granted access
-      - __ongoing__: migration process started
+      - __successful__: the card's information was successfully updated
       - __failed__: something went wrong (more details are given in the error
         JSON object)
-      - __successful__: the card's information was successfully updated
 
     ___
 
@@ -665,7 +665,7 @@ paths:
     post:
       tags:
         - xChange
-      summary: Replaces the payment method on the merchant’s website
+      summary: Updates payment method on file with Merchant
       description: |
         This endpoint replaces the payment method on the merchant’s website.
       operationId: postMigrations
