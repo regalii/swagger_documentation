@@ -81,6 +81,9 @@ info:
       To make requests to the production environment, use the following URL:
         `https://apix.arcusapi.com`
 
+      __NOTE:__ For security reasons, it's not possible to make production
+      requests through our dynamic documentation.
+
     ---
 
     # Security
@@ -405,8 +408,6 @@ info:
 servers:
   - url: https://apix.staging.arcusapi.com
     description: Sandbox, Mock Credentials; Mock Data
-  - url: https://apix.arcusapi.com
-    description: Production, Real Credentials; Real Data
 
 tags:
   - name: Common
