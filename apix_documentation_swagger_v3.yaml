@@ -596,74 +596,29 @@ paths:
           content:
             application/vnd.regalii.v3.2+json:
               schema:
-                type: array
-                title: billers
+                type: object
                 properties:
-                  type:
-                    type: string
-                    description: A fixed value of 'biller'
-                  id:
-                    type: integer
-                    description: ID of the biller [deprecated]
-                  uuid:
-                    type: string
-                    description: Unique identifier (UUID) of the biller
-                  name:
-                    type: string
-                    description: Biller's name
-                  country:
-                    type: string
-                    description: Biller’s ISO 2 digit country code
-                  currency:
-                    type: string
-                    description: 3 digit ISO currency code of the biller’s
-                      country
-                  biller_type:
-                    type: string
-                    description: Short description of the biller's type (e.g.
-                      Television/Internet, electricity, etc.)
-                  bill_type:
-                    type: string
-                    description: Specifies the bill identifier that is used to
-                      perform queries and payments
-                  required_parameters:
-                    type: array
-                    description: List of parameters required to create a bill
-                      with this biller
-                    items:
-                      type: string
-                  returned_parameters:
-                    description: List of returned parameters on a bill by this
-                      biller
+                  billers:
                     type: array
                     items:
-                      type: string
-                  can_migrate:
-                    description: Determines whether you can use xChange with
-                      this biller
-                    type: boolean
-                  charge_user:
-                    description: "[deprecated; will be removed in future
-                      versions]"
-                    type: boolean
-                  has_xdata:
-                    description: Determines whether you can use xData with this
-                      biller
-                    type: boolean
+                      $ref: '#/components/schemas/Biller'
+
                 example:
-                  type: biller
-                  id: 6510
-                  uuid: 3bc572a9-cb55-4aea-80aa-40b058d26673
-                  name: Con Edison
-                  country: US
-                  currency: USD
-                  biller_type: Electricity
-                  bill_type: credentials
-                  required_parameters: [login,password]
-                  returned_parameters: [balance,due_date,account_number,name_on_account,xdata]
-                  can_migrate: false
-                  charge_user: true
-                  has_xdata: false
+                  billers:
+                    - type: biller
+                      id: 6510
+                      uuid: 3bc572a9-cb55-4aea-80aa-40b058d26673
+                      name: Con Edison
+                      country: US
+                      currency: USD
+                      biller_type: Electricity
+                      bill_type: credentials
+                      required_parameters: [login,password]
+                      returned_parameters: [balance,due_date,account_number,name_on_account,xdata]
+                      can_migrate: false
+                      charge_user: true
+                      has_xdata: false
+
   /bills:
     post:
       tags:
@@ -1576,72 +1531,22 @@ components:
       type: http
       scheme: hmac-sha1
   schemas:
-    Transaction:
+    Basic_Credentials:
+      description: Includes the basic information to access an end user's
+        account
       type: object
-      allOf:
-        - $ref: '#/components/schemas/Error_Info'
       properties:
-        id:
-          description: Transaction's ID
-          type: integer
-        status:
-          description: Transaction's status
+        login:
           type: string
-        bill_id:
-          description: ID of the bill related to the transaction
+          description: The account's username/email address/identifier
+          example: "jdoe@successful.ii"
+        password:
           type: string
-        account_number:
-          description: Account number related to the transaction
-          type: string
-        amount:
-          description: Transaction's amount
-          type: number
-        currency:
-          description: Amount's currency
-          type: string
-        created_at:
-          description: Timestamp of when the transaction was created
-          type: string
-        updated_at:
-          description: Timestamp of when the transaction was last updated
-          type: string
-
-      example:
-        id: be42c413-fcce-4857-b6fa-374228e33912
-        status: initialized
-        bill_id: null
-        account_number: 1234-56
-        currency: USD
-        amount: 2000.0
-        created_at: '2018-04-06T15:41:52.846Z'
-        updated_at: '2018-04-06T15:41:52.846Z'
-        error_code: null
-        error_message: null
-
-    Migration:
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/Error_Info'
-      properties:
-        id:
-          description: ID of the bill whose migration was requested
-          type: string
-        status:
-          description: Migration's status
-          type: string
-        requested_at:
-          description: Timestamp of when the migration was requested
-          type: string
-        migrated_at:
-          description: Timestamp of when the migration succeeded
-          type: string
-      example:
-        error_code: null
-        error_message: null
-        id: de2a19ff-91d1-4c45-b6c4-cb4abfaa4077
-        status: updating
-        requested_at: '2018-04-06T18:18:36.144Z'
-        migrated_at: null
+          description: The account's password
+          example: "HeLl0o1!"
+      required:
+        - login
+        - password
 
     Bill:
       type: object
@@ -1718,25 +1623,71 @@ components:
         migrated_at: null
         mfa_challenges: []
 
-    MFA_Response:
+    Biller:
       type: object
-      required:
-        - id
-        - type
-        - response
       properties:
-        id:
-          type: string
-          description: ID or UUID of the challenge that is being answered
         type:
           type: string
-          description: Type of challenge (question, code, image, image_choice)
-        response:
+          description: A fixed value of 'biller'
+        id:
+          type: integer
+          description: ID of the biller [deprecated]
+        uuid:
           type: string
-          description: In the case of type 'code' or 'question', the answer to
-            the challenge. In the case of type 'image', the size of the image.
-            In the case of 'image_choice' and '?', the ID (index) of the correct
-            choice.
+          description: Unique identifier (UUID) of the biller
+        name:
+          type: string
+          description: Biller's name
+        country:
+          type: string
+          description: Biller’s ISO 2 digit country code
+        currency:
+          type: string
+          description: 3 digit ISO currency code of the biller’s
+            country
+        biller_type:
+          type: string
+          description: Short description of the biller's type (e.g.
+            Television/Internet, electricity, etc.)
+        bill_type:
+          type: string
+          description: Specifies the bill identifier that is used to
+            perform queries and payments
+        required_parameters:
+          type: array
+          description: List of parameters required to create a bill
+            with this biller
+          items:
+            type: string
+        returned_parameters:
+          description: List of returned parameters on a bill by this
+            biller
+          type: array
+          items:
+            type: string
+        can_migrate:
+          description: Determines whether you can use xChange with
+            this biller
+          type: boolean
+        charge_user:
+          description: "[deprecated; will be removed in future
+            versions]"
+          type: boolean
+        has_xdata:
+          description: Determines whether you can use xData with this
+            biller
+          type: boolean
+
+    Error_Info:
+      type: object
+      properties:
+        error_code:
+          description: Error code; null if the request was successful
+          type: string
+        error_message:
+          description: Description of the error encountered; null if the request
+            was successful
+          type: string
 
     MFA_Challenge:
       description: Shared information of MFA Challenges
@@ -1762,9 +1713,8 @@ components:
           description: Delay of expiration; after this timestamp the answer will
             be rejected. It can be null.
 
-    MFA_Challenge_Question:
-      description: Structure of an MFA Challenge of type 'question'. Secret
-        questions are often asked in addition to an end user's password.
+    MFA_Challenge_Choices:
+      description: Structure of an MFA Challenge of type '?'
       allOf:
         - $ref: '#/components/schemas/MFA_Challenge'
         - type: object
@@ -1772,9 +1722,25 @@ components:
             - prompt
           properties:
             prompt:
-              type: string
-              description: The question to show to the owner of the account
-              example: What is 4 + 4?
+              type: array
+              description: An array of choices
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: The ID of the option (basically the index of
+                      the array)
+                  category:
+                    type: string
+                    description: Defines the category to which the value belongs
+                      (e.g. Phone, Text, E-mail). It can be null
+                    example: Phone
+                  value:
+                    type: string
+                    description: A phone number or e-mail address. The same
+                      value can be present in different categories
+                    example: "+1234567890"
 
     MFA_Challenge_Code:
       description: Structure of an MFA Challenge of type 'code'. Verification
@@ -1837,8 +1803,10 @@ components:
                     description: The URL of the image for url or the content of
                       the image for uri
                     example: http://via.placeholder.com/350x150
-    MFA_Challenge_Choices:
-      description: Structure of an MFA Challenge of type '?'
+
+    MFA_Challenge_Question:
+      description: Structure of an MFA Challenge of type 'question'. Secret
+        questions are often asked in addition to an end user's password.
       allOf:
         - $ref: '#/components/schemas/MFA_Challenge'
         - type: object
@@ -1846,50 +1814,93 @@ components:
             - prompt
           properties:
             prompt:
-              type: array
-              description: An array of choices
-              items:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                    description: The ID of the option (basically the index of
-                      the array)
-                  category:
-                    type: string
-                    description: Defines the category to which the value belongs
-                      (e.g. Phone, Text, E-mail). It can be null
-                    example: Phone
-                  value:
-                    type: string
-                    description: A phone number or e-mail address. The same
-                      value can be present in different categories
-                    example: "+1234567890"
+              type: string
+              description: The question to show to the owner of the account
+              example: What is 4 + 4?
 
-    Basic_Credentials:
-      description: Includes the basic information to access an end user's
-        account
+    MFA_Response:
       type: object
-      properties:
-        login:
-          type: string
-          description: The account's username/email address/identifier
-          example: "jdoe@successful.ii"
-        password:
-          type: string
-          description: The account's password
-          example: "HeLl0o1!"
       required:
-        - login
-        - password
-
-    Error_Info:
-      type: object
+        - id
+        - type
+        - response
       properties:
-        error_code:
-          description: Error code; null if the request was successful
+        id:
           type: string
-        error_message:
-          description: Description of the error encountered; null if the request
-            was successful
+          description: ID or UUID of the challenge that is being answered
+        type:
           type: string
+          description: Type of challenge (question, code, image, image_choice)
+        response:
+          type: string
+          description: In the case of type 'code' or 'question', the answer to
+            the challenge. In the case of type 'image', the size of the image.
+            In the case of 'image_choice' and '?', the ID (index) of the correct
+            choice.
+
+    Migration:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/Error_Info'
+      properties:
+        id:
+          description: ID of the bill whose migration was requested
+          type: string
+        status:
+          description: Migration's status
+          type: string
+        requested_at:
+          description: Timestamp of when the migration was requested
+          type: string
+        migrated_at:
+          description: Timestamp of when the migration succeeded
+          type: string
+      example:
+        error_code: null
+        error_message: null
+        id: de2a19ff-91d1-4c45-b6c4-cb4abfaa4077
+        status: updating
+        requested_at: '2018-04-06T18:18:36.144Z'
+        migrated_at: null
+
+    Transaction:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/Error_Info'
+      properties:
+        id:
+          description: Transaction's ID
+          type: integer
+        status:
+          description: Transaction's status
+          type: string
+        bill_id:
+          description: ID of the bill related to the transaction
+          type: string
+        account_number:
+          description: Account number related to the transaction
+          type: string
+        amount:
+          description: Transaction's amount
+          type: number
+        currency:
+          description: Amount's currency
+          type: string
+        created_at:
+          description: Timestamp of when the transaction was created
+          type: string
+        updated_at:
+          description: Timestamp of when the transaction was last updated
+          type: string
+
+      example:
+        id: be42c413-fcce-4857-b6fa-374228e33912
+        status: initialized
+        bill_id: null
+        account_number: 1234-56
+        currency: USD
+        amount: 2000.0
+        created_at: '2018-04-06T15:41:52.846Z'
+        updated_at: '2018-04-06T15:41:52.846Z'
+        error_code: null
+        error_message: null
