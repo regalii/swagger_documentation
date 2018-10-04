@@ -839,6 +839,8 @@ paths:
     delete:
       tags:
         - xData
+      servers:
+        - url: https://apix.casiregalii.com
       summary: Deletes a specific bill
       description: This endpoint deletes a specific bill
       operationId: deleteBill
