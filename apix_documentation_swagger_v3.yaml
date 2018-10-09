@@ -1284,7 +1284,7 @@ paths:
         200:
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 $ref: '#/components/schemas/Transaction'
 
@@ -1311,7 +1311,7 @@ paths:
         200:
           description: successful response
           content:
-            application/json:
+            application/vnd.regalii.v3.2+json:
               schema:
                 $ref: '#/components/schemas/Transaction'
 
