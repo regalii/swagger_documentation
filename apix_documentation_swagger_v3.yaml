@@ -853,12 +853,8 @@ paths:
           schema:
             type: string
       responses:
-        200:
+        204:
           description: successful response
-          content:
-            application/vnd.regalii.v3.2+json:
-              schema:
-                $ref: '#/components/schemas/Bill'
   /bills/{id}/refresh:
     post:
       tags:
