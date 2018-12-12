@@ -1223,26 +1223,10 @@ paths:
           schema:
             type: string
         - in: query
-          name: q[bill_id_eq]
-          required: false
-          description: Returns the transactions whose bill_id matches the
-            specified value
-          schema:
-            type: string
-        - in: query
           name: q[biller_id_in][]
           required: false
           description: Returns the transactions of the billers whose ids are
             provided
-          schema:
-            type: array
-            items:
-              type: string
-        - in: query
-          name: q[bill_id_in][]
-          required: false
-          description: Returns the transactions whose bill's ids match any of
-            the values provided
           schema:
             type: array
             items:
