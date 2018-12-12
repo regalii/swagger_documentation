@@ -435,6 +435,14 @@ info:
         </td>
       </tr>
       <tr>
+        <td>code</td>
+        <td>
+          This will associate a new MFA Challenge of type 'choice' with the
+          bill. You will have to select the answer from the choices given in the
+          response.
+        </td>
+      </tr>
+      <tr>
         <td>image_uri</td>
         <td>
           This will associate a new MFA Challenge of type 'uri' with the
@@ -1728,7 +1736,7 @@ components:
             be rejected. It can be null.
 
     MFA_Challenge_Choices:
-      description: Structure of an MFA Challenge of type '?'
+      description: Structure of an MFA Challenge of type 'choice'
       allOf:
         - $ref: '#/components/schemas/MFA_Challenge'
         - type: object
