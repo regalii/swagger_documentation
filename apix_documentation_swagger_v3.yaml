@@ -708,6 +708,14 @@ paths:
               type: string
               items:
                 type: string
+        - in: query
+          name: q[external_user_id_eq]
+          required: false
+          description: Returns the bills belonging to the same end user. This
+            attribute is meant to help our customers link our bills to their own
+            records.
+          schema:
+            type: string
       responses:
         200:
           description: successful response
@@ -1231,6 +1239,14 @@ paths:
             type: array
             items:
               type: string
+        - in: query
+          name: q[client_number_eq]
+          required: false
+          description: Returns the transactions belonging to the same end user.
+            This attribute is meant to help our customers link our
+            transactions to their own records.
+          schema:
+            type: string
       responses:
         200:
           description: successful response
@@ -1413,6 +1429,14 @@ paths:
           required: false
           schema:
             type: integer
+        - in: query
+          name: q[external_user_id_eq]
+          required: false
+          description: Returns the migrations belonging to the same end user.
+            This attribute is meant to help our customers link our records to
+            their own.
+          schema:
+            type: string
       responses:
         200:
           description: successful response
