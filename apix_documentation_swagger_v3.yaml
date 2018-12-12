@@ -864,6 +864,13 @@ paths:
         This endpoint refreshes a specific bill by polling the biller. It
         responds with the same structure as `POST /bills`.
       operationId: refreshBill
+      requestBody:
+        description: An empty body needs to be provided
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
       parameters:
         - name: id
           in: path
