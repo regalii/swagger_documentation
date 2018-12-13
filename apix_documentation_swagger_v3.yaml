@@ -435,6 +435,14 @@ info:
         </td>
       </tr>
       <tr>
+        <td>code</td>
+        <td>
+          This will associate a new MFA Challenge of type 'choice' with the
+          bill. You will have to select the answer from the choices given in the
+          response.
+        </td>
+      </tr>
+      <tr>
         <td>image_uri</td>
         <td>
           This will associate a new MFA Challenge of type 'uri' with the
@@ -708,6 +716,14 @@ paths:
               type: string
               items:
                 type: string
+        - in: query
+          name: q[external_user_id_eq]
+          required: false
+          description: Returns the bills belonging to the same end user. This
+            attribute is meant to help our customers link our bills to their own
+            records.
+          schema:
+            type: string
       responses:
         200:
           description: successful response
@@ -864,6 +880,13 @@ paths:
         This endpoint refreshes a specific bill by polling the biller. It
         responds with the same structure as `POST /bills`.
       operationId: refreshBill
+      requestBody:
+        description: An empty body needs to be provided
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
       parameters:
         - name: id
           in: path
@@ -1093,6 +1116,10 @@ paths:
         process the transaction. After that time, the transaction’s status will
         be updated. You can always check the transaction's status by making a
         request to the `GET /transactions/{id}` endpoint.
+        <br/><br/>
+        NOTE: It is possible to create an on_hold transaction, i.e., a
+        transaction that is not to be processed yet. To do this, it is necessary
+        to send the attribute `status` with a value of `on_hold`
       operationId: postTransactions
       requestBody:
         description: |
@@ -1175,6 +1202,14 @@ paths:
                     state:
                       type: string
                       example: "NY"
+                status:
+                  type: string
+                  description: Only needed when you want to create a transaction
+                    that is to be processed at a later date. For this purpose,
+                    the value needs to be `on_hold`; if any other value is sent,
+                    the transaction will be created with the `initialized`
+                    status.
+                  example: "on_hold"
       responses:
         202:
           description: successful response
@@ -1216,13 +1251,6 @@ paths:
           schema:
             type: string
         - in: query
-          name: q[bill_id_eq]
-          required: false
-          description: Returns the transactions whose bill_id matches the
-            specified value
-          schema:
-            type: string
-        - in: query
           name: q[biller_id_in][]
           required: false
           description: Returns the transactions of the billers whose ids are
@@ -1232,14 +1260,13 @@ paths:
             items:
               type: string
         - in: query
-          name: q[bill_id_in][]
+          name: q[client_number_eq]
           required: false
-          description: Returns the transactions whose bill's ids match any of
-            the values provided
+          description: Returns the transactions belonging to the same end user.
+            This attribute is meant to help our customers link our
+            transactions to their own records.
           schema:
-            type: array
-            items:
-              type: string
+            type: string
       responses:
         200:
           description: successful response
@@ -1278,6 +1305,48 @@ paths:
             type: string
       responses:
         200:
+          description: successful response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+    patch:
+      tags:
+        - xPay
+      summary: Updates an on_hold transaction
+      description: |
+        This endpoint allows you to update the amount of an on_hold transaction
+        and/or change its status to `initialized`, so that it can be processed.
+      operationId: patchTransaction
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID of the transaction you wish to update
+          schema:
+            type: string
+      requestBody:
+        description: |
+          Neither of the parameters are required. If none are provided, the
+          transaction will simply remain unchanged.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: integer
+                  description: Amount to pay
+                  example: "2000.0"
+                status:
+                  type: string
+                  description: Only needed when you want to activate a
+                    transaction so that it's processed. For this purpose,
+                    the value needs to be `initialized`; if any other value is
+                    provided, the transaction will keep the `on_hold` status.
+      responses:
+        202:
           description: successful response
           content:
             application/vnd.regalii.v3.2+json:
@@ -1422,6 +1491,14 @@ paths:
           required: false
           schema:
             type: integer
+        - in: query
+          name: q[external_user_id_eq]
+          required: false
+          description: Returns the migrations belonging to the same end user.
+            This attribute is meant to help our customers link our records to
+            their own.
+          schema:
+            type: string
       responses:
         200:
           description: successful response
@@ -1713,7 +1790,7 @@ components:
             be rejected. It can be null.
 
     MFA_Challenge_Choices:
-      description: Structure of an MFA Challenge of type '?'
+      description: Structure of an MFA Challenge of type 'choice'
       allOf:
         - $ref: '#/components/schemas/MFA_Challenge'
         - type: object
