@@ -932,6 +932,12 @@ paths:
                     type: string
               required:
                 - bill_ids
+            example:
+              bill_ids:
+                - 4066f193-9ade-4efb-95ba-ea4de1ccee1a
+                - 4b9c1306-f4b4-4433-a76a-6ce2e26e570f
+                - 6cc36638-6892-468e-bcae-a3eb5d164c9b
+
       responses:
         200:
           description: successful response
