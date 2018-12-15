@@ -435,7 +435,7 @@ info:
         </td>
       </tr>
       <tr>
-        <td>code</td>
+        <td>choice</td>
         <td>
           This will associate a new MFA Challenge of type 'choice' with the
           bill. You will have to select the answer from the choices given in the
@@ -661,6 +661,11 @@ paths:
                   type: string
                   description: Biller's UUID
                   example: "0282369b-acd1-4e44-a894-c2a10ea5f8e3"
+                external_user_id:
+                  type: string
+                  description: This attribute is meant to help our customers
+                    link our bills to their own records.
+                  example: "1234"
               required:
                 - biller_id
       responses:
@@ -1168,7 +1173,9 @@ paths:
                   example: "(714) 202-5081"
                 client_number:
                   type: string
-                  description: End user's client number
+                  description: End user's client number. This attribute is meant
+                    to help our customers link our transactions to their own
+                    records.
                   example: "805-612-0442"
                 payer_born_on:
                   type: string
@@ -1491,14 +1498,6 @@ paths:
           required: false
           schema:
             type: integer
-        - in: query
-          name: q[external_user_id_eq]
-          required: false
-          description: Returns the migrations belonging to the same end user.
-            This attribute is meant to help our customers link our records to
-            their own.
-          schema:
-            type: string
       responses:
         200:
           description: successful response
@@ -1681,6 +1680,10 @@ components:
               - $ref: '#/components/schemas/MFA_Challenge_Image'
               - $ref: '#/components/schemas/MFA_Challenge_Image_Choices'
               - $ref: '#/components/schemas/MFA_Challenge_Choices'
+        external_user_id:
+          description: This attribute is meant to help our customers link our
+            bills to their own records.
+          type: string
       example:
         type: bill
         id: 674117
@@ -1695,9 +1698,9 @@ components:
         balance_updated_at: '2017-01-16T20:12:58Z'
         error_code: null
         error_message: null
-        status: linked
+        status: updated
         migrated_at: null
-        mfa_challenges: []
+        external_user_id: "1234"
 
     Biller:
       type: object
@@ -1968,6 +1971,10 @@ components:
         updated_at:
           description: Timestamp of when the transaction was last updated
           type: string
+        client_number:
+          description: This attribute is meant to help our customers link our
+            transactions to their own records.
+          type: string
 
       example:
         id: be42c413-fcce-4857-b6fa-374228e33912
@@ -1980,3 +1987,4 @@ components:
         updated_at: '2018-04-06T15:41:52.846Z'
         error_code: null
         error_message: null
+        client_number: "805-612-0442"
