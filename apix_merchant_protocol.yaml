@@ -1,7 +1,6 @@
 openapi: 3.0.0
-
 info:
-  version: '1.0'
+  version: "1.0-oas3"
   title: arcus Merchant Documentation
   description: |
     # Introduction
@@ -114,18 +113,9 @@ info:
         <td>Service Temporary Unavailable -- Your system is not capable to answer our request</td>
       </tr>
     </table>
-
-# servers:
-#   - url: https://apix.staging.arcusapi.com
-#     description: Sandbox, Mock Credentials; Mock Data
-
 tags:
   - name: xChange
     description: Access to xChange documentation
-
-# security:
-#   - hmacAuth: []
-
 paths:
   /cards:
     put:
@@ -159,11 +149,13 @@ paths:
               properties:
                 id:
                   type: string
-                  description: The request's ID, to uniquely identify the request. An UUID format v4.
+                  description: >-
+                    The request's ID, to uniquely identify the request. An UUID
+                    format v4.
                   example: 6ab564f9-4e9d-4b03-96d6-dd9f2c39ec53
                 version:
                   type: integer
-                  description: The version used to identify the payload (Must be: 1)
+                  description: 'The version used to identify the payload (Must be: 1)'
                   example: 1
                 payload:
                   type: object
@@ -171,7 +163,9 @@ paths:
                   properties:
                     login:
                       type: string
-                      description: The User's login allowing you to find him in your Database.
+                      description: >-
+                        The User's login allowing you to find him in your
+                        Database.
                       example: john@mail.com
                     password:
                       type: string
@@ -183,16 +177,20 @@ paths:
                       example: John Smith
                     card_brand:
                       type: string
-                      description: The brand of the card (visa/mastercard/american_express/discover)
+                      description: >-
+                        The brand of the card
+                        (visa/mastercard/american_express/discover)
                       example: american_express
                     card_number:
                       type: string
-                      description: The FPAN or DPAN of the card (without spaces or formatting)
-                      example: "344135254976623"
+                      description: >-
+                        The FPAN or DPAN of the card (without spaces or
+                        formatting)
+                      example: '344135254976623'
                     card_security:
                       type: string
                       description: The CVV of the card (3 or 4 digits)
-                      example: "0123"
+                      example: '0123'
                     card_expiration:
                       type: object
                       description: The expiration object of the card
@@ -203,7 +201,9 @@ paths:
                           example: 4
                         year:
                           type: integer
-                          description: The year greater or equals to 2018 of the card expiration
+                          description: >-
+                            The year greater or equals to 2018 of the card
+                            expiration
                           example: 2022
                     card_address:
                       type: object
@@ -212,48 +212,27 @@ paths:
                         street:
                           type: string
                           description: The street name of the Card Holder
-                          example: "214W 29th St. Suite 1007 "
+                          example: '214W 29th St. Suite 1007 '
                         city:
                           type: string
                           description: The city name of the Card Holder
-                          example: "New York"
+                          example: New York
                         state:
                           type: string
                           description: The US state of the Card Holder (as 2 characters)
-                          example: "NY"
+                          example: NY
                         zipcode:
                           type: string
                           description: The zip code of the address
-                          example: "10001"
+                          example: '10001'
                         country:
                           type: string
-                          description: The country of the address (default: US)
-                          example: "US"
-
+                          description: 'The country of the address (default: US)'
+                          example: US
       responses:
-        204:
+        '204':
           description: Successful response - No payload expected
-
-        # 202:
-        #   description: Accepted - Requires Arcus to provide challenge answer
-        #   content:
-        #     application/json:
-        #       schema:
-        #         type: object
-        #         properties:
-        #           id:
-        #             type: string
-        #             description: The ID sent in the initial request
-        #           question:
-        #             type: string
-        #             description: The challenge question
-        #             example: "What the name of your pet?"
-
-        #         example:
-        #           id: "5fde398b-90b3-48f3-9012-9de7820641c3"
-        #           question: "What the name of your pet?"
-
-        401:
+        '401':
           description: Invalid credentials - The password doesn't match your database
           content:
             application/json:
@@ -268,12 +247,10 @@ paths:
                     type: string
                     description: The message explaining the error
                     example: Credentials invalid
-
                 example:
-                  id: "5fde398b-90b3-48f3-9012-9de7820641c3"
-                  question: "Credentials invalid"
-
-        404:
+                  id: 5fde398b-90b3-48f3-9012-9de7820641c3
+                  question: Credentials invalid
+        '404':
           description: Unknown user - The password doesn't match your database
           content:
             application/json:
@@ -288,12 +265,10 @@ paths:
                     type: string
                     description: The message explaining the error
                     example: Unknown user
-
                 example:
-                  id: "5fde398b-90b3-48f3-9012-9de7820641c3"
-                  question: "Unknown user"
-
-        422:
+                  id: 5fde398b-90b3-48f3-9012-9de7820641c3
+                  question: Unknown user
+        '422':
           description: Card rejected - The card provided was not validated by your systems
           content:
             application/json:
@@ -308,13 +283,13 @@ paths:
                     type: string
                     description: The message explaining the error
                     example: Card rejected - The address doesn't match the card holder
-
                 example:
-                  id: "5fde398b-90b3-48f3-9012-9de7820641c3"
-                  question: "Card rejected - The address doesn't match the card holder"
-
-        500:
-          description: Server unavailable - Your infrastructure was not capable to apply the migration
+                  id: 5fde398b-90b3-48f3-9012-9de7820641c3
+                  question: Card rejected - The address doesn't match the card holder
+        '500':
+          description: >-
+            Server unavailable - Your infrastructure was not capable to apply
+            the migration
           content:
             application/json:
               schema:
@@ -328,8 +303,6 @@ paths:
                     type: string
                     description: The message explaining the error
                     example: Server unavailable
-
                 example:
-                  id: "5fde398b-90b3-48f3-9012-9de7820641c3"
-                  question: "Server unavailable"
-
+                  id: 5fde398b-90b3-48f3-9012-9de7820641c3
+                  question: Server unavailable
