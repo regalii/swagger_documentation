@@ -1,0 +1,335 @@
+openapi: 3.0.0
+
+info:
+  version: '1.0'
+  title: arcus Merchant Documentation
+  description: |
+    # Introduction
+
+    This documentation will provide you the protocol you must implement __as
+    merchant__ in order to receive xChange request. For reminder, a xChange
+    request contains the new card information for one of your specific user.
+
+    By implementing, the Merchant protocol, you will be able to receive updated
+    cards from our Issuer Partner, this will reduce mecanically your false
+    declined attempts and let your user to have is freshly emmitted card present
+    in your services in order to streamline is experience of purshase.
+
+    Integration happens in some easy steps:
+
+    1. Your system receives a request from our infrastructure in real-time
+    (the Issuer Partner expects an answer coming from your infrastructure.)
+    2. You update the card information in your infrastructure by using the
+    payload previously sent by our infrastructure
+    3. You provide the response (success or error) to our infrastructure and we
+    take care to forward it to the Issuer Partner
+
+    ---
+
+    # Glossary
+
+    * __Migration__ It's a request made by the Issuer Partner in order to
+    replace card on file by a new card, the migration is initiated by your user
+    which is also customer of the Issuer Partner. The bank never pushes the card
+    without the explicit consent of their customer/your user.
+    * __User__ It's the user of your services on your hand. It's the same
+    physical person than the Issuer Partner's customer.
+    * __Customer__ It's the Issuer Partner's user and it's the same physical
+    person than your own user.
+
+    ---
+
+    # Environments
+
+    arcus will provide you with separate API keys for our two existing
+    environments:
+
+    * __Sandbox__. arcus maintains a Sandbox which allows developers to test the
+    API using mock data. We recommend keeping in mind the following:
+
+        * The data is always fake
+        * Do not send real credentials to the Sandbox
+
+      To make requests to the sandbox environment, use the following URL:
+        `https://apix.staging.arcusapi.com`
+
+    * __Production__. Once you have completed all the necessary tests on the
+    sandbox, contact us to receive your production keys.
+
+      To make requests to the production environment, use the following URL:
+        `https://apix.arcusapi.com`
+
+      __NOTE:__ For security reasons, it's not possible to make production
+      requests through our dynamic documentation.
+
+    ---
+
+    # Security
+
+    To make requests to our endpoints, you must use the `https` protocol,
+    regardless of the environment you're using.
+
+    <div class="panel panel-danger">
+      <div class="panel-body">
+        <h4>
+          <strong>Note:</strong> For security reasons, our API doesn't support
+          the TLS V1.0 anymore; we ask you to use TLS v1.2 for better security.
+        </h4>
+      </div>
+    </div>
+
+    > ## Authentication
+
+    >  TBD
+    ___
+
+    # Errors
+
+    Your implentations must answer a specific protocol in order to let our APIx
+    to manage properly your responses.
+
+    <table>
+      <tr>
+        <th>Error Code</th>
+        <th>Meaning</th>
+      </tr>
+      <tr>
+        <td>401</td>
+        <td>
+          Credentials Invalid -- The User's credentials doesn't match your database
+        </td>
+      </tr>
+      <tr>
+        <td>404</td>
+        <td>Unknown User -- The credentials don't match an existing user</td>
+      </tr>
+      <tr>
+        <td>422</td>
+        <td>
+          Card rejected -- The card information were rejected by your systems
+        </td>
+      </tr>
+      <tr>
+        <td>500</td>
+        <td>Service Temporary Unavailable -- Your system is not capable to answer our request</td>
+      </tr>
+    </table>
+
+# servers:
+#   - url: https://apix.staging.arcusapi.com
+#     description: Sandbox, Mock Credentials; Mock Data
+
+tags:
+  - name: xChange
+    description: Access to xChange documentation
+
+# security:
+#   - hmacAuth: []
+
+paths:
+  /cards:
+    put:
+      tags:
+        - xChange
+      summary: Receive a migration request.
+      operationId: putCard
+      description: |
+        This endpoint allows Arcus to push to the Merchant infrastructure a
+        migration request.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - merchant_id
+                - card_first_name
+                - card_last_name
+                - card_type
+                - card_brand
+                - card_number
+                - card_expiration
+                - card_verification_code
+                - card_address
+                - card_city
+                - card_state
+                - card_zip_code
+                - card_country
+              properties:
+                id:
+                  type: string
+                  description: The request's ID, to uniquely identify the request. An UUID format v4.
+                  example: 6ab564f9-4e9d-4b03-96d6-dd9f2c39ec53
+                version:
+                  type: integer
+                  description: The version used to identify the payload (Must be: 1)
+                  example: 1
+                payload:
+                  type: object
+                  description: The paylaod containing all the Migration information
+                  properties:
+                    login:
+                      type: string
+                      description: The User's login allowing you to find him in your Database.
+                      example: john@mail.com
+                    password:
+                      type: string
+                      description: The User's password allowing to authenticate the login.
+                      example: Life42!
+                    name_on_card:
+                      type: string
+                      description: The full name of the card holder
+                      example: John Smith
+                    card_brand:
+                      type: string
+                      description: The brand of the card (visa/mastercard/american_express/discover)
+                      example: american_express
+                    card_number:
+                      type: string
+                      description: The FPAN or DPAN of the card (without spaces or formatting)
+                      example: "344135254976623"
+                    card_security:
+                      type: string
+                      description: The CVV of the card (3 or 4 digits)
+                      example: "0123"
+                    card_expiration:
+                      type: object
+                      description: The expiration object of the card
+                      properties:
+                        month:
+                          type: integer
+                          description: The month from 1 to 12 of the card expiration
+                          example: 4
+                        year:
+                          type: integer
+                          description: The year greater or equals to 2018 of the card expiration
+                          example: 2022
+                    card_address:
+                      type: object
+                      description: The object for the card holder's physical address
+                      properties:
+                        street:
+                          type: string
+                          description: The street name of the Card Holder
+                          example: "214W 29th St. Suite 1007 "
+                        city:
+                          type: string
+                          description: The city name of the Card Holder
+                          example: "New York"
+                        state:
+                          type: string
+                          description: The US state of the Card Holder (as 2 characters)
+                          example: "NY"
+                        zipcode:
+                          type: string
+                          description: The zip code of the address
+                          example: "10001"
+                        country:
+                          type: string
+                          description: The country of the address (default: US)
+                          example: "US"
+
+      responses:
+        204:
+          description: Successful response - No payload expected
+
+        # 202:
+        #   description: Accepted - Requires Arcus to provide challenge answer
+        #   content:
+        #     application/json:
+        #       schema:
+        #         type: object
+        #         properties:
+        #           id:
+        #             type: string
+        #             description: The ID sent in the initial request
+        #           question:
+        #             type: string
+        #             description: The challenge question
+        #             example: "What the name of your pet?"
+
+        #         example:
+        #           id: "5fde398b-90b3-48f3-9012-9de7820641c3"
+        #           question: "What the name of your pet?"
+
+        401:
+          description: Invalid credentials - The password doesn't match your database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: The ID sent in the initial request
+                    example: 5fde398b-90b3-48f3-9012-9de7820641c3
+                  message:
+                    type: string
+                    description: The message explaining the error
+                    example: Credentials invalid
+
+                example:
+                  id: "5fde398b-90b3-48f3-9012-9de7820641c3"
+                  question: "Credentials invalid"
+
+        404:
+          description: Unknown user - The password doesn't match your database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: The ID sent in the initial request
+                    example: 5fde398b-90b3-48f3-9012-9de7820641c3
+                  message:
+                    type: string
+                    description: The message explaining the error
+                    example: Unknown user
+
+                example:
+                  id: "5fde398b-90b3-48f3-9012-9de7820641c3"
+                  question: "Unknown user"
+
+        422:
+          description: Card rejected - The card provided was not validated by your systems
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: The ID sent in the initial request
+                    example: 5fde398b-90b3-48f3-9012-9de7820641c3
+                  message:
+                    type: string
+                    description: The message explaining the error
+                    example: Card rejected - The address doesn't match the card holder
+
+                example:
+                  id: "5fde398b-90b3-48f3-9012-9de7820641c3"
+                  question: "Card rejected - The address doesn't match the card holder"
+
+        500:
+          description: Server unavailable - Your infrastructure was not capable to apply the migration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: The ID sent in the initial request
+                    example: 5fde398b-90b3-48f3-9012-9de7820641c3
+                  message:
+                    type: string
+                    description: The message explaining the error
+                    example: Server unavailable
+
+                example:
+                  id: "5fde398b-90b3-48f3-9012-9de7820641c3"
+                  question: "Server unavailable"
+
