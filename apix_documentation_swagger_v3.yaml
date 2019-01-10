@@ -1007,6 +1007,8 @@ paths:
           description: Returns xPay billers whose masks include the specified
             BIN (Bank Identification Number, which can have either 6 or 8
             characters)
+          schema:
+            type: integer
       responses:
         200:
           description: successful response
