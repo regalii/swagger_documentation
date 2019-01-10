@@ -971,36 +971,42 @@ paths:
         - name: q[biller_type_eq]
           in: query
           required: false
-          description: Only returns xPay billers of the specified type
+          description: Returns xPay billers of the specified type
           schema:
             type: string
         - name: q[name_eq]
           in: query
           required: false
-          description: Only returns xPay billers whose name matches the value
+          description: Returns xPay billers whose name matches the value
             sent
           schema:
             type: string
         - name: q[name_cont]
           in: query
           required: false
-          description: Only returns xPay billers whose name contains the value
+          description: Returns xPay billers whose name contains the value
             sent
           schema:
             type: string
         - name: q[country_eq]
           in: query
           required: false
-          description: Only returns xPay billers of the specified country
+          description: Returns xPay billers of the specified country
           schema:
             type: string
         - name: q[biller_class_cont]
           in: query
           required: false
-          description: Only returns xPay billers whose biller_class contains the
+          description: Returns xPay billers whose biller_class contains the
             value sent
           schema:
             type: string
+        - name: q[bin_eq]
+          in: query
+          required: false
+          description: Returns xPay billers whose masks include the specified
+            BIN (Bank Identification Number, which can have either 6 or 8
+            characters)
       responses:
         200:
           description: successful response
