@@ -685,6 +685,86 @@ paths:
                         parameter: id
                       code: NotFound
                       detail: The resource requested can't be found
+  /bills:
+    post:
+      tags:
+        - Common
+      summary: Create biller of merchants
+      operationId: create biller
+      description: |
+        This endpoint creates a new bill of a merchant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Basic_Credentials'
+              type: object
+              required:
+                - merchant_id
+              properties:
+                merchant_id:
+                  type: string
+                  description: Merchant's ID.
+                  example: 6ab564f9-4e9d-4b03-96d6-dd9f2c39ec53
+                login:
+                  type: string
+                  description: User name 
+                  example: email@exaple.com
+                password:
+                  type: string
+                  description: Password
+                  example: Example123!
+                external_id _dynamic:
+                  type: string
+                  description: In merchant configuration you will find the custom fields external id
+                  example: 312441241
+
+      responses:
+        202:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                  allOf:
+                    - $ref: '#/components/schemas/BillerData'
+                example:
+                  data:
+                    id: 7da26c9d-cfd0-4af3-a348-fed5dcbfa5d5
+                    type: bill
+                    attributes:
+                      external_user_id: null
+                      status: initialized
+                      requested_at: "2019-01-25Z18:50:56 UTC"
+                      retrieved_at: null
+                      xdata: null
+                      error: null
+        422:
+          description: unprocessable entity
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error_Info'
+
+                example:
+                  errors:
+                    - source:
+                        parameter: password
+                      code: BlankAttributeError
+                      detail: Password can't be blank
+                    - source:
+                        parameter: card_country
+                      code: InvalidAttributeError
+                      detail: Card country is invalid
 
   /migrations:
     post:
@@ -1247,7 +1327,6 @@ components:
           properties:
             parameter:
               type: string
-
     MFA_Challenge:
       description: Shared information of MFA Challenges
       type: object
@@ -1431,3 +1510,38 @@ components:
                         description: A phone number or e-mail address. The same
                           value can be present in different categories
                         example: "+1234567890"
+    BillData:
+      description: Structure of an MFA Challenge of type '?'
+      allOf:
+        - $ref: '#/components/schemas/GenericData'
+      type: object
+      properties:
+        type:
+          type: string
+          description: Describes the type of data that is being returned
+        id:
+          type: string
+          description: Unique identifier (UUID) of the entity
+        status: 
+          type: string
+          enum:
+            - initialized
+            - ongoing
+            - authenticated,
+            - waiting,
+            - successful
+            - failed
+        requested_at: 
+          type: string
+          format: date-time
+          description: It can be null.
+        retrieved_at: 
+          type: string
+          format: date-time
+          description: It can be null.
+        xdata: 
+          type: string
+          description: It can be null.
+        error: 
+          type: string
+          description: It can be null.
