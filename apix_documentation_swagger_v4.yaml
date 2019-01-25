@@ -730,8 +730,8 @@ paths:
                 type: object
                 properties:
                   data:
-                  allOf:
-                    - $ref: '#/components/schemas/BillerData'
+                    allOf:
+                      - $ref: '#/components/schemas/Bill'
                 example:
                   data:
                     id: 7da26c9d-cfd0-4af3-a348-fed5dcbfa5d5
@@ -762,9 +762,9 @@ paths:
                       code: BlankAttributeError
                       detail: Password can't be blank
                     - source:
-                        parameter: card_country
+                        parameter: password
                       code: InvalidAttributeError
-                      detail: Card country is invalid
+                      detail: password is invalid
 
   /migrations:
     post:
@@ -1510,7 +1510,7 @@ components:
                         description: A phone number or e-mail address. The same
                           value can be present in different categories
                         example: "+1234567890"
-    BillData:
+    Bill:
       description: Structure of an MFA Challenge of type '?'
       allOf:
         - $ref: '#/components/schemas/GenericData'
