@@ -1511,7 +1511,7 @@ components:
                           value can be present in different categories
                         example: "+1234567890"
     Bill:
-      description: Structure of an MFA Challenge of type '?'
+      description: Structure of an Bill
       allOf:
         - $ref: '#/components/schemas/GenericData'
       type: object
