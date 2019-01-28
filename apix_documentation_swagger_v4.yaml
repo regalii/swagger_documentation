@@ -424,6 +424,8 @@ servers:
 tags:
   - name: Common
     description: Common endpoints
+  - name: xData
+    description: Access to xData documentation
   - name: xChange
     description: Access to xChange documentation
   - name: Challenges
@@ -700,7 +702,7 @@ paths:
   /bills:
     post:
       tags:
-        - Common
+        - xData
       summary: Create biller of merchants
       operationId: create biller
       description: |
@@ -813,6 +815,194 @@ paths:
                         parameter: merchant
                       code: NotImplemented
                       detail: This Merchant is not configured to accept requests at this time, please try again later
+    get:
+      tags:
+        - xData
+      summary: Get all bills of merchant
+      operationId: get all biller
+      description: |
+        This endpoint get all bill
+      parameters:
+        - in: query
+          name: external_user_id_eq
+          required: false
+          description: External id filter
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      - $ref: '#/components/schemas/Bill'
+                example:
+                  data:
+                    -               
+                      id: 7da26c9d-cfd0-4af3-a348-fed5dcbfa5d5
+                      type: bill
+                      attributes:
+                        external_user_id: null
+                        status: initialized
+                        requested_at: "2019-01-25Z18:50:56 UTC"
+                        retrieved_at: null
+                        xdata: null
+                        error: null
+  /bills/{id}:
+    get:
+      tags:
+        - xData
+      summary: Retrieves a specific bill’s cached data
+      operationId: get specify Bill
+      description: |
+        This endpoint retrieves a specific bill’s cached data.
+      parameters:
+        - name: id
+          in: path
+          description: UUID of the bill you wish to obtain (this version still
+            accepts IDs, but they will be deprecated in future versions)
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+                example:
+                  data:              
+                    id: 7da26c9d-cfd0-4af3-a348-fed5dcbfa5d5
+                    type: bill
+                    attributes:
+                      external_user_id: null
+                      status: initialized
+                      requested_at: "2019-01-25Z18:50:56 UTC"
+                      retrieved_at: null
+                      xdata: null
+                      error: null
+                    relationships: {}
+                  included: []
+        404:
+          description: resource not found
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error_Info'
+
+                example:
+                  errors:
+                    - source:
+                        parameter: id
+                      code: NotFound
+                      detail: The resource requested can't be found
+  /bills/{id}/challenges:
+    get:
+      tags:
+        - xData
+      summary: Retrieves a specific challenges data
+      operationId: get specify challenge bill
+      description: |
+        This endpoint retrieves a specific bill challenges 
+      parameters:
+        - name: id
+          in: path
+          description: UUID of the bill you wish to obtain (this version still
+            accepts IDs, but they will be deprecated in future versions)
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+                example:
+                  data:              
+                    id: 7da26c9d-cfd0-4af3-a348-fed5dcbfa5d5
+                    type: bill
+                    attributes:
+                      external_user_id: null
+                      status: initialized
+                      requested_at: "2019-01-25Z18:50:56 UTC"
+                      retrieved_at: null
+                      xdata: null
+                      error: null
+                    relationships: {}
+                  included: []
+  /bill:
+    post:
+      tags:
+        - xData
+      summary: Retrieves a specific bill’s cached data
+      operationId: getBill
+      description: |
+        This endpoint retrieves a specific bill’s cached data. To pull fresh
+        data from a biller see `POST /bills/{id}/refresh`
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+              properties: 
+                id:
+                  type: string
+                  description: Biller's ID.
+                  example: f83b26db-67de-49a1-b735-b8d574e6a1d0            
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+                example:
+                  data:              
+                    id: 7da26c9d-cfd0-4af3-a348-fed5dcbfa5d5
+                    type: bill
+                    attributes:
+                      external_user_id: null
+                      status: initialized
+                      requested_at: "2019-01-25Z18:50:56 UTC"
+                      retrieved_at: null
+                      xdata: null
+                      error: null
+                    relationships: {}
+                  included: []
+        404:
+          description: resource not found
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error_Info'
+
+                example:
+                  errors:
+                    - source:
+                        parameter: id
+                      code: NotFound
+                      detail: The resource requested can't be found
   /migrations:
     post:
       tags:
