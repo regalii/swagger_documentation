@@ -73,7 +73,7 @@ info:
         * Do not send real credentials to the Sandbox
 
       To make requests to the sandbox environment, use the following URL:
-        `https://apix.staging.arcusapi.com`
+        ` `
 
     * __Production__. Once you have completed all the necessary tests on the
     sandbox, contact us to receive your production keys.
@@ -220,6 +220,12 @@ info:
         <td>Not Found -- The specified resource could not be found</td>
       </tr>
       <tr>
+        <td>405</td>
+        <td>
+          Method Not Allowed -- Not yet active for xData
+        </td>
+      </tr>
+      <tr>
         <td>422</td>
         <td>
           Unprocessable Entity -- You will receive more information on the
@@ -237,6 +243,12 @@ info:
         <td>
           Internal Server Error -- We had a problem with our server. Try again
           later.
+        </td>
+      </tr>
+      <tr>
+        <td>501</td>
+        <td>
+          Not Implemented -- Not configured to accept request at this time.
         </td>
       </tr>
       <tr>
@@ -765,7 +777,42 @@ paths:
                         parameter: password
                       code: InvalidAttributeError
                       detail: password is invalid
+        405:
+          description:  Method Not Allowed
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error_Info'
 
+                example:
+                  errors:
+                    - source:
+                        parameter: configuration
+                      code: UnknownConfiguration
+                      detail: Merchant is not yet active for xData
+        501:
+          description:  Not Implemented
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error_Info'
+
+                example:
+                  errors:
+                    - source:
+                        parameter: merchant
+                      code: NotImplemented
+                      detail: This Merchant is not configured to accept requests at this time, please try again later
   /migrations:
     post:
       tags:
