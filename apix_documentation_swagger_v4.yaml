@@ -1012,17 +1012,21 @@ paths:
                 $ref: '#/components/schemas/Bill'
                 example:
                   data:              
-                    id: 7da26c9d-cfd0-4af3-a348-fed5dcbfa5d5
+                    id: ee032897-9b3a-4f0e-a122-fe79c2164e00
                     type: bill
                     attributes:
-                      external_user_id: null
-                      status: initialized
-                      requested_at: "2019-01-25Z18:50:56 UTC"
-                      retrieved_at: null
-                      xdata: null
-                      error: null
+                      kind: question
+                      create_at: "2019-01-25Z18:50:56 UTC"
+                      expires_at: null
+                      prompt: "What is the secret word? (question)"
                     relationships: {}
-                  included: []
+                  meta: 
+                    total: 1
+                    total-pages: 1
+                  links: 
+                    self: "https://apix.staging.arcusapi.com/bills/3c95647b-0df8-4cd0-9b26-43164af13525/challenges?page=1"
+                    next: null
+                    prev: null
   /bill:
     post:
       tags:
@@ -1414,7 +1418,7 @@ paths:
   /migrations/{id}/challenges:
     get:
       tags:
-        - Challenges
+        - xChange
       summary: Gets all challenges associated with a specific migration
       description: |
         If the migration requires the end user to answer some challenges, the
@@ -1428,6 +1432,66 @@ paths:
           required: true
           schema:
             type: string
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      anyOf:
+                        - $ref: '#/components/schemas/MFA_Challenge_Question'
+                        - $ref: '#/components/schemas/MFA_Challenge_Code'
+                        - $ref: '#/components/schemas/MFA_Challenge_Image'
+                        - $ref: '#/components/schemas/MFA_Challenge_Image_Choices'
+                        - $ref: '#/components/schemas/MFA_Challenge_Choices'
+                allOf:
+                  - $ref: '#/components/schemas/MetaData'
+                  - $ref: '#/components/schemas/NavigationLinks'
+
+                example:
+                  data:
+                    - id: afa0b9c8-7fe2-41ee-9f4c-617dac91ca89
+                      type: challenge
+                      attributes:
+                        kind: question
+                        created_at: "2018-07-09 21:40:45 UTC"
+                        expires_at: null
+                        prompt: What is the secret word?
+                  # TODO: Include examples of different challenges
+                  meta:
+                    total: 1
+                    total-pages: 1
+                  links:
+                    self: "https://apix.staging.arcusapi.com/migrations/eae8d4c7-b3d9-4fc5-89b6-7ccdd0b4111c/challenges?page=1"
+                    next: null
+                    prev: null
+  /migration_challenges:
+    post:
+      tags:
+        - xChange
+      summary: Gets all challenges associated with a specific migration
+      description: |
+        If the migration requires the end user to answer some challenges, the
+        customer can request the challenges associated to one specific
+        migration by using this endpoint.
+      operationId: getMigrationsChallengesPost
+      requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - migration_id
+                properties: 
+                  migration_id:
+                    type: string
+                    description: ID of the migration whose challenges you wish to obtain
+                    example: 146f15d9-9d59-4a9f-972a-da7a54dd5193
       responses:
         200:
           description: successful response
@@ -1525,7 +1589,63 @@ paths:
                       created_at: '2018-06-15 14:16:16 UTC'
                       expires_at: '2018-06-15 14:19:16 UTC'
                       prompt: Please provide the code sent to your phone.
+    put:
+      tags:
+        - Challenges
+      summary: Submit answer to a challenge
+      description: |
+        Sends the answer to a specific challenge
+      operationId: updateChallengeput
+      parameters:
+        - name: id
+          in: path
+          description: ID of the challenge that is being answered
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                challenge:
+                  type: object
+                  required:
+                    - answer
+                  properties:
+                    answer:
+                      type: string
+              example:
+                challenge:
+                  answer: 12345
 
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    oneOf:
+                      - $ref: '#/components/schemas/MFA_Challenge_Question'
+                      - $ref: '#/components/schemas/MFA_Challenge_Code'
+                      - $ref: '#/components/schemas/MFA_Challenge_Image'
+                      - $ref: '#/components/schemas/MFA_Challenge_Image_Choices'
+                      - $ref: '#/components/schemas/MFA_Challenge_Choices'
+                example:
+                  data:
+                    id: 3a798711-d352-4ee5-b35d-383fd23e7edc
+                    type: challenge
+                    attributes:
+                      kind: code
+                      created_at: '2018-06-15 14:16:16 UTC'
+                      expires_at: '2018-06-15 14:19:16 UTC'
+                      prompt: Please provide the code sent to your phone.
 components:
   securitySchemes:
     hmacAuth:
