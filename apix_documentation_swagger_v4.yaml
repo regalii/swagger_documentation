@@ -699,6 +699,86 @@ paths:
                         parameter: id
                       code: NotFound
                       detail: The resource requested can't be found
+  /merchant:
+    post:
+      tags:
+        - Common
+      summary: Obtains the details of a single merchant
+      operationId: getMerchantPost
+      description: |
+        This endpoint provides the details of a single merchant.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+              properties: 
+                id:
+                  type: string
+                  description: UUID of the merchant you wish to obtain
+                  example: f83b26db-67de-49a1-b735-b8d574e6a1d0
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                      - $ref: '#/components/schemas/Merchant'
+
+                example:
+                  data:
+                    id: 7da26c9d-cfd0-4af3-a348-fed5dcbfa5d5
+                    type: merchant
+                    attributes:
+                      category: E-Commerce
+                      name: Amazon Prime
+                      country: US
+                      currency: USD
+                      home_url: "https://www.amazon.com/"
+                      signup_url: "https://www.amazon.com/ap/register"
+                      password_url: "https://www.amazon.com/ap/forgotpassword"
+                      support_phone_number: "+12062662992"
+                      color: "#FF9900"
+                      logos:
+                        - mime_type: image/svg+xml
+                          url: "https://static.staging.arcusapi.com/vector/amazon-prime.svg"
+                        - mime_type: image/png
+                          resolution: 90x34
+                          url: "https://static.staging.arcusapi.com/90x34/amazon-prime.png"
+                        - mime_type: image/png
+                          resolution: 135x51
+                          url: "https://static.staging.arcusapi.com/135x51/amazon-prime.png"
+                        - mime_type: image/png
+                          resolution: 180x68
+                          url: "https://static.staging.arcusapi.com/180x68/amazon-prime.png"
+                      created_at: "2016-06-08 21:36:33 UTC"
+                      updated_at: "2018-08-03 18:50:56 UTC"
+
+        404:
+          description: resource not found
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error_Info'
+
+                example:
+                  errors:
+                    - source:
+                        parameter: id
+                      code: NotFound
+                      detail: The resource requested can't be found
   /bills:
     post:
       tags:
@@ -1215,7 +1295,6 @@ paths:
                     self: "https://apix.staging.arcusapi.com/migrations?page=1"
                     next: null
                     prev: null
-
   /migrations/{id}:
     get:
       tags:
@@ -1255,7 +1334,83 @@ paths:
                       error:
                         code: InvalidCredentials
                         detail: Invalid login or password
-
+        404:
+          description: Not Found
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error_Info'
+                example:
+                  errors:
+                    - source:
+                        parameter: id
+                      code: NotFound
+                      detail: The resource requested can't be found
+  /migration:
+    post:
+      tags:
+        - xChange
+      summary: Gets the last migration attempt of a bill
+      description: |
+        This endpoint gets the last migration attempt of a bill.
+      operationId: get Migration Post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+              properties: 
+                id:
+                  type: string
+                  description: ID of the bill whose migration information you wish to obtain
+                  example: f83b26db-67de-49a1-b735-b8d574e6a1d0
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                      - $ref: '#/components/schemas/Migration'
+                example:
+                  data:
+                    id: b4aa7d78-6f16-4ddd-887d-9f5c0b730a26
+                    type: migration
+                    attributes:
+                      status: failed
+                      requested_at: '2018-06-15 14:16:16 UTC'
+                      migrated_at: '2018-06-15 16:34:54 UTC'
+                      error:
+                        code: InvalidCredentials
+                        detail: Invalid login or password
+        404:
+          description: Not Found
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error_Info'
+                example:
+                  errors:
+                    - source:
+                        parameter: id
+                      code: NotFound
+                      detail: The resource requested can't be found
   /migrations/{id}/challenges:
     get:
       tags:
