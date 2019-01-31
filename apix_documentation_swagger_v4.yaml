@@ -699,6 +699,7 @@ paths:
                         parameter: id
                       code: NotFound
                       detail: The resource requested can't be found
+                      
   /merchant:
     post:
       tags:
@@ -779,14 +780,15 @@ paths:
                         parameter: id
                       code: NotFound
                       detail: The resource requested can't be found
+
   /bills:
     post:
       tags:
         - xData
-      summary: Create biller of merchants
-      operationId: create biller
+      summary: Create bill for a specific merchant
+      operationId: createBill
       description: |
-        This endpoint creates a new bill of a merchant
+        This endpoint creates a new bill of a specific merchant
       requestBody:
         required: true
         content:
@@ -814,7 +816,6 @@ paths:
                   type: string
                   description: In merchant configuration you will find the custom fields external id
                   example: 312441241
-
       responses:
         202:
           description: successful response
@@ -858,7 +859,7 @@ paths:
                     - source:
                         parameter: password
                       code: InvalidAttributeError
-                      detail: password is invalid
+                      detail: Password is invalid
         405:
           description:  Method Not Allowed
           content:
@@ -870,7 +871,6 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Error_Info'
-
                 example:
                   errors:
                     - source:
@@ -895,18 +895,19 @@ paths:
                         parameter: merchant
                       code: NotImplemented
                       detail: This Merchant is not configured to accept requests at this time, please try again later
+
     get:
       tags:
         - xData
-      summary: Get all bills of merchant
-      operationId: get all biller
+      summary: Retrieve all your bills
+      operationId: getAllBills
       description: |
-        This endpoint get all bill
+        This endpoint retrieves all your bills
       parameters:
         - in: query
           name: external_user_id_eq
           required: false
-          description: External id filter
+          description: Returns the bills belonging to the same end user
           schema:
             type: string
       responses:
@@ -933,12 +934,13 @@ paths:
                         retrieved_at: null
                         xdata: null
                         error: null
+
   /bills/{id}:
     get:
       tags:
         - xData
       summary: Retrieves a specific bill’s cached data
-      operationId: get specify Bill
+      operationId: getSpecificBill
       description: |
         This endpoint retrieves a specific bill’s cached data.
       parameters:
@@ -980,21 +982,21 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Error_Info'
-
                 example:
                   errors:
                     - source:
                         parameter: id
                       code: NotFound
                       detail: The resource requested can't be found
+
   /bills/{id}/challenges:
     get:
       tags:
         - xData
-      summary: Retrieves a specific challenges data
+      summary: Retrieves the challenges associated with a specific bill
       operationId: get specify challenge bill
       description: |
-        This endpoint retrieves a specific bill challenges 
+        This endpoint retrieves a specific bill's challenges 
       parameters:
         - name: id
           in: path
@@ -1027,6 +1029,7 @@ paths:
                     self: "https://apix.staging.arcusapi.com/bills/3c95647b-0df8-4cd0-9b26-43164af13525/challenges?page=1"
                     next: null
                     prev: null
+
   /bill:
     post:
       tags:
@@ -1087,6 +1090,7 @@ paths:
                         parameter: id
                       code: NotFound
                       detail: The resource requested can't be found
+
   /migrations:
     post:
       tags:
@@ -1299,6 +1303,7 @@ paths:
                     self: "https://apix.staging.arcusapi.com/migrations?page=1"
                     next: null
                     prev: null
+
   /migrations/{id}:
     get:
       tags:
@@ -1355,6 +1360,7 @@ paths:
                         parameter: id
                       code: NotFound
                       detail: The resource requested can't be found
+
   /migration:
     post:
       tags:
@@ -1362,7 +1368,7 @@ paths:
       summary: Gets the last migration attempt of a bill
       description: |
         This endpoint gets the last migration attempt of a bill.
-      operationId: get Migration Post
+      operationId: getMigrationPost
       requestBody:
         required: true
         content:
@@ -1415,6 +1421,7 @@ paths:
                         parameter: id
                       code: NotFound
                       detail: The resource requested can't be found
+
   /migrations/{id}/challenges:
     get:
       tags:
@@ -1470,6 +1477,7 @@ paths:
                     self: "https://apix.staging.arcusapi.com/migrations/eae8d4c7-b3d9-4fc5-89b6-7ccdd0b4111c/challenges?page=1"
                     next: null
                     prev: null
+
   /migration_challenges:
     post:
       tags:
@@ -1839,6 +1847,7 @@ components:
           properties:
             parameter:
               type: string
+
     MFA_Challenge:
       description: Shared information of MFA Challenges
       type: object
@@ -2022,8 +2031,9 @@ components:
                         description: A phone number or e-mail address. The same
                           value can be present in different categories
                         example: "+1234567890"
+
     Bill:
-      description: Structure of an Bill
+      description: Structure of a Bill
       allOf:
         - $ref: '#/components/schemas/GenericData'
       type: object
@@ -2056,4 +2066,4 @@ components:
           description: It can be null.
         error: 
           type: string
-          description: It can be null.
+          description: It can be null. 
