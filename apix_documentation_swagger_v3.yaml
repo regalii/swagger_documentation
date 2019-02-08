@@ -860,8 +860,6 @@ paths:
     delete:
       tags:
         - xData
-      servers:
-        - url: https://apix.casiregalii.com
       summary: Deletes a specific bill
       description: This endpoint deletes a specific bill
       operationId: deleteBill
@@ -1613,6 +1611,22 @@ paths:
             application/vnd.regalii.v3.2+json:
               schema:
                 $ref: '#/components/schemas/Migration'
+    delete:
+      tags:
+        - xChange
+      summary: Deletes a specific migration
+      description: This endpoint deletes a specific migration
+      operationId: deleteMigration
+      parameters:
+        - name: id
+          in: path
+          description: UUID of the migration to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: successful response
 
 components:
   securitySchemes:

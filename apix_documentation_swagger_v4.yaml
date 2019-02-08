@@ -926,7 +926,6 @@ paths:
                   data:
                     allOf:
                       - $ref: '#/components/schemas/Migration'
-
                 example:
                   data:
                     id: b4aa7d78-6f16-4ddd-887d-9f5c0b730a26
@@ -938,6 +937,24 @@ paths:
                       error:
                         code: InvalidCredentials
                         detail: Invalid login or password
+
+    delete:
+      tags:
+        - xChange
+      summary: Deletes the data associated with a specific migration
+      description: This endpoint deletes the data associated with a specific
+        migration
+      operationId: deleteMigration
+      parameters:
+        - name: id
+          in: path
+          description: UUID of the migration to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: successful response
 
   /migrations/{id}/challenges:
     get:
