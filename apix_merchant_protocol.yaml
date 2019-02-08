@@ -5,61 +5,50 @@ info:
   description: |
     # Introduction
 
-    This documentation will provide you the protocol you must implement __as
-    merchant__ in order to receive xChange request. For reminder, a xChange
-    request contains the new card information for one of your specific user.
+    This documentation provides Merchants the protocol to be implemented in
+    order to receive an xChange request.
 
-    By implementing, the Merchant protocol, you will be able to receive updated
-    cards from our Issuer Partner, this will reduce mecanically your false
-    declined attempts and let your user to have is freshly emmitted card present
-    in your services in order to streamline is experience of purshase.
+    After implementation, Merchants will be able to receive updated card
+    information from Arcus Issuer partners, which will reduce the possibility of
+    a false positive occurring from outdated payment information.
 
-    Integration happens in some easy steps:
+    The actual update occurs in the following steps:
+    1. Merchant system receives a request from Arcus infrastructure in real-time.
+    2. Merchant updates the payment card information in their infrastructure,
+    using the payload previously delivered by Arcus
+    3. Merchant provides a response code to Arcus infrastructure, which Arcus
+    will forward to our Issuer partner.
 
-    1. Your system receives a request from our infrastructure in real-time
-    (the Issuer Partner expects an answer coming from your infrastructure.)
-    2. You update the card information in your infrastructure by using the
-    payload previously sent by our infrastructure
-    3. You provide the response (success or error) to our infrastructure and we
-    take care to forward it to the Issuer Partner
 
     ---
 
     # Glossary
 
-    * __Migration__ It's a request made by the Issuer Partner in order to
-    replace card on file by a new card, the migration is initiated by your user
-    which is also customer of the Issuer Partner. The bank never pushes the card
-    without the explicit consent of their customer/your user.
-    * __User__ It's the user of your services on your hand. It's the same
-    physical person than the Issuer Partner's customer.
-    * __Customer__ It's the Issuer Partner's user and it's the same physical
+    * __Migration__ Is a request made by the Issuer partner to update the
+    payment card on file.
+    * __User__ Is your and the partner Issuer’s mutual customer.
+    * __Customer__ Is the Issuer Partner's user and it's the same physical
     person than your own user.
+
 
     ---
 
     # Environments
 
-    arcus will provide you with separate API keys for our two existing
+    Arcus will provide Merchants with separate API keys for our two existing
     environments:
 
-    * __Sandbox__. arcus maintains a Sandbox which allows developers to test the
-    API using mock data. We recommend keeping in mind the following:
-
+    * __Sandbox__: Arcus maintains a Sandbox which allows developers to test the
+    API using mock data. We recommend keeping the following information in mind:
         * The data is always fake
-        * Do not send real credentials to the Sandbox
-
-      To make requests to the sandbox environment, use the following URL:
-        `https://apix.staging.arcusapi.com`
-
-    * __Production__. Once you have completed all the necessary tests on the
+        * Do not send any real information in the Sandbox
+        * To make requests to the sandbox environment, use the following URL: https://apix.staging.arcusapi.com
+    * __Production__: Once you have completed all of the necessary tests in the
     sandbox, contact us to receive your production keys.
+        * To make requests to the production environment, use the following URL: https://apix.arcusapi.com
+    * __NOTE__: For security reasons, it's not possible to make production
+    requests through our dynamic documentation.
 
-      To make requests to the production environment, use the following URL:
-        `https://apix.arcusapi.com`
-
-      __NOTE:__ For security reasons, it's not possible to make production
-      requests through our dynamic documentation.
 
     ---
 
@@ -72,20 +61,19 @@ info:
       <div class="panel-body">
         <h4>
           <strong>Note:</strong> For security reasons, our API doesn't support
-          the TLS V1.0 anymore; we ask you to use TLS v1.2 for better security.
+          TLS V1.0; we ask that you use minimum TLS v1.2.
         </h4>
       </div>
     </div>
 
-    > ## Authentication
+    ## Authentication
 
-    >  TBD
+    TBD
     ___
 
     # Errors
 
-    Your implentations must answer a specific protocol in order to let our APIx
-    to manage properly your responses.
+    The following error codes must be used when responding to an update request:
 
     <table>
       <tr>
@@ -95,7 +83,7 @@ info:
       <tr>
         <td>401</td>
         <td>
-          Credentials Invalid -- The User's credentials doesn't match your database
+          Credentials Invalid -- The provided credentials don't match existing records
         </td>
       </tr>
       <tr>
@@ -105,14 +93,26 @@ info:
       <tr>
         <td>422</td>
         <td>
-          Card rejected -- The card information were rejected by your systems
+          Card rejected -- The card information is invalid
         </td>
       </tr>
       <tr>
         <td>500</td>
-        <td>Service Temporary Unavailable -- Your system is not capable to answer our request</td>
+        <td>Service Temporary Unavailable -- Merchant system is temporarily unavailable</td>
       </tr>
     </table>
+
+    # Types of Integrations With Arcus:
+
+    * __Merchant Integrates with Arcus__: Merchant can use this documentation to
+    create an API integration with the Arcus infrastructure.
+    * __Arcus Integrates with Merchant__: Arcus is able to integrate with
+    existing Merchant API infrastructure in order to eliminate level of effort
+    required to go live with Arcus xChange. To accomplish this, Arcus works with
+    the Merchant to map our data to existing API endpoints for card information.
+      * If interested in discussing further, please contact your Arcus
+        representative to learn more.
+
 tags:
   - name: xChange
     description: Access to xChange documentation
