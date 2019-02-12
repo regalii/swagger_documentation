@@ -103,6 +103,7 @@ paths:
         This endpoint allows Arcus to push to the Merchant infrastructure a
         migration request.
 
+
         __Old Card/New Card:__
         * Customer identity authentication method depends on Merchant
         tokenization method.
