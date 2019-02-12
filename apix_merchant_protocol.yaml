@@ -19,6 +19,16 @@ info:
     3. Merchant provides a response code to Arcus infrastructure, which Arcus
     will forward to our Issuer partner.
 
+    ## Types of Integrations With Arcus
+
+    * __Merchant Integrates with Arcus__: Merchant can use this documentation to
+    create an API integration with the Arcus infrastructure.
+    * __Arcus Integrates with Merchant__: Arcus is able to integrate with
+    existing Merchant API infrastructure in order to eliminate level of effort
+    required to go live with Arcus xChange. To accomplish this, Arcus works with
+    the Merchant to map our data to existing API endpoints for card information.
+      * If interested in discussing further, please contact your Arcus
+        representative to learn more.
 
     ---
 
@@ -57,14 +67,8 @@ info:
     To make requests to our endpoints, you must use the `https` protocol,
     regardless of the environment you're using.
 
-    <div class="panel panel-danger">
-      <div class="panel-body">
-        <h4>
-          <strong>Note:</strong> For security reasons, our API doesn't support
-          TLS V1.0; we ask that you use minimum TLS v1.2.
-        </h4>
-      </div>
-    </div>
+    __Note:__ For security reasons, our API doesn't support TLS V1.0;
+    we ask that you use minimum TLS v1.2.
 
     ## Authentication
 
@@ -101,17 +105,6 @@ info:
         <td>Service Temporary Unavailable -- Merchant system is temporarily unavailable</td>
       </tr>
     </table>
-
-    # Types of Integrations With Arcus:
-
-    * __Merchant Integrates with Arcus__: Merchant can use this documentation to
-    create an API integration with the Arcus infrastructure.
-    * __Arcus Integrates with Merchant__: Arcus is able to integrate with
-    existing Merchant API infrastructure in order to eliminate level of effort
-    required to go live with Arcus xChange. To accomplish this, Arcus works with
-    the Merchant to map our data to existing API endpoints for card information.
-      * If interested in discussing further, please contact your Arcus
-        representative to learn more.
 
 tags:
   - name: xChange
