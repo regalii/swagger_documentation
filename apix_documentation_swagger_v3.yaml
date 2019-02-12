@@ -204,13 +204,13 @@ info:
         response has been received yet
       - __on_hold__ This status has to be manually set; transaction will not
         be processed until it is changed back to `initialized`
-      - __confirmed__ Payment was successful, in the case of check payment,
+      - __confirmed__ Payment was successful. In the case of check payment,
         it means that the check was processed for delivery
       - __rejected__ There was a problem with the payment; you can get more
         information by checking the __error_code__ and __error_message__ in
         the transaction’s response.
       - __canceling__ Immediate status response, after cancel attempt, of check payment
-      - __canceled__ Confirmation of payment cancelation via check
+      - __cancelled__ Confirmation of payment cancelation via check
       - __linked__ Check payment is in process, is the next status after `initialized `status
       - __rerouted__ it occurs when a check is "Re-Routed".
 
@@ -1507,8 +1507,8 @@ paths:
         the cancellation attempt, you will receive the status response as
         `canceling`, then you can see if transaction it was possible to be
         cancelled at the endpoint GET /transactions/{id}, that can respond with
-        a status `canceled` or the corresponding process status in the case
-        that check were not posible to be canceled
+        a status `cancelled` or the corresponding process status in the case
+        that check were not posible to be cancelled
 
       operationId: getTransactions
       parameters:
