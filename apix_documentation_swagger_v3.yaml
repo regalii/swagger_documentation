@@ -1495,6 +1495,14 @@ paths:
         __initialized__ state. If you make a request to delete an already
         processing transaction, then you would get an __unprocessable_entity__
         HTTP response.
+        <br/><br/>
+        In the case that the `id` corresponds to a check payment after receive
+        the cancellation attempt, you will receive the status response as
+        `canceling`, then you can see if transaction it was possible to be
+        cancelled at the endpoint GET /transactions/{id}, that can respond with
+        a status `canceled` or the corresponding process status in the case
+        that check were not posible to be canceled
+
       operationId: getTransactions
       parameters:
         - in: path
