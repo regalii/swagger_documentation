@@ -72,39 +72,22 @@ info:
 
     ## Authentication
 
-    TBD
+    Arcus supports multiple methods of authentication, including:
+    * Mutual SSL
+    * Authorization Token
+    * OAuth
     ___
 
-    # Errors
+    # Order of Operations:
 
-    The following error codes must be used when responding to an update request:
+    * Arcus facilitates the transfer of new PCI and PII from Issuer environment,
+    to Merchant environment.
+    * The Merchant receives the payload, and is responsible for enriching
+    appropriate Merchant infrastructure endpoints in real time.
+    * The Merchant is then expected to return a status to Arcus in order to
+    allow Arcus to notify customer of update success.
 
-    <table>
-      <tr>
-        <th>Error Code</th>
-        <th>Meaning</th>
-      </tr>
-      <tr>
-        <td>401</td>
-        <td>
-          Credentials Invalid -- The provided credentials don't match existing records
-        </td>
-      </tr>
-      <tr>
-        <td>404</td>
-        <td>Unknown User -- The credentials don't match an existing user</td>
-      </tr>
-      <tr>
-        <td>422</td>
-        <td>
-          Card rejected -- The card information is invalid
-        </td>
-      </tr>
-      <tr>
-        <td>500</td>
-        <td>Service Temporary Unavailable -- Merchant system is temporarily unavailable</td>
-      </tr>
-    </table>
+    ___
 
 tags:
   - name: xChange
@@ -119,6 +102,13 @@ paths:
       description: |
         This endpoint allows Arcus to push to the Merchant infrastructure a
         migration request.
+
+        __Old Card/New Card:__
+        * Customer identity authentication method depends on Merchant
+        tokenization method.
+        * __PAN__: Arcus sends Old Card Information as identifier
+        * __Credentials__: Arcus sends customer account credentials as identifier
+
       requestBody:
         required: true
         content:
@@ -226,7 +216,7 @@ paths:
         '204':
           description: Successful response - No payload expected
         '401':
-          description: Invalid credentials - The password doesn't match your database
+          description: Credentials Invalid -- The provided credentials don't match existing records
           content:
             application/json:
               schema:
@@ -242,7 +232,7 @@ paths:
                     example: Credentials invalid
                 example:
                   id: 5fde398b-90b3-48f3-9012-9de7820641c3
-                  question: Credentials invalid
+                  message: Credentials invalid
         '404':
           description: Unknown user - The password doesn't match your database
           content:
@@ -260,9 +250,9 @@ paths:
                     example: Unknown user
                 example:
                   id: 5fde398b-90b3-48f3-9012-9de7820641c3
-                  question: Unknown user
+                  message: Unknown user
         '422':
-          description: Card rejected - The card provided was not validated by your systems
+          description: Card rejected -- The card information is invalid
           content:
             application/json:
               schema:
@@ -278,11 +268,10 @@ paths:
                     example: Card rejected - The address doesn't match the card holder
                 example:
                   id: 5fde398b-90b3-48f3-9012-9de7820641c3
-                  question: Card rejected - The address doesn't match the card holder
+                  message: Card rejected - The address doesn't match the card holder
         '500':
           description: >-
-            Server unavailable - Your infrastructure was not capable to apply
-            the migration
+            Service Temporary Unavailable -- Merchant system is temporarily unavailable
           content:
             application/json:
               schema:
@@ -295,7 +284,7 @@ paths:
                   message:
                     type: string
                     description: The message explaining the error
-                    example: Server unavailable
+                    example: Service Temporary Unavailable
                 example:
                   id: 5fde398b-90b3-48f3-9012-9de7820641c3
-                  question: Server unavailable
+                  message: Service Temporary Unavailable
