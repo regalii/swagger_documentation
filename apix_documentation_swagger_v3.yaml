@@ -204,10 +204,15 @@ info:
         response has been received yet
       - __on_hold__ This status has to be manually set; transaction will not
         be processed until it is changed back to `initialized`
-      - __confirmed__ Payment was successful
+      - __confirmed__ Payment was successful, in the case of check payment,
+        it means that the check was processed for delivery
       - __rejected__ There was a problem with the payment; you can get more
         information by checking the __error_code__ and __error_message__ in
         the transaction’s response.
+      - __canceling__ Immediate status response, after cancel attempt, of check payment
+      - __canceled__ Confirmation of payment cancelation via check
+      - __linked__ Check payment is in process, is the next status after `initialized `status
+      - __rerouted__ it occurs when a check is "Re-Routed".
 
     ## xChange
 
@@ -1042,6 +1047,8 @@ paths:
                   address:
                     description: xPay biller's address
                     type: array
+                    items:
+                      type: string
                   masks:
                     description: This array of objects describes the different
                       formats that an account_number of this biller can have
@@ -1062,6 +1069,8 @@ paths:
                           type: string
                         descriptions:
                           type: array
+                          items:
+                            type: string
                 example:
                   rpps_billers:
                     - id: 692b45ea-7369-4232-bdd6-2bd662fe1ebd
@@ -1137,6 +1146,29 @@ paths:
         NOTE: It is possible to create an on_hold transaction, i.e., a
         transaction that is not to be processed yet. To do this, it is necessary
         to send the attribute `status` with a value of `on_hold`
+        <br/><br/>
+        We also provide the option to send payments via `phisycal checks`, for this payment option you will need to have a validated US bank account (for sandbox environment arcus will provide you a fake bank account),  and send an object describing the an `amount`, `memo`, `sender address` and the `receiver address` in the request body, described with more details fordward.
+        <br/><br/>
+
+        NOTE: Once you provide the bank account information to arcus for production environment, it will take arround 2 or 3 bussines days to be validated. the information required bank account information is:
+        <br/><br/>
+        <ul>
+          <li>
+            Account Number
+          </li>
+          <li>
+            Routing Number
+          </li>
+          <li>
+            Bank Name
+          </li>
+          <li>
+            Account Type (ex. Company / Individual)
+          </li>
+          <li>
+            Signatory (ex. John Due)
+          </li>
+        </ul>
       operationId: postTransactions
       requestBody:
         description: |
@@ -1147,88 +1179,169 @@ paths:
           <br/><br/>
           You have to make sure the `account_number` matches one of the masks'
           `mask_format` of the xPay Biller.
+          <br/><br/>
+          In the case of payment of pysical check, the request body as descibed above will send, an `amount`, `memo`, `sender address`, `receiver address`
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - account_number
-                - amount
-                - currency
-                - rpps_biller_id
-                - phone_number
-                - payer_born_on
-                - first_name
-                - last_name
-                - address
-              properties:
-                account_number:
-                  type: string
-                  description: Account number where the payment is directed to
-                  example: "1234-56"
-                amount:
-                  type: integer
-                  description: Amount to pay
-                  example: "2000.0"
-                currency:
-                  type: string
-                  description: Amount's currency
-                  example: "USD"
-                rpps_biller_id:
-                  type: string
-                  description: xPay biller's UUID
-                  example: "692b45ea-7369-4232-bdd6-2bd662fe1ebd"
-                phone_number:
-                  type: string
-                  description: End user's phone number
-                  example: "(714) 202-5081"
-                client_number:
-                  type: string
-                  description: End user's client number. This attribute is meant
-                    to help our customers link our transactions to their own
-                    records.
-                  example: "805-612-0442"
-                payer_born_on:
-                  type: string
-                  format: date
-                  description: End user's date of birth
-                  example: "1983-09-03"
-                first_name:
-                  type: string
-                  description: End user's first name
-                  example: "John"
-                last_name:
-                  type: string
-                  description: End user's last name
-                  example: "Doe"
-                address:
-                  type: object
-                  description: End user's address
+              oneOf:
+                - type: object
                   required:
-                    - city
-                    - state
+                    - account_number
+                    - amount
+                    - currency
+                    - rpps_biller_id
+                    - phone_number
+                    - payer_born_on
+                    - first_name
+                    - last_name
+                    - address
                   properties:
-                    street:
+                    account_number:
                       type: string
-                      example: "351 W 14th St Apt L"
-                    zip_code:
+                      description: Account number where the payment is directed to
+                      example: "1234-56"
+                    amount:
+                      type: integer
+                      description: Amount to pay
+                      example: "2000.0"
+                    currency:
                       type: string
-                      example: "10014"
-                    city:
+                      description: Amount's currency
+                      example: "USD"
+                    rpps_biller_id:
                       type: string
-                      example: "New York"
-                    state:
+                      description: xPay biller's UUID
+                      example: "692b45ea-7369-4232-bdd6-2bd662fe1ebd"
+                    phone_number:
                       type: string
-                      example: "NY"
-                status:
-                  type: string
-                  description: Only needed when you want to create a transaction
-                    that is to be processed at a later date. For this purpose,
-                    the value needs to be `on_hold`; if any other value is sent,
-                    the transaction will be created with the `initialized`
-                    status.
-                  example: "on_hold"
+                      description: End user's phone number
+                      example: "(714) 202-5081"
+                    client_number:
+                      type: string
+                      description: End user's client number. This attribute is meant
+                        to help our customers link our transactions to their own
+                        records.
+                      example: "805-612-0442"
+                    payer_born_on:
+                      type: string
+                      format: date
+                      description: End user's date of birth
+                      example: "1983-09-03"
+                    first_name:
+                      type: string
+                      description: End user's first name
+                      example: "John"
+                    last_name:
+                      type: string
+                      description: End user's last name
+                      example: "Doe"
+                    address:
+                      type: object
+                      description: End user's address
+                      required:
+                        - city
+                        - state
+                      properties:
+                        street:
+                          type: string
+                          example: "351 W 14th St Apt L"
+                        zip_code:
+                          type: string
+                          example: "10014"
+                        city:
+                          type: string
+                          example: "New York"
+                        state:
+                          type: string
+                          example: "NY"
+                    status:
+                      type: string
+                      description: Only needed when you want to create a transaction
+                        that is to be processed at a later date. For this purpose,
+                        the value needs to be `on_hold`; if any other value is sent,
+                        the transaction will be created with the `initialized`
+                        status.
+                      example: "on_hold"
+                - type: object
+                  required:
+                    - amount
+                    - memo
+                    - sender_address
+                    - receiver_address
+                  properties:
+                    amount:
+                      type: number
+                      description: is a number that specifies the payment amount to be sent in dollars. Amounts will be rounded to 2 decimal places and must be less than $1,000,000
+                      example: "5.17"
+                    memo:
+                      type: string
+                      description: Max of 40 characters to be included on the memo line of the check.
+                      example: "rent"
+                    sender_address:
+                      type: object
+                      description: it includes information of who's is sending the payment
+                      required:
+                        - name
+                        - company
+                        - email
+                        - phone
+                        - address_line1
+                        - address_city
+                        - address_zip
+                    receiver_address:
+                      type: object
+                      description: it includes information of who's is receiving the payment
+                      required:
+                        - name
+                        - company
+                        - email
+                        - phone
+                        - address_line1
+                        - address_city
+                        - address_zip
+        $ref: ''
+        examples:
+          payment:
+            account_number: 1234-56
+            amount: 2000.0
+            currency: USD
+            rpps_biller_id: 692b45ea-7369-4232-bdd6-2bd662fe1ebd
+            phone_number: (714) 202-5081
+            client_number: 805-612-0442
+            payer_born_on: 1983-09-03
+            first_name: John
+            last_name: Doe
+            address:
+              street: 351 W 14th St Apt L
+              zip_code: 10014
+              city: New York
+              state: NY
+          check_payment:
+            amount: 2.50
+            memo: ok
+            sender_address:
+              name: David st
+              company: own
+              email: edst83@gmail.com
+              phone: 2331261506
+              address_line1: residential highrise
+              address_line2: Suite 1007
+              address_city: New York
+              address_state: NY
+              address_zip: 10001
+            receiver_address:
+              name: oscar ramirez
+              company: owner
+              email: other@gmail.com
+              phone: 2411335555
+              address_line1: residential highrise
+              address_line2: ''
+              address_city: Beverly Hills
+              address_state: CA
+              address_zip: 90210
+
       responses:
         202:
           description: successful response
@@ -1236,7 +1349,6 @@ paths:
             application/vnd.regalii.v3.2+json:
               schema:
                 $ref: '#/components/schemas/Transaction'
-
     get:
       tags:
         - xPay
@@ -1357,7 +1469,7 @@ paths:
                 amount:
                   type: integer
                   description: Amount to pay
-                  example: "2000.0"
+                  example: 2000.0
                 status:
                   type: string
                   description: Only needed when you want to activate a
@@ -1434,60 +1546,60 @@ paths:
                 biller_id:
                   type: string
                   description: Biller's ID.
-                  example: "6ab564f9-4e9d-4b03-96d6-dd9f2c39ec53"
+                  example: 6ab564f9-4e9d-4b03-96d6-dd9f2c39ec53
                 cc_first_name:
                   type: string
                   description: End user’s first name
-                  example: "Elon"
+                  example: Elon
                 cc_last_name:
                   type: string
                   description: End user’s last name
-                  example: "Musk"
+                  example: Musk
                 cc_country:
                   type: string
                   description: Country where the card was issued (US only for
                     the time being)
-                  example: "US"
+                  example: US
                 cc_number:
                   type: string
                   description: Card number
-                  example: "5221740002389461"
+                  example: 5221740002389461
                 cc_type:
                   type: string
                   description: Type of card (credit/debit)
-                  example: "credit"
+                  example: credit
                 cc_brand:
                   type: string
                   description: Card's brand (mastercard/visa/american_express)
-                  example: "visa"
+                  example: visa
                 cc_expiry_year:
                   type: string
                   description: Card's expiry year (4 digit number)
-                  example: "2021"
+                  example: 2021
                 cc_expiry_month:
                   type: string
                   description: Card’s expiry month (2 digit number)
-                  example: "02"
+                  example: 02
                 cc_security_code:
                   type: string
                   description: Card’s security code (3 or 4 digit number)
-                  example: "123"
+                  example: 123
                 cc_address:
                   type: string
                   description: Street name and number
-                  example: "351 W 14th St Apt L"
+                  example: 351 W 14th St Apt L
                 cc_city:
                   type: string
                   description: City
-                  example: "New York"
+                  example: New York
                 cc_state:
                   type: string
                   description: Two letter abbreviation of a US state
-                  example: "NY"
+                  example: NY
                 cc_zip:
                   type: string
                   description: Address’ zipcode
-                  example: "10014"
+                  example: 10014
 
       responses:
         202:
@@ -1642,11 +1754,11 @@ components:
         login:
           type: string
           description: The account's username/email address/identifier
-          example: "jdoe@successful.ii"
+          example: jdoe@successful.ii
         password:
           type: string
           description: The account's password
-          example: "HeLl0o1!"
+          example: HeLl0o1!
       required:
         - login
         - password
@@ -1728,7 +1840,7 @@ components:
         error_message: null
         status: updated
         migrated_at: null
-        external_user_id: "1234"
+        external_user_id: 1234
 
     Biller:
       type: object
@@ -1777,8 +1889,7 @@ components:
             this biller
           type: boolean
         charge_user:
-          description: "[deprecated; will be removed in future
-            versions]"
+          description: '[deprecated; will be removed in future versions]'
           type: boolean
         has_xdata:
           description: Determines whether you can use xData with this
@@ -1847,7 +1958,7 @@ components:
                     type: string
                     description: A phone number or e-mail address. The same
                       value can be present in different categories
-                    example: "+1234567890"
+                    example: '+1234567890'
 
     MFA_Challenge_Code:
       description: Structure of an MFA Challenge of type 'code'. Verification
@@ -1877,7 +1988,7 @@ components:
               properties:
                 type:
                   type: string
-                  description: "The type of the image: url or uri"
+                  description: 'The type of the image: url or uri'
                 value:
                   type: string
                   description: The URL of the image for url or the content of
@@ -1904,7 +2015,7 @@ components:
                       the array)
                   type:
                     type: string
-                    description: "The type of the image: url or uri"
+                    description: 'The type of the image: url or uri'
                   value:
                     type: string
                     description: The URL of the image for url or the content of
@@ -2003,7 +2114,6 @@ components:
           description: This attribute is meant to help our customers link our
             transactions to their own records.
           type: string
-
       example:
         id: be42c413-fcce-4857-b6fa-374228e33912
         status: initialized
@@ -2015,4 +2125,5 @@ components:
         updated_at: '2018-04-06T15:41:52.846Z'
         error_code: null
         error_message: null
-        client_number: "805-612-0442"
+        client_number: '805-612-0442'
+        
