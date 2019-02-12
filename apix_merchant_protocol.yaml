@@ -32,17 +32,6 @@ info:
 
     ---
 
-    # Glossary
-
-    * __Migration__ Is a request made by the Issuer partner to update the
-    payment card on file.
-    * __User__ Is your and the partner Issuer’s mutual customer.
-    * __Customer__ Is the Issuer Partner's user and it's the same physical
-    person than your own user.
-
-
-    ---
-
     # Environments
 
     Arcus will provide Merchants with separate API keys for our two existing
@@ -76,7 +65,7 @@ info:
     * Mutual SSL
     * Authorization Token
     * OAuth
-    ___
+    ---
 
     # Order of Operations:
 
