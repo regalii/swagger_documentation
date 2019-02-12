@@ -1147,10 +1147,17 @@ paths:
         transaction that is not to be processed yet. To do this, it is necessary
         to send the attribute `status` with a value of `on_hold`
         <br/><br/>
-        We also provide the option to send payments via `phisycal checks`, for this payment option you will need to have a validated US bank account (for sandbox environment arcus will provide you a fake bank account),  and send an object describing the an `amount`, `memo`, `sender address` and the `receiver address` in the request body, described with more details fordward.
+        We also provide the option to send payments via `phisycal checks`, for
+        this payment option you will need to have a validated US bank account
+        (for sandbox environment arcus will provide you a fake bank account),
+        and send an object describing the an `amount`, `memo`, `sender address`
+        and the `receiver address` in the request body, described with more
+        details fordward.
         <br/><br/>
 
-        NOTE: Once you provide the bank account information to arcus for production environment, it will take arround 2 or 3 bussines days to be validated. the information required bank account information is:
+        NOTE: Once you provide the bank account information to arcus for
+        production environment, it will take arround 2 or 3 bussines days
+        to be validated. the information required bank account information is:
         <br/><br/>
         <ul>
           <li>
@@ -2134,4 +2141,3 @@ components:
         error_code: null
         error_message: null
         client_number: '805-612-0442'
-        
