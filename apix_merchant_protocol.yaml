@@ -93,7 +93,8 @@ paths:
         migration request.
 
 
-        __Old Card/New Card:__
+
+        __Identity Authentication Methods:__
         * Customer identity authentication method depends on Merchant
         tokenization method.
         * __PAN__: Arcus sends Old Card Information as identifier
