@@ -220,6 +220,12 @@ info:
         <td>Not Found -- The specified resource could not be found</td>
       </tr>
       <tr>
+        <td>405</td>
+        <td>
+          Method Not Allowed -- Not yet active for xData
+        </td>
+      </tr>
+      <tr>
         <td>422</td>
         <td>
           Unprocessable Entity -- You will receive more information on the
@@ -237,6 +243,12 @@ info:
         <td>
           Internal Server Error -- We had a problem with our server. Try again
           later.
+        </td>
+      </tr>
+      <tr>
+        <td>501</td>
+        <td>
+          Not Implemented -- Not configured to accept request at this time.
         </td>
       </tr>
       <tr>
@@ -412,6 +424,8 @@ servers:
 tags:
   - name: Common
     description: Common endpoints
+  - name: xData
+    description: Access to xData documentation
   - name: xChange
     description: Access to xChange documentation
   - name: Challenges
@@ -666,7 +680,316 @@ paths:
                           url: "https://static.staging.arcusapi.com/180x68/amazon-prime.png"
                       created_at: "2016-06-08 21:36:33 UTC"
                       updated_at: "2018-08-03 18:50:56 UTC"
+        404:
+          description: resource not found
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error_Info'
 
+                example:
+                  errors:
+                    - source:
+                        parameter: id
+                      code: NotFound
+                      detail: The resource requested can't be found
+
+  /bills:
+    post:
+      tags:
+        - xData
+      summary: Create bill for a specific merchant
+      operationId: createBill
+      description: |
+        This endpoint creates a new bill of a specific merchant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Basic_Credentials'
+              type: object
+              required:
+                - merchant_id
+              properties:
+                merchant_id:
+                  type: string
+                  description: Merchant's ID.
+                  example: 6ab564f9-4e9d-4b03-96d6-dd9f2c39ec53
+                login:
+                  type: string
+                  description: User name 
+                  example: email@exaple.com
+                password:
+                  type: string
+                  description: Password
+                  example: Example123!
+                external_id _dynamic:
+                  type: string
+                  description: In merchant configuration you will find the custom fields external id
+                  example: 312441241
+      responses:
+        202:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                      - $ref: '#/components/schemas/Bill'
+                example:
+                  data:
+                    id: 7da26c9d-cfd0-4af3-a348-fed5dcbfa5d5
+                    type: bill
+                    attributes:
+                      external_user_id: null
+                      status: initialized
+                      requested_at: "2019-01-25Z18:50:56 UTC"
+                      retrieved_at: null
+                      xdata: null
+                      error: null
+        422:
+          description: unprocessable entity
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error_Info'
+
+                example:
+                  errors:
+                    - source:
+                        parameter: password
+                      code: BlankAttributeError
+                      detail: Password can't be blank
+                    - source:
+                        parameter: password
+                      code: InvalidAttributeError
+                      detail: Password is invalid
+        405:
+          description:  Method Not Allowed
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error_Info'
+                example:
+                  errors:
+                    - source:
+                        parameter: configuration
+                      code: UnknownConfiguration
+                      detail: Merchant is not yet active for xData
+        501:
+          description:  Not Implemented
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error_Info'
+
+                example:
+                  errors:
+                    - source:
+                        parameter: merchant
+                      code: NotImplemented
+                      detail: This Merchant is not configured to accept requests at this time, please try again later
+
+    get:
+      tags:
+        - xData
+      summary: Retrieve all your bills
+      operationId: getAllBills
+      description: |
+        This endpoint retrieves all your bills
+      parameters:
+        - in: query
+          name: external_user_id_eq
+          required: false
+          description: Returns the bills belonging to the same end user
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      - $ref: '#/components/schemas/Bill'
+                example:
+                  data:
+                    -               
+                      id: 7da26c9d-cfd0-4af3-a348-fed5dcbfa5d5
+                      type: bill
+                      attributes:
+                        external_user_id: null
+                        status: initialized
+                        requested_at: "2019-01-25Z18:50:56 UTC"
+                        retrieved_at: null
+                        xdata: null
+                        error: null
+
+  /bills/{id}:
+    get:
+      tags:
+        - xData
+      summary: Retrieves a specific bill’s cached data
+      operationId: getSpecificBill
+      description: |
+        This endpoint retrieves a specific bill’s cached data.
+      parameters:
+        - name: id
+          in: path
+          description: UUID of the bill you wish to obtain (this version still
+            accepts IDs, but they will be deprecated in future versions)
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+                example:
+                  data:              
+                    id: 7da26c9d-cfd0-4af3-a348-fed5dcbfa5d5
+                    type: bill
+                    attributes:
+                      external_user_id: null
+                      status: initialized
+                      requested_at: "2019-01-25Z18:50:56 UTC"
+                      retrieved_at: null
+                      xdata: null
+                      error: null
+                    relationships: {}
+                  included: []
+        404:
+          description: resource not found
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error_Info'
+                example:
+                  errors:
+                    - source:
+                        parameter: id
+                      code: NotFound
+                      detail: The resource requested can't be found
+
+  /bills/{id}/challenges:
+    get:
+      tags:
+        - xData
+      summary: Retrieves the challenges associated with a specific bill
+      operationId: get specify challenge bill
+      description: |
+        This endpoint retrieves a specific bill's challenges 
+      parameters:
+        - name: id
+          in: path
+          description: UUID of the bill you wish to obtain (this version still
+            accepts IDs, but they will be deprecated in future versions)
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+                example:
+                  data:              
+                    id: ee032897-9b3a-4f0e-a122-fe79c2164e00
+                    type: bill
+                    attributes:
+                      kind: question
+                      create_at: "2019-01-25Z18:50:56 UTC"
+                      expires_at: null
+                      prompt: "What is the secret word? (question)"
+                    relationships: {}
+                  meta: 
+                    total: 1
+                    total-pages: 1
+                  links: 
+                    self: "https://apix.staging.arcusapi.com/bills/3c95647b-0df8-4cd0-9b26-43164af13525/challenges?page=1"
+                    next: null
+                    prev: null
+
+  /bill:
+    post:
+      tags:
+        - xData
+      summary: Retrieves a specific bill’s cached data
+      operationId: getBill
+      description: |
+        This endpoint retrieves a specific bill’s cached data. To pull fresh
+        data from a biller see `POST /bills/{id}/refresh`
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+              properties: 
+                id:
+                  type: string
+                  description: Biller's ID.
+                  example: f83b26db-67de-49a1-b735-b8d574e6a1d0            
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+                example:
+                  data:              
+                    id: 7da26c9d-cfd0-4af3-a348-fed5dcbfa5d5
+                    type: bill
+                    attributes:
+                      external_user_id: null
+                      status: initialized
+                      requested_at: "2019-01-25Z18:50:56 UTC"
+                      retrieved_at: null
+                      xdata: null
+                      error: null
+                    relationships: {}
+                  included: []
         404:
           description: resource not found
           content:
@@ -791,7 +1114,6 @@ paths:
                       status: initialized
                       requested_at: '2018-06-22 21:23:26 UTC'
                       migrated_at: null
-
         422:
           description: unprocessable entity
           content:
@@ -937,6 +1259,84 @@ paths:
                       error:
                         code: InvalidCredentials
                         detail: Invalid login or password
+        404:
+          description: Not Found
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error_Info'
+                example:
+                  errors:
+                    - source:
+                        parameter: id
+                      code: NotFound
+                      detail: The resource requested can't be found
+
+  /migration:
+    post:
+      tags:
+        - xChange
+      summary: Gets the last migration attempt of a bill
+      description: |
+        This endpoint gets the last migration attempt of a bill.
+      operationId: getMigrationPost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+              properties: 
+                id:
+                  type: string
+                  description: ID of the bill whose migration information you wish to obtain
+                  example: f83b26db-67de-49a1-b735-b8d574e6a1d0
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                      - $ref: '#/components/schemas/Migration'
+                example:
+                  data:
+                    id: b4aa7d78-6f16-4ddd-887d-9f5c0b730a26
+                    type: migration
+                    attributes:
+                      status: failed
+                      requested_at: '2018-06-15 14:16:16 UTC'
+                      migrated_at: '2018-06-15 16:34:54 UTC'
+                      error:
+                        code: InvalidCredentials
+                        detail: Invalid login or password
+        404:
+          description: Not Found
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error_Info'
+                example:
+                  errors:
+                    - source:
+                        parameter: id
+                      code: NotFound
+                      detail: The resource requested can't be found
 
     delete:
       tags:
@@ -959,7 +1359,7 @@ paths:
   /migrations/{id}/challenges:
     get:
       tags:
-        - Challenges
+        - xChange
       summary: Gets all challenges associated with a specific migration
       description: |
         If the migration requires the end user to answer some challenges, the
@@ -973,6 +1373,67 @@ paths:
           required: true
           schema:
             type: string
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      anyOf:
+                        - $ref: '#/components/schemas/MFA_Challenge_Question'
+                        - $ref: '#/components/schemas/MFA_Challenge_Code'
+                        - $ref: '#/components/schemas/MFA_Challenge_Image'
+                        - $ref: '#/components/schemas/MFA_Challenge_Image_Choices'
+                        - $ref: '#/components/schemas/MFA_Challenge_Choices'
+                allOf:
+                  - $ref: '#/components/schemas/MetaData'
+                  - $ref: '#/components/schemas/NavigationLinks'
+
+                example:
+                  data:
+                    - id: afa0b9c8-7fe2-41ee-9f4c-617dac91ca89
+                      type: challenge
+                      attributes:
+                        kind: question
+                        created_at: "2018-07-09 21:40:45 UTC"
+                        expires_at: null
+                        prompt: What is the secret word?
+                  # TODO: Include examples of different challenges
+                  meta:
+                    total: 1
+                    total-pages: 1
+                  links:
+                    self: "https://apix.staging.arcusapi.com/migrations/eae8d4c7-b3d9-4fc5-89b6-7ccdd0b4111c/challenges?page=1"
+                    next: null
+                    prev: null
+
+  /migration_challenges:
+    post:
+      tags:
+        - xChange
+      summary: Gets all challenges associated with a specific migration
+      description: |
+        If the migration requires the end user to answer some challenges, the
+        customer can request the challenges associated to one specific
+        migration by using this endpoint.
+      operationId: getMigrationsChallengesPost
+      requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - migration_id
+                properties: 
+                  migration_id:
+                    type: string
+                    description: ID of the migration whose challenges you wish to obtain
+                    example: 146f15d9-9d59-4a9f-972a-da7a54dd5193
       responses:
         200:
           description: successful response
@@ -1044,7 +1505,6 @@ paths:
               example:
                 challenge:
                   answer: 12345
-
       responses:
         200:
           description: successful response
@@ -1070,7 +1530,62 @@ paths:
                       created_at: '2018-06-15 14:16:16 UTC'
                       expires_at: '2018-06-15 14:19:16 UTC'
                       prompt: Please provide the code sent to your phone.
-
+    put:
+      tags:
+        - Challenges
+      summary: Submit answer to a challenge
+      description: |
+        Sends the answer to a specific challenge
+      operationId: updateChallengeput
+      parameters:
+        - name: id
+          in: path
+          description: ID of the challenge that is being answered
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                challenge:
+                  type: object
+                  required:
+                    - answer
+                  properties:
+                    answer:
+                      type: string
+              example:
+                challenge:
+                  answer: 12345
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v4.0+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    oneOf:
+                      - $ref: '#/components/schemas/MFA_Challenge_Question'
+                      - $ref: '#/components/schemas/MFA_Challenge_Code'
+                      - $ref: '#/components/schemas/MFA_Challenge_Image'
+                      - $ref: '#/components/schemas/MFA_Challenge_Image_Choices'
+                      - $ref: '#/components/schemas/MFA_Challenge_Choices'
+                example:
+                  data:
+                    id: 3a798711-d352-4ee5-b35d-383fd23e7edc
+                    type: challenge
+                    attributes:
+                      kind: code
+                      created_at: '2018-06-15 14:16:16 UTC'
+                      expires_at: '2018-06-15 14:19:16 UTC'
+                      prompt: Please provide the code sent to your phone.
 components:
   securitySchemes:
     hmacAuth:
@@ -1448,3 +1963,39 @@ components:
                         description: A phone number or e-mail address. The same
                           value can be present in different categories
                         example: "+1234567890"
+
+    Bill:
+      description: Structure of a Bill
+      allOf:
+        - $ref: '#/components/schemas/GenericData'
+      type: object
+      properties:
+        type:
+          type: string
+          description: Describes the type of data that is being returned
+        id:
+          type: string
+          description: Unique identifier (UUID) of the entity
+        status: 
+          type: string
+          enum:
+            - initialized
+            - ongoing
+            - authenticated,
+            - waiting,
+            - successful
+            - failed
+        requested_at: 
+          type: string
+          format: date-time
+          description: It can be null.
+        retrieved_at: 
+          type: string
+          format: date-time
+          description: It can be null.
+        xdata: 
+          type: string
+          description: It can be null.
+        error: 
+          type: string
+          description: It can be null. 
