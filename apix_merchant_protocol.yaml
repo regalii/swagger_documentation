@@ -235,7 +235,7 @@ paths:
                   id: 5fde398b-90b3-48f3-9012-9de7820641c3
                   message: Credentials invalid
         '404':
-          description: Unknown user - The password doesn't match your database
+          description: Unknown user - The credentials provided don't match an existing user
           content:
             application/json:
               schema:
@@ -252,6 +252,24 @@ paths:
                 example:
                   id: 5fde398b-90b3-48f3-9012-9de7820641c3
                   message: Unknown user
+        '420':
+          description: MFA invalid -- The MFA answer doesn't match existing records
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: The ID sent in the initial request
+                    example: 5fde398b-90b3-48f3-9012-9de7820641c3
+                  message:
+                    type: string
+                    description: The message explaining the error
+                    example: MFA invalid - The MFA answer doesn't match existing records
+                example:
+                  id: 5fde398b-90b3-48f3-9012-9de7820641c3
+                  message: MFA invalid - The MFA answer doesn't match existing records
         '422':
           description: Card rejected -- The card information is invalid
           content:
