@@ -143,17 +143,17 @@ paths:
                     old_pan:
                       type: string
                       description: >-
-                        Old Card Information as identifier. Only required if `type` is equal `old_pan`
+                        Old Card Information as identifier. Only required if `type` is equal to `old_pan`
                       example: "5186822726831300"
                     login:
                       type: string
                       description: >-
                         The User's login allowing you to find him in your
-                        Database. Only required if `type` is equal `credentials`.
+                        Database. Only required if `type` is equal to `credentials`.
                       example: john@mail.com
                     password:
                       type: string
-                      description: The User's password allowing to authenticate the login. Only required if `type` is equal `credentials`.
+                      description: The User's password allowing to authenticate the login. Only required if `type` is equal to `credentials`.
                       example: Life42!
                     name_on_card:
                       type: string
