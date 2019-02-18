@@ -65,6 +65,7 @@ info:
     * Mutual SSL
     * Authorization Token
     * OAuth
+
     ---
 
     # Order of Operations:
@@ -91,8 +92,6 @@ paths:
       description: |
         This endpoint allows Arcus to push to the Merchant infrastructure a
         migration request.
-
-
 
         __Identity Authentication Methods:__
         * Customer identity authentication method depends on Merchant
@@ -135,15 +134,26 @@ paths:
                   type: object
                   description: The paylaod containing all the Migration information
                   properties:
+                    type:
+                      type: string
+                      description: >-
+                        The authentication type associated to the merchant. The values accepted are:
+                        `credentials` or `old_pan`.
+                      example: credentials
+                    old_pan:
+                      type: string
+                      description: >-
+                        Old Card Information as identifier. Only required if `type` is equal `old_pan`
+                      example: "5186822726831300"
                     login:
                       type: string
                       description: >-
                         The User's login allowing you to find him in your
-                        Database.
+                        Database. Only required if `type` is equal `credentials`.
                       example: john@mail.com
                     password:
                       type: string
-                      description: The User's password allowing to authenticate the login.
+                      description: The User's password allowing to authenticate the login. Only required if `type` is equal `credentials`.
                       example: Life42!
                     name_on_card:
                       type: string
