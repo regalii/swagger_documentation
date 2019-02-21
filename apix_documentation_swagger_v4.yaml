@@ -1026,6 +1026,8 @@ paths:
                 - $ref: '#/components/schemas/Basic_Credentials'
               type: object
               required:
+                - password
+                - login
                 - merchant_id
                 - card_first_name
                 - card_last_name
@@ -1040,6 +1042,14 @@ paths:
                 - card_zip_code
                 - card_country
               properties:
+                login:
+                  type: string
+                  description: Value unique
+                  example: code.12345
+                password :
+                  type: string
+                  description: Password
+                  example: Hell0o1!
                 merchant_id:
                   type: string
                   description: Merchant's ID.
