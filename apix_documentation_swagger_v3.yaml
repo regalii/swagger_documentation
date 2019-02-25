@@ -1258,7 +1258,7 @@ paths:
         - in: query
           name: q[type_eq]
           required: false
-          description: Returns those transactions made by different payment method that can be `check` of `electronic`
+          description: Returns those transactions made by different payment method that can be `check` or `electronic`
           schema:
             type: string
         - in: query
