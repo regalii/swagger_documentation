@@ -1256,6 +1256,12 @@ paths:
             type: string
             format: date-time
         - in: query
+          name: q[type_eq]
+          required: false
+          description: Returns those transactions made by different payment method that can be `check` of `electronic`
+          schema:
+            type: string
+        - in: query
           name: q[created_at_lteq]
           required: false
           description: Returns those transactions that were created before the
