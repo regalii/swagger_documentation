@@ -25,18 +25,11 @@ info:
     # Our products
 
     * __xData__ Pull real-time data from billers
-    * __xPay__ Push payments (via ACH) to billers
-    * __xChange__ Push card-on-file updates to billers
 
     ---
 
     # Glossary
 
-    * __ACH__ Stands for Automated Clearing House. It is an electronic network
-      for financial transactions in the United States. ACH processes large
-      volumes of credit (direct deposit, payroll, vendor payments) and debit
-      (consumer payments on insurance premiums, mortgage loans, and other kinds
-      of bills) transactions in batches.
     * __api-key__ It allows arcus to uniquely identify the client making any
       requests to the APIx.
     * __secret-key__ You will be given this key to generate a unique signature
@@ -96,6 +89,8 @@ info:
     </div>
 
     > ## Authentication
+
+    >TODO
 
     > arcus uses an api-key and a secret-key for authentication that we generate
     and will provide to you, one for each environment.
@@ -201,7 +196,7 @@ info:
     # Webhooks
 
     arcus offers webhooks which can be used to notify you when there are updates
-    to a bill or transaction.
+    to a bill.
 
     You can set up a webhook URL with arcus by contacting us.
 
@@ -318,15 +313,6 @@ info:
         </td>
       </tr>
       <tr>
-        <td></td>
-        <td>
-          Account not eligible for migration
-        </td>
-        <td>
-          It's not possible for us to make changes to this account
-        </td>
-      </tr>
-      <tr>
         <td>R123</td>
         <td>
           The identification answer answered was incorrect <br/>
@@ -379,11 +365,10 @@ info:
       - ID: 451cc3f4-68c4-4280-9d8a-164891bbd850
 
     This can be done by using a specific `login` value in those endpoints that
-    create a resource for xData or xChange. If you're testing MFA challenge
+    create a resource for xData. If you're testing MFA challenge
     behavior, depending on which product you're using you will have to provide
     the fixed answer (see table below) on the corresponding `PATCH` endpoint:
-    <b>PATCH/bills/{id}</b> for xData or <b>PATCH/migrations/{id}</b> for
-    xChange.
+    <b>PATCH/bills/{id}</b> for xData.
 
     Following is the list of the existing `login` values for testing purposes:
 
@@ -419,14 +404,6 @@ info:
           This will associate a new MFA Challenge of type 'choice' with the
           bill. You will have to select the answer from the choices given in the
           response.
-        </td>
-      </tr>
-      <tr>
-        <td>image_uri</td>
-        <td>
-          This will associate a new MFA Challenge of type 'uri' with the
-          migration attempt. Challenge answer: arcus fi (you would be able to
-          see this text if you were to convert the base64 content to an image)
         </td>
       </tr>
       <tr>
