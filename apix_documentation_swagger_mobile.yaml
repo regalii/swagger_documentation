@@ -480,6 +480,45 @@ security:
   - hmacAuth: []
 
 paths:
+  /public/token:
+    post:
+      tags:
+        - Common
+      summary: Creates an User and his keys
+      operationId: createBills
+      description: |
+        This endpoint creates an user for a specific merchant.
+
+        When you send the credentials, the user object is created and
+        then we return the credentials for the user.
+      requestBody:
+        description: Within the request body the parameters sent are the
+          `public_key` from the merchant.
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Basic_Credentials'
+              type: object
+              properties:
+                public_key:
+                  type: string
+                  description: Merchant public_key
+                  example: "407c1ad16080b52aa55d2ac1cab81a412e25520f765f8e1462b9068194ba463e1dc28a7ddd1ea94e8b33b26db8c1101f1aa57aa7110e45b5a1de50255bc371f3"
+              required:
+                - public_key
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                api_key: 0b4f423d36581cdb541a86e445868787
+                secret_key: diiWbYpnfdJUXDVtiAowZmIL2LAl0Neugh8qHzs1i5PzRgRgZFKadF1Pn+sgiWdbVXtZ+fG/ayU4IknfPBUOdg==
+
   /billers:
     get:
       tags:
@@ -499,25 +538,6 @@ paths:
           description: It allows you to display any page of the billers' list
           schema:
             type: integer
-        - in: query
-          name: product
-          required: false
-          description: Only returns billers that have been activated for a
-            specific product (xchange, xdata)
-          schema:
-            type: string
-        - in: query
-          name: q[biller_type_eq]
-          required: false
-          description: Only returns billers whose type matches the value sent
-          schema:
-            type: string
-        - in: query
-          name: q[country_eq]
-          required: false
-          description: Only returns billers whose country matches the value sent
-          schema:
-            type: string
         - in: query
           name: q[name_eq]
           required: false
@@ -548,7 +568,6 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Biller'
-
                 example:
                   billers:
                     - type: biller
@@ -569,13 +588,13 @@ paths:
     post:
       tags:
         - xData
-      summary: Creates a bill for a specific biller
+      summary: Creates a bill for a specific  user
       operationId: createBills
       description: |
-        This endpoint creates a bill for a specific biller.
+        This endpoint creates a bill for a specific user.
 
         When you send the credentials and biller_id to create a bill, the bill
-        object is created and we then attempt to fetch the bill from the biller.
+        object is created and we then attempt to fetch the bill from the user.
         Thus no matter what happens (MFA, wrong credentials, biller down, etc),
         the bill object is created.
 
@@ -585,7 +604,7 @@ paths:
 
       requestBody:
         description: Within the request body the parameters sent are a
-          `biller_id`, `login` and `password
+          `biller_id`, `login` and `password`
         required: true
         content:
           application/json:
@@ -598,13 +617,18 @@ paths:
                   type: string
                   description: Biller's UUID
                   example: "0282369b-acd1-4e44-a894-c2a10ea5f8e3"
-                external_user_id:
+                login:
                   type: string
-                  description: This attribute is meant to help our customers
-                    link our bills to their own records.
-                  example: "1234"
+                  description: User login value
+                  example: "jdoe@successful.ii"
+                password:
+                  type: string
+                  description: User password value
+                  example: "HeLl0o1!"
               required:
                 - biller_id
+                - login
+                - password
       responses:
         200:
           description: successful response
@@ -658,14 +682,6 @@ paths:
               type: string
               items:
                 type: string
-        - in: query
-          name: q[external_user_id_eq]
-          required: false
-          description: Returns the bills belonging to the same end user. This
-            attribute is meant to help our customers link our bills to their own
-            records.
-          schema:
-            type: string
       responses:
         200:
           description: successful response
@@ -868,6 +884,18 @@ components:
         - login
         - password
 
+    User:
+      type: object
+      properties:
+        api_key:
+          type: string
+          description: Api key of the user
+        secret_key:
+          type: string
+          description: Secret key of the user
+      example:
+        api_key: 0b4f423d36581cdb541a86e445868787
+        secret_key: diiWbYpnfdJUXDVtiAowZmIL2LAl0Neugh8qHzs1i5PzRgRgZFKadF1Pn+sgiWdbVXtZ+fG/ayU4IknfPBUOdg==
     Bill:
       type: object
       allOf:
@@ -925,10 +953,6 @@ components:
               - $ref: '#/components/schemas/MFA_Challenge_Image'
               - $ref: '#/components/schemas/MFA_Challenge_Image_Choices'
               - $ref: '#/components/schemas/MFA_Challenge_Choices'
-        external_user_id:
-          description: This attribute is meant to help our customers link our
-            bills to their own records.
-          type: string
       example:
         type: bill
         id: 674117
@@ -945,7 +969,6 @@ components:
         error_message: null
         status: updated
         migrated_at: null
-        external_user_id: "1234"
 
     Biller:
       type: object
