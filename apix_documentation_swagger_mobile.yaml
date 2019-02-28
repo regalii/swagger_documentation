@@ -7,7 +7,7 @@ info:
     # Introduction
 
     Welcome to arcus! Here you’ll find detailed information for integrating with
-    our API B2C endpoints. We’ve tried to make this documentation as user-friendly
+    our API endpoints. We’ve tried to make this documentation as user-friendly
     and example-filled as possible, but if you have any questions, please
     [contact us](mailto:support@Regalii.com).
 
@@ -30,16 +30,16 @@ info:
 
     # Glossary
 
-    * __api-key__ It allows arcus to uniquely identify the client making any
+    * __api-key__ It allows arcus to uniquely identify the user making any
       requests to the APIx.
-    * __secret-key__ You will be given this key to generate a unique signature
-      (checksum) to your requests, thus guaranteeing their authenticity. Make
-      sure never to share it.
-    * __Bill__ Expenses owed by an end user to a biller which need to be paid on
+    * __secret-key__ This key will be generated to give your users a unique
+      signature (checksum) for their requests, thus guaranteeing the authenticity.
+      Make sure never to expose this.
+    * __Bill__ Expenses owed by a user to a biller which need to be paid on
       a recurring basis.
-    * __Biller__ Any merchant that offers an end user a service (e.g.: Verizon,
+    * __Biller__ Any merchant that offers a user a service (e.g.: Verizon,
       Uber, Time Warner)
-    * __Credentials__ A set of values that gives an end user access to a
+    * __Credentials__ A set of values that gives a user access to a
       biller's website and/or app. E.g.: username + password.
     * __MFA__ Stands for Multi-factor Authentication. Some billers require more
       than just a username/password to log in. In those situations, one or more
@@ -52,10 +52,10 @@ info:
 
     # Environments
 
-    arcus will provide you with separate API keys for our two existing
+    Arcus will provide you with separate API keys for our two existing
     environments:
 
-    * __Sandbox__. arcus maintains a Sandbox which allows developers to test the
+    * __Sandbox__. Arcus maintains a Sandbox which allows developers to test the
     API using mock data. We recommend keeping in mind the following:
 
         * The list of billers is not in sync with the billers in production
@@ -90,14 +90,13 @@ info:
 
     > ## Authentication
 
-    >TODO
+    > Arcus uses a `public_key` for getting the authentication keys (`api_key`,
+    `secret_key`) for a user. This will be provided for your requests to the
+    `/public/token` endpoint.
 
-    > arcus uses an api-key and a secret-key for authentication that we generate
-    and will provide to you, one for each environment.
-
-    > arcus expects for the api-key to be included in all API requests to the
-    server in the ‘Authorization’ header, combined with a checksum which we will
-    describe later on:
+    > Arcus expects the api-key to be included in all API requests (except to
+    the `public/token`) in the ‘Authorization’ header, combined with a checksum
+    which we will describe later on:
 
     > __Authorization:__ `APIAuth <your-api-key>:<checksum>`
 
