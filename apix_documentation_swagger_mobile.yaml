@@ -37,7 +37,7 @@ info:
       Make sure never to expose this.
     * __Bill__ Expenses owed by a user to a biller which need to be paid on
       a recurring basis.
-    * __Biller__ Any merchant that offers a user a service (e.g.: Verizon,
+    * __Biller__ Any client that offers a user a service (e.g.: Verizon,
       Uber, Time Warner)
     * __Credentials__ A set of values that gives a user access to a
       biller's website and/or app. E.g.: username + password.
@@ -192,24 +192,6 @@ info:
 
     ___
 
-    # Webhooks
-
-    arcus offers webhooks which can be used to notify you when there are updates
-    to a bill.
-
-    You can set up a webhook URL with arcus by contacting us.
-
-    * ## Bills' Webhook
-      Webhooks return the same data offered in the bill status.
-
-      * The bill finishes updating and now requires password entry (error 420);
-      waiting; or has data ready since updated
-      * A long-running fetch has completed
-      * The bill has been re-run by arcus due to an earlier error or outage
-
-      __NOTE:__ It is the client's responsibility to trigger bills to refresh
-      under normal operation.
-
     # Errors
 
     Responses will use standard HTTP error codes to convey basic error status
@@ -358,7 +340,7 @@ info:
 
     ## Forcing errors and MFAs
 
-    Within the Sandbox, we have created a merchant that will allow you to force
+    Within the Sandbox, we have created a client that will allow you to force
     a failed response as well as test the usage of MFA Challenges:
       - name: Arcus Faker
       - ID: 451cc3f4-68c4-4280-9d8a-164891bbd850
@@ -463,13 +445,13 @@ paths:
       summary: Creates an User and his keys
       operationId: createBills
       description: |
-        This endpoint creates an user for a specific merchant.
+        This endpoint creates an user for a specific client.
 
         When you send the credentials, the user object is created and
         then we return the credentials for the user.
       requestBody:
         description: Within the request body the parameters sent are the
-          `public_key` from the merchant.
+          `public_key` from the client.
         required: true
         content:
           application/json:
@@ -480,7 +462,7 @@ paths:
               properties:
                 public_key:
                   type: string
-                  description: Merchant public_key
+                  description: Client public_key
                   example: "407c1ad16080b52aa55d2ac1cab81a412e25520f765f8e1462b9068194ba463e1dc28a7ddd1ea94e8b33b26db8c1101f1aa57aa7110e45b5a1de50255bc371f3"
               required:
                 - public_key
