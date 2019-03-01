@@ -199,15 +199,29 @@ info:
 
     ## xPay
 
-      - __initialized__ Transaction is waiting to be processed
+      - __initialized__ Transaction is waiting to be processed, in physical
+        check payment context it means that check is just created
       - __pending__ Transaction has been sent to the sponsor bank but no
-        response has been received yet
+        response has been received yet, in physical check payment context
+        it means that check is in transit
       - __on_hold__ This status has to be manually set; transaction will not
         be processed until it is changed back to `initialized`
       - __confirmed__ Payment was successful
       - __rejected__ There was a problem with the payment; you can get more
         information by checking the __error_code__ and __error_message__ in
-        the transaction’s response.
+        the transaction’s response, in physical check payment context
+        it means that check was returned to the sender
+      - __linked__  In physical check payment, it means that check is ready
+      -__rerouted__ In physical check payment, it means that check's delivery
+        route has changed
+      -__confirmed__ In physical check payment, it means that check arrived
+        to its destination
+      -__canceling__ In physical check payment, it is the immediate status
+        response received after requesting a check’s cancellation (deletion).
+        If the transaction is deleted successfully, it won’t be found anymore;
+        otherwise, the transaction’s status will return to the value it had
+        before the cancellation attempt. NOTE: Only checks with initialized or
+        linked (before 5 minutes) statuses can be cancelled.
 
     ## xChange
 
@@ -1139,33 +1153,32 @@ paths:
         to send the attribute `status` with a value of `on_hold`
         <br/><br/>
         We also provide the option to send payments via `physical checks`, for
-        this payment option you will need to have a validated US bank account
-        (for sandbox environment arcus will provide you a fake bank account),
-        and send a payload describing the `amount`, `memo`, `sender address`
-        and `receiver address` in the request body, described with more
-        details forward.
-        <br/><br/>
-        NOTE: Once you provide the bank account information to arcus for
-        production environment, it will take around 2 or 3 business days
-        to be validated. The information required bank account information is:
-        <br/><br/>
-        <ul>
-          <li>
-            Account Number
-          </li>
-          <li>
-            Routing Number
-          </li>
-          <li>
-            Bank Name
-          </li>
-          <li>
-            Account Type (ex. Company / Individual)
-          </li>
-          <li>
-            Signatory (ex. John Due)
-          </li>
-        </ul>
+        this payment option you will need to provide Arcus the details of a US
+        bank account; it will take up to 3 business days for the account to be
+        validated (for sandbox environment, Arcus will provide you a fake bank
+        account.). The information required is the following:
+          <ul>
+            <li>
+              Account Number
+            </li>
+            <li>
+              Routing Number
+            </li>
+            <li>
+              Bank Name
+            </li>
+            <li>
+              Account Type (ex. Company / Individual)
+            </li>
+            <li>
+              Signatory (ex. John Doe)
+            </li>
+          </ul>
+
+        NOTE: Once this information is received by Arcus, we will send two
+        microdeposits (between 0.1 and 0.99 dollars) to the bank account provided.
+        Once these deposits have been reflected on your account, you must provide
+        us with these amounts to finalize the validation of your bank account.
 
       operationId: postTransactions
       requestBody:
@@ -1178,7 +1191,9 @@ paths:
           You have to make sure the `account_number` matches one of the masks'
           `mask_format` of the xPay Biller.
           <br/><br/>
-          In the case of payment with physical check, the request body should include an `amount`, `memo`, `sender address`, `receiver address`
+          In the case of payment with physical check, the request body should
+          include the optional element `check`, that includes an `amount`, `memo`,
+          `sender address`, `receiver address`
         required: true
         content:
           application/json:
@@ -1262,87 +1277,7 @@ paths:
                     status.
                   example: "on_hold"
                 check:
-                  type: object
-                  required:
-                    - amount
-                    - memo
-                    - sender_address
-                    - receiver_address
-                  properties:
-                    amount:
-                      type: number
-                      description: The payment asmount
-                      example: "10.0"
-                    memo:
-                      type: string
-                      description: memo about payment
-                      example: "Rent Payment"
-                    sender_address:
-                      type: object
-                      description: Payment Sender
-                      required:
-                        - name
-                        - company
-                        - email
-                        - phone
-                        - address_line1
-                        - address_city
-                        - address_zip
-                      properties:
-                        name:
-                          type: string
-                          example: John Doe
-                        company:
-                          type: string
-                          example: Arcus
-                        email:
-                          type: string
-                          example: mail_owner@arcusfi.com
-                        phone:
-                          type: string
-                          example: 455283940
-                        address_line1:
-                          type: string
-                          example: residential highrise
-                        address_city:
-                          type: string
-                          example: New York
-                        address_zip:
-                          type: string
-                          example: 10001
-                    receiver_address:
-                      type: object
-                      description: Payment Addressee
-                      required:
-                        - name
-                        - company
-                        - email
-                        - phone
-                        - address_line1
-                        - address_city
-                        - address_zip
-                      properties:
-                        name:
-                          type: string
-                          example: John Doe
-                        company:
-                          type: string
-                          example: Arcus
-                        email:
-                          type: string
-                          example: mail_owner@arcusfi.com
-                        phone:
-                          type: string
-                          example: 455283940
-                        address_line1:
-                          type: string
-                          example: residential highrise
-                        address_city:
-                          type: string
-                          example: New York
-                        address_zip:
-                          type: string
-                          example: 10001
+                  $ref: '#/components/schemas/Check'
 
 
       responses:
@@ -1361,6 +1296,9 @@ paths:
         This endpoint returns the list of transactions that arcus has processed
         for you. If you send any of the q[] parameters, it will return a set of
         transactions that meet the criteria specified.
+        <br><br>
+        In physical check payment context you can get a list of the checks you
+        have created, only you need to include the filter <strong>q[type_eq]=check<strong>
       operationId: getAllTransactions
       parameters:
         - in: query
@@ -1505,6 +1443,10 @@ paths:
         __initialized__ state. If you make a request to delete an already
         processing transaction, then you would get an __unprocessable_entity__
         HTTP response.
+        <br><br>
+        In the case of physical check payment, the response will contain the
+        transaction details, with a canceling status (already explained on xpay
+        canceling status).
       operationId: getTransactions
       parameters:
         - in: path
@@ -2125,7 +2067,6 @@ components:
           description: This attribute is meant to help our customers link our
             transactions to their own records.
           type: string
-
       example:
         id: be42c413-fcce-4857-b6fa-374228e33912
         status: initialized
@@ -2138,3 +2079,86 @@ components:
         error_code: null
         error_message: null
         client_number: "805-612-0442"
+
+    Check:
+      type: object
+      required:
+        - amount
+        - memo
+        - sender_address
+        - receiver_address
+      properties:
+        amount:
+          type: number
+          description: The payment asmount
+          example: "10.0"
+        memo:
+          type: string
+          description: memo about payment
+          example: "Rent Payment"
+        sender_address:
+          type: object
+          description: Payment Sender
+          required:
+            - name
+            - company
+            - email
+            - phone
+            - address_line1
+            - address_city
+            - address_zip
+          properties:
+            name:
+              type: string
+              example: John Doe
+            company:
+              type: string
+              example: Arcus
+            email:
+              type: string
+              example: mail_owner@arcusfi.com
+            phone:
+              type: string
+              example: 455283940
+            address_line1:
+              type: string
+              example: residential highrise
+            address_city:
+              type: string
+              example: New York
+            address_zip:
+              type: string
+              example: 10001
+        receiver_address:
+          type: object
+          description: Payment Addressee
+          required:
+            - name
+            - company
+            - email
+            - phone
+            - address_line1
+            - address_city
+            - address_zip
+          properties:
+            name:
+              type: string
+              example: John Doe
+            company:
+              type: string
+              example: Arcus
+            email:
+              type: string
+              example: mail_owner@arcusfi.com
+            phone:
+              type: string
+              example: 455283940
+            address_line1:
+              type: string
+              example: residential highrise
+            address_city:
+              type: string
+              example: New York
+            address_zip:
+              type: string
+              example: 10001
