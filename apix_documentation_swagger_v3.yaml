@@ -1229,6 +1229,90 @@ paths:
                     the transaction will be created with the `initialized`
                     status.
                   example: "on_hold"
+                check:
+                  type: object
+                  required:
+                    - amount
+                    - memo
+                    - sender_address
+                    - receiver_address
+                  properties:
+                    amount:
+                      type: number
+                      description: The payment asmount
+                      example: "10.0"
+                    memo:
+                      type: string
+                      description: memo about payment
+                      example: "Rent Payment"
+                    sender_address:
+                      type: object
+                      description: Payment Sender
+                      required:
+                        - name
+                        - company
+                        - email
+                        - phone
+                        - address_line1
+                        - address_city
+                        - address_zip
+                      properties:
+                        name:
+                          type: string
+                          example: John Doe
+                        company:
+                          type: string
+                          example: Arcus
+                        email:
+                          type: string
+                          example: mail_owner@arcusfi.com
+                        phone:
+                          type: string
+                          example: 455283940
+                        address_line1:
+                          type: string
+                          example: residential highrise
+                        address_city:
+                          type: string
+                          example: New York
+                        address_zip:
+                          type: string
+                          example: 10001
+                    receiver_address:
+                      type: object
+                      description: Payment Addressee
+                      required:
+                        - name
+                        - company
+                        - email
+                        - phone
+                        - address_line1
+                        - address_city
+                        - address_zip
+                      properties:
+                        name:
+                          type: string
+                          example: John Doe
+                        company:
+                          type: string
+                          example: Arcus
+                        email:
+                          type: string
+                          example: mail_owner@arcusfi.com
+                        phone:
+                          type: string
+                          example: 455283940
+                        address_line1:
+                          type: string
+                          example: residential highrise
+                        address_city:
+                          type: string
+                          example: New York
+                        address_zip:
+                          type: string
+                          example: 10001
+
+
       responses:
         202:
           description: successful response
