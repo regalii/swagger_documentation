@@ -1137,6 +1137,36 @@ paths:
         NOTE: It is possible to create an on_hold transaction, i.e., a
         transaction that is not to be processed yet. To do this, it is necessary
         to send the attribute `status` with a value of `on_hold`
+        <br/><br/>
+        We also provide the option to send payments via `phisycal checks`, for
+        this payment option you will need to have a validated US bank account
+        (for sandbox environment arcus will provide you a fake bank account),
+        and send an object describing the an `amount`, `memo`, `sender address`
+        and the `receiver address` in the request body, described with more
+        details fordward.
+        <br/><br/>
+        NOTE: Once you provide the bank account information to arcus for
+        production environment, it will take arround 2 or 3 bussines days
+        to be validated. the information required bank account information is:
+        <br/><br/>
+        <ul>
+          <li>
+            Account Number
+          </li>
+          <li>
+            Routing Number
+          </li>
+          <li>
+            Bank Name
+          </li>
+          <li>
+            Account Type (ex. Company / Individual)
+          </li>
+          <li>
+            Signatory (ex. John Due)
+          </li>
+        </ul>
+
       operationId: postTransactions
       requestBody:
         description: |
@@ -1147,6 +1177,8 @@ paths:
           <br/><br/>
           You have to make sure the `account_number` matches one of the masks'
           `mask_format` of the xPay Biller.
+          <br/><br/>
+          In the case of payment of pysical check, the request body as descibed above will send, an `amount`, `memo`, `sender address`, `receiver address`
         required: true
         content:
           application/json:
@@ -1229,6 +1261,90 @@ paths:
                     the transaction will be created with the `initialized`
                     status.
                   example: "on_hold"
+                check:
+                  type: object
+                  required:
+                    - amount
+                    - memo
+                    - sender_address
+                    - receiver_address
+                  properties:
+                    amount:
+                      type: number
+                      description: The payment asmount
+                      example: "10.0"
+                    memo:
+                      type: string
+                      description: memo about payment
+                      example: "Rent Payment"
+                    sender_address:
+                      type: object
+                      description: Payment Sender
+                      required:
+                        - name
+                        - company
+                        - email
+                        - phone
+                        - address_line1
+                        - address_city
+                        - address_zip
+                      properties:
+                        name:
+                          type: string
+                          example: John Doe
+                        company:
+                          type: string
+                          example: Arcus
+                        email:
+                          type: string
+                          example: mail_owner@arcusfi.com
+                        phone:
+                          type: string
+                          example: 455283940
+                        address_line1:
+                          type: string
+                          example: residential highrise
+                        address_city:
+                          type: string
+                          example: New York
+                        address_zip:
+                          type: string
+                          example: 10001
+                    receiver_address:
+                      type: object
+                      description: Payment Addressee
+                      required:
+                        - name
+                        - company
+                        - email
+                        - phone
+                        - address_line1
+                        - address_city
+                        - address_zip
+                      properties:
+                        name:
+                          type: string
+                          example: John Doe
+                        company:
+                          type: string
+                          example: Arcus
+                        email:
+                          type: string
+                          example: mail_owner@arcusfi.com
+                        phone:
+                          type: string
+                          example: 455283940
+                        address_line1:
+                          type: string
+                          example: residential highrise
+                        address_city:
+                          type: string
+                          example: New York
+                        address_zip:
+                          type: string
+                          example: 10001
+
+
       responses:
         202:
           description: successful response
