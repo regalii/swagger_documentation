@@ -1138,16 +1138,16 @@ paths:
         transaction that is not to be processed yet. To do this, it is necessary
         to send the attribute `status` with a value of `on_hold`
         <br/><br/>
-        We also provide the option to send payments via `phisycal checks`, for
+        We also provide the option to send payments via `physical checks`, for
         this payment option you will need to have a validated US bank account
         (for sandbox environment arcus will provide you a fake bank account),
-        and send an object describing the an `amount`, `memo`, `sender address`
-        and the `receiver address` in the request body, described with more
-        details fordward.
+        and send a payload describing the `amount`, `memo`, `sender address`
+        and `receiver address` in the request body, described with more
+        details forward.
         <br/><br/>
         NOTE: Once you provide the bank account information to arcus for
-        production environment, it will take arround 2 or 3 bussines days
-        to be validated. the information required bank account information is:
+        production environment, it will take around 2 or 3 business days
+        to be validated. The information required bank account information is:
         <br/><br/>
         <ul>
           <li>
@@ -1178,7 +1178,7 @@ paths:
           You have to make sure the `account_number` matches one of the masks'
           `mask_format` of the xPay Biller.
           <br/><br/>
-          In the case of payment of pysical check, the request body as descibed above will send, an `amount`, `memo`, `sender address`, `receiver address`
+          In the case of payment with physical check, the request body should include an `amount`, `memo`, `sender address`, `receiver address`
         required: true
         content:
           application/json:
