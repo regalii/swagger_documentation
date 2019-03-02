@@ -1277,7 +1277,7 @@ paths:
                     status.
                   example: "on_hold"
                 check:
-                  $ref: '#/components/schemas/Check'
+                  $ref: '#/components/schemas/check'
 
 
       responses:
@@ -1692,6 +1692,106 @@ paths:
         204:
           description: successful response
 
+  /addresses:
+    post:
+      tags:
+        - xPay
+      summary: Adds new check payment addresses.
+      operationId: postAddresses
+      description: >-
+        In the case that you need to send a payment via physical check, this endpoint saves
+        a new addresses used for Sender / Receiver on Arcus, which includes the name of titular
+        of the address, the name of the company, an email, its phone number, and the address
+        including address_line1, address_line2 complementing the first one  in the case of a
+        very long addres line, also includes the city, state and zip code.
+        <br/><br/>
+      requestBody:
+        description: The required paameters to create a new check payment address is the following.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/check_address'
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                type: object
+                properties:
+                  billers:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/check_address'
+
+    get:
+      tags:
+        - xPay
+      summary: Returns your check payment addresses.
+      operationId: getAddresses
+      description: >-
+        In the case that you need to send a payment via physical check, this endpoint returns
+        your Arcus saved addresses to be used as a sender or receiver adddresses in your physical
+        check payments.
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                type: object
+                properties:
+                  billers:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/check_address'
+
+  /addresses/{id}:
+    get:
+      tags:
+        - xPay
+      summary: Returns the details of a specific address
+      description: |
+        This endpoint returns the details of a specific saved address.
+      operationId: getAddressesId
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID of the address you wish to obtain
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/check_address'
+
+    delete:
+      tags:
+        - xPay
+      summary: Deletes a specific address
+      description: |
+        This endpoint deletes the address that corresponds to the `id` sent.
+      operationId: deleteAddress
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID of the address to be deleted
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/check_address'
+
 components:
   securitySchemes:
     hmacAuth:
@@ -2080,7 +2180,7 @@ components:
         error_message: null
         client_number: "805-612-0442"
 
-    Check:
+    check:
       type: object
       required:
         - amount
@@ -2097,68 +2197,44 @@ components:
           description: memo about payment
           example: "Rent Payment"
         sender_address:
-          type: object
-          description: Payment Sender
-          required:
-            - name
-            - company
-            - email
-            - phone
-            - address_line1
-            - address_city
-            - address_zip
-          properties:
-            name:
-              type: string
-              example: John Doe
-            company:
-              type: string
-              example: Arcus
-            email:
-              type: string
-              example: mail_owner@arcusfi.com
-            phone:
-              type: string
-              example: 455283940
-            address_line1:
-              type: string
-              example: residential highrise
-            address_city:
-              type: string
-              example: New York
-            address_zip:
-              type: string
-              example: 10001
+          type: string
+          description: UUID of saved address
+          example: "930e49a9-4b64-4dc1-b2fd-c6b21dbd98cc"
         receiver_address:
-          type: object
-          description: Payment Addressee
-          required:
-            - name
-            - company
-            - email
-            - phone
-            - address_line1
-            - address_city
-            - address_zip
-          properties:
-            name:
-              type: string
-              example: John Doe
-            company:
-              type: string
-              example: Arcus
-            email:
-              type: string
-              example: mail_owner@arcusfi.com
-            phone:
-              type: string
-              example: 455283940
-            address_line1:
-              type: string
-              example: residential highrise
-            address_city:
-              type: string
-              example: New York
-            address_zip:
-              type: string
-              example: 10001
+          type: string
+          description: UUID of saved address
+          example: "930e49a9-4b64-4dc1-b2fd-c6b21dbd98cc"
+
+    check_address:
+      type: object
+      description: Payment Addressee
+      required:
+        - name
+        - company
+        - email
+        - phone
+        - address_line1
+        - address_city
+        - address_zip
+      properties:
+        name:
+          type: string
+          example: John Doe
+        company:
+          type: string
+          example: Arcus
+        email:
+          type: string
+          example: mail_owner@arcusfi.com
+        phone:
+          type: string
+          example: 455283940
+        address_line1:
+          type: string
+          example: residential highrise
+        address_city:
+          type: string
+          example: New York
+        address_zip:
+          type: string
+          example: 10001
