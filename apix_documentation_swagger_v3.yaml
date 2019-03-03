@@ -79,13 +79,13 @@ info:
         * Do not send real credentials to the Sandbox
 
       To make requests to the sandbox environment, use the following URL:
-        `https://apix.staging.Arcusapi.com`
+        `https://apix.staging.arcusapi.com`
 
     * __Production__. Once you have completed all the necessary tests on the
     sandbox, contact us to receive your production keys.
 
       To make requests to the production environment, use the following URL:
-        `https://apix.Arcusapi.com`
+        `https://apix.arcusapi.com`
 
       __NOTE:__ For security reasons, it's not possible to make production
       requests through our dynamic documentation.
@@ -527,7 +527,7 @@ info:
       resource in the sandbox.
 
 servers:
-  - url: https://apix.staging.Arcusapi.com
+  - url: https://apix.staging.arcusapi.com
     description: Sandbox, Mock Credentials; Mock Data
 
 tags:
