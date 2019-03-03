@@ -2,11 +2,11 @@ openapi: 3.0.0
 
 info:
   version: '3.2'
-  title: arcus API Documentation
+  title: Arcus API Documentation
   description: |
     # Introduction
 
-    Welcome to arcus! Here you’ll find detailed information for integrating with
+    Welcome to Arcus! Here you’ll find detailed information for integrating with
     our API endpoints. We’ve tried to make this documentation as user-friendly
     and example-filled as possible, but if you have any questions, please
     [contact us](mailto:support@Regalii.com).
@@ -25,7 +25,7 @@ info:
     # Our products
 
     * __xData__ Pull real-time data from billers
-    * __xPay__ Push payments (via ACH) to billers
+    * __xPay__ Push payments to billers, via ACH or check
     * __xChange__ Push card-on-file updates to billers
 
     ---
@@ -37,11 +37,9 @@ info:
       volumes of credit (direct deposit, payroll, vendor payments) and debit
       (consumer payments on insurance premiums, mortgage loans, and other kinds
       of bills) transactions in batches.
-    * __api-key__ It allows arcus to uniquely identify the client making any
+    * __api-key__ It allows Arcus to uniquely identify the client making any
       requests to the APIx.
-    * __secret-key__ You will be given this key to generate a unique signature
-      (checksum) to your requests, thus guaranteeing their authenticity. Make
-      sure never to share it.
+    * __Check__ A written order directing a bank to pay money as instructed.
     * __Bill__ Expenses owed by an end user to a biller which need to be paid on
       a recurring basis.
     * __Biller__ Any merchant that offers an end user a service (e.g.: Verizon,
@@ -55,28 +53,39 @@ info:
       choose from, or different choices which only the end user would know the
       answer to.
     * __Migration__ It is the act of changing a bill's credit card number.
+    * __Receiver__ Data of a person or entity that will receive payment through
+      a physical check.
+    * __secret-key__ You will be given this key to generate a unique signature
+      (checksum) to your requests, thus guaranteeing their authenticity. Make
+      sure never to share it.
+    * __Sender__ Data of the person or entity that is requesting the sending of
+      a physical check to pay for a service.
+    * __Transaction__ Details of an exchange of funds, be it through ACH or via
+      a physical check.
+    * __Webhook__ HTTP callback that notifies in real-time about an object's
+      change of state
 
     ---
 
     # Environments
 
-    arcus will provide you with separate API keys for our two existing
+    Arcus will provide you with separate API keys for our two existing
     environments:
 
-    * __Sandbox__. arcus maintains a Sandbox which allows developers to test the
+    * __Sandbox__. Arcus maintains a Sandbox which allows developers to test the
     API using mock data. We recommend keeping in mind the following:
 
         * The list of billers is not in sync with the billers in production
         * Do not send real credentials to the Sandbox
 
       To make requests to the sandbox environment, use the following URL:
-        `https://apix.staging.arcusapi.com`
+        `https://apix.staging.Arcusapi.com`
 
     * __Production__. Once you have completed all the necessary tests on the
     sandbox, contact us to receive your production keys.
 
       To make requests to the production environment, use the following URL:
-        `https://apix.arcusapi.com`
+        `https://apix.Arcusapi.com`
 
       __NOTE:__ For security reasons, it's not possible to make production
       requests through our dynamic documentation.
@@ -98,10 +107,10 @@ info:
 
     > ## Authentication
 
-    > arcus uses an api-key and a secret-key for authentication that we generate
+    > Arcus uses an api-key and a secret-key for authentication that we generate
     and will provide to you, one for each environment.
 
-    > arcus expects for the api-key to be included in all API requests to the
+    > Arcus expects for the api-key to be included in all API requests to the
     server in the ‘Authorization’ header, combined with a checksum which we will
     describe later on:
 
@@ -199,29 +208,37 @@ info:
 
     ## xPay
 
-      - __initialized__ Transaction is waiting to be processed, in physical
-        check payment context it means that check is just created
+    ### Electronic transactions
+
+      - __initialized__ Transaction is waiting to be processed
       - __pending__ Transaction has been sent to the sponsor bank but no
-        response has been received yet, in physical check payment context
-        it means that check is in transit
+        response has been received yet
       - __on_hold__ This status has to be manually set; transaction will not
         be processed until it is changed back to `initialized`
       - __confirmed__ Payment was successful
       - __rejected__ There was a problem with the payment; you can get more
         information by checking the __error_code__ and __error_message__ in
-        the transaction’s response, in physical check payment context
-        it means that check was returned to the sender
-      - __linked__  In physical check payment, it means that check is ready
-      -__rerouted__ In physical check payment, it means that check's delivery
-        route has changed
-      -__confirmed__ In physical check payment, it means that check arrived
-        to its destination
-      -__canceling__ In physical check payment, it is the immediate status
-        response received after requesting a check’s cancellation (deletion).
-        If the transaction is deleted successfully, it won’t be found anymore;
-        otherwise, the transaction’s status will return to the value it had
-        before the cancellation attempt. NOTE: Only checks with initialized or
-        linked (before 5 minutes) statuses can be cancelled.
+        the transaction’s response.
+
+    ### Checks
+
+      - __initialized__: check just created
+      - __linked__:  physical check is ready. The check's PDF can be consulted
+        through a URL
+      - __pending__: check in transit
+      - __rerouted__: this status appears when a check's delivery route has
+        changed
+      - __confirmed__: check arrived to its destination
+      - __cashed__: the receiver has cashed the check (only available under
+        certain circumstances)
+      - __rejected__: check was returned to the sender
+      - __canceling__: immediate status response received after requesting a
+        check’s cancellation (deletion). If the transaction is deleted
+        successfully, it won’t be found anymore; otherwise, the transaction’s
+        status will return to the value it had before the cancellation attempt.
+        NOTE: Only checks with initialized statuses can be cancelled, i.e., you
+        will have approximately a 5 minute window to cancel a check, before it
+        changes to a linked status
 
     ## xChange
 
@@ -235,21 +252,29 @@ info:
 
     # Webhooks
 
-    arcus offers webhooks which can be used to notify you when there are updates
-    to a bill or transaction.
+    Arcus offers webhooks which can be used to notify you when there are updates
+    to a bill's or transaction's status. The payload returned is the same as
+    that obtained through the GET /bills/{id} and GET /transactions/{id}
+    endpoints.
 
-    You can set up a webhook URL with arcus by contacting us.
+    You can set up a webhook URL with Arcus by contacting us.
 
-    * ## Bills' Webhook
-      Webhooks return the same data offered in the bill status.
+    * ## Bills' Webhooks
+
+      The following events will trigger a bill's webhook:
 
       * The bill finishes updating and now requires password entry (error 420);
       waiting; or has data ready since updated
       * A long-running fetch has completed
-      * The bill has been re-run by arcus due to an earlier error or outage
+      * The bill has been re-run by Arcus due to an earlier error or outage
 
       __NOTE:__ It is the client's responsibility to trigger bills to refresh
       under normal operation.
+
+    * ## Transactions' Webhooks
+
+    A webhook will be triggered whenever a transaction changes to the following
+    statuses: `pending`, `confirmed`, and `rejected`
 
     # Errors
 
@@ -399,10 +424,10 @@ info:
     ## Handling Multi-factor Authentication (MFA)
 
     Some billers require more than just a username/password to log in. In
-    those situations, arcus will associate one or more MFA challenges with a
+    those situations, Arcus will associate one or more MFA challenges with a
     bill. An MFA challenge can be a verification code sent to a phone, a
     secret question, an image, a list of images to choose from, or different
-    choices which only the end user would know the answer to. When arcus
+    choices which only the end user would know the answer to. When Arcus
     refreshes a bill, it will be set into a status of waiting, which means
     that the end user must answer a challenge.
 
@@ -460,7 +485,7 @@ info:
         <td>image_uri</td>
         <td>
           This will associate a new MFA Challenge of type 'uri' with the
-          migration attempt. Challenge answer: arcus fi (you would be able to
+          migration attempt. Challenge answer: Arcus fi (you would be able to
           see this text if you were to convert the base64 content to an image)
         </td>
       </tr>
@@ -468,7 +493,7 @@ info:
         <td>image_url</td>
         <td>
           This will associate a new MFA Challenge of type 'url' with the bill.
-          Challenge answer: arcus (you would be able to see this text if you
+          Challenge answer: Arcus (you would be able to see this text if you
           were to open the url provided)
         </td>
       </tr>
@@ -502,7 +527,7 @@ info:
       resource in the sandbox.
 
 servers:
-  - url: https://apix.staging.arcusapi.com
+  - url: https://apix.staging.Arcusapi.com
     description: Sandbox, Mock Credentials; Mock Data
 
 tags:
@@ -523,10 +548,10 @@ paths:
     get:
       tags:
         - Common
-      summary: Returns the properties of your arcus account.
+      summary: Returns the properties of your Arcus account.
       operationId: getAccount
       description: >-
-        This endpoint returns the properties of your arcus account, which
+        This endpoint returns the properties of your Arcus account, which
         include the name of your company, the currency you work with and, in
         case you're an xPay client, the current balance you have available to
         make transactions.
@@ -830,7 +855,7 @@ paths:
 
         ### Bill's status changes
 
-        * Once the challenge has been answered, arcus will be able to update the
+        * Once the challenge has been answered, Arcus will be able to update the
           bill's balance. The bill's status will be set to 'updating'.
         * Once the bill balance has been updated, the bill's status will be set
           to 'updated'.
@@ -1139,24 +1164,27 @@ paths:
         - xPay
       summary: Creates a new transaction
       description: |
-        With this endpoint you can create a new transaction by passing an xPay
-        Biller ID and information about the payment and the end user who is
-        making the payment (see parameters below).
-        <br/><br/>
-        Once the transactions are created in arcus’ system, it takes 2-3 days to
-        process the transaction. After that time, the transaction’s status will
-        be updated. You can always check the transaction's status by making a
-        request to the `GET /transactions/{id}` endpoint.
+        With this endpoint you can create a new transaction. Currently we allow
+        2 payment methods: electronic and check.
+
+        <h2>Electronic transactions</h2>
+        Once a transaction is created in Arcus’ system, it takes 2-3 business
+        days for it to be processed. After that time, the transaction’s status
+        will be updated. You can always check the transaction's status by making
+        a request to the `GET /transactions/{id}` endpoint; optionally, we
+        highly encourage you to implement our webhooks, so that you can be
+        notified in real-time about status changes.
         <br/><br/>
         NOTE: It is possible to create an on_hold transaction, i.e., a
         transaction that is not to be processed yet. To do this, it is necessary
         to send the attribute `status` with a value of `on_hold`
-        <br/><br/>
-        We also provide the option to send payments via `physical checks`, for
-        this payment option you will need to provide Arcus the details of a US
-        bank account; it will take up to 3 business days for the account to be
-        validated (for sandbox environment, Arcus will provide you a fake bank
-        account.). The information required is the following:
+
+        <h2>Checks</h2>
+        We also provide the option to send payments via `physical checks`. In
+        order to use this service you will need to provide Arcus the details of
+        a US bank account; it will take up to 3 business days for the account to
+        be validated (for sandbox environment, Arcus will provide you a fake
+        bank account). The information required is the following:
           <ul>
             <li>
               Account Number
@@ -1175,110 +1203,79 @@ paths:
             </li>
           </ul>
 
-        NOTE: Once this information is received by Arcus, we will send two
-        microdeposits (between 0.1 and 0.99 dollars) to the bank account provided.
-        Once these deposits have been reflected on your account, you must provide
-        us with these amounts to finalize the validation of your bank account.
+        Once this information is received by Arcus, we will send two
+        microdeposits (between 0.1 and 0.99 dollars) to the bank account
+        provided. Once these deposits have been reflected on your account, you
+        must provide us with these amounts to finalize the validation of your
+        bank account.
 
       operationId: postTransactions
       requestBody:
         description: |
-          Within the request body the required parameters to be sent are an
-          `account_number`, `amount`, `currency`, `rpps_biller_id`,
-          `payer_born_on`, `first_name`, `last_name` and an `address` object
-          with required information for `city` and `state`.
-          <br/><br/>
-          You have to make sure the `account_number` matches one of the masks'
-          `mask_format` of the xPay Biller.
-          <br/><br/>
-          In the case of payment with physical check, the request body should
-          include the optional element `check`, that includes an `amount`, `memo`,
-          `sender address`, `receiver address`
+          <h2>Electronic transaction</h2>
+          The information required to create an electronic transaction is the
+          following:
+          - `rpps_biller_id`
+          - `account_number`. You have to make sure that it matches one of the
+            masks' `mask_format` of the xPay Biller.
+          - `amount`
+          - `currency`
+          - `payer_born_on`
+          - `first_name`
+          - `last_name`
+          - `address` object, for which `city` and `state` are required
+
+          <h2>Check</h2>
+          To create a check you will need to provide the following information:
+          - `amount` in USD
+          - `memo`
+          - `sender_address`
+          - `receiver_address`
+          You can either provide all the information of the sender and receiver
+          or you can re-use a previously created address by providing its ID
+          (see addresses endpoints for more information).
+
+          NOTE: The example shown below includes the payload for both electronic
+                and check transactions, however only one of them has to be used
+                at a time. Please refer to the schemas to better understand each
+                transaction's requirements.
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - account_number
-                - amount
-                - currency
-                - rpps_biller_id
-                - phone_number
-                - payer_born_on
-                - first_name
-                - last_name
-                - address
-              properties:
-                account_number:
-                  type: string
-                  description: Account number where the payment is directed to
-                  example: "1234-56"
-                amount:
-                  type: integer
-                  description: Amount to pay
-                  example: "2000.0"
-                currency:
-                  type: string
-                  description: Amount's currency
-                  example: "USD"
-                rpps_biller_id:
-                  type: string
-                  description: xPay biller's UUID
-                  example: "692b45ea-7369-4232-bdd6-2bd662fe1ebd"
-                phone_number:
-                  type: string
-                  description: End user's phone number
-                  example: "(714) 202-5081"
-                client_number:
-                  type: string
-                  description: End user's client number. This attribute is meant
-                    to help our customers link our transactions to their own
-                    records.
-                  example: "805-612-0442"
-                payer_born_on:
-                  type: string
-                  format: date
-                  description: End user's date of birth
-                  example: "1983-09-03"
-                first_name:
-                  type: string
-                  description: End user's first name
-                  example: "John"
-                last_name:
-                  type: string
-                  description: End user's last name
-                  example: "Doe"
+              oneOf:
+              - $ref: '#/components/schemas/ElectronicTransaction'
+              - $ref: '#/components/schemas/check'
+            example:
+             -  account_number: "1234-56"
+                amount: "2000.0"
+                currency: "USD"
+                rpps_biller_id: "692b45ea-7369-4232-bdd6-2bd662fe1ebd"
+                phone_number: "(714) 202-5081"
+                client_number: "805-612-0442"
+                payer_born_on: "1983-09-03"
+                first_name: "John"
+                last_name: "Doe"
                 address:
-                  type: object
-                  description: End user's address
-                  required:
-                    - city
-                    - state
-                  properties:
-                    street:
-                      type: string
-                      example: "351 W 14th St Apt L"
-                    zip_code:
-                      type: string
-                      example: "10014"
-                    city:
-                      type: string
-                      example: "New York"
-                    state:
-                      type: string
-                      example: "NY"
-                status:
-                  type: string
-                  description: Only needed when you want to create a transaction
-                    that is to be processed at a later date. For this purpose,
-                    the value needs to be `on_hold`; if any other value is sent,
-                    the transaction will be created with the `initialized`
-                    status.
-                  example: "on_hold"
-                check:
-                  $ref: '#/components/schemas/check'
-
+                  street: "351 W 14th St Apt L"
+                  zip_code: "10014"
+                  city: "New York"
+                  state: "NY"
+                status: "on_hold"
+             -  amount: 2000.00,
+                memo: Rent payment,
+                sender_address:
+                  name: Roberto Carlos,
+                  company: own,
+                  email: mail_owner@gmail.com,
+                  phone: 23234264506,
+                  address_line1: residential highrise,
+                  address_line2: Suite 1007,
+                  address_city: New York,
+                  address_state: NY,
+                  address_zip: 10001
+                receiver_address:
+                  id: "930e49a9-4b64-4dc1-b2fd-c6b21dbd98cc"
 
       responses:
         202:
@@ -1291,14 +1288,15 @@ paths:
     get:
       tags:
         - xPay
-      summary: Returns the list of transactions that arcus has processed for you
+      summary: Returns the list of transactions that Arcus has processed for you
       description: |
-        This endpoint returns the list of transactions that arcus has processed
+        This endpoint returns the list of transactions that Arcus has processed
         for you. If you send any of the q[] parameters, it will return a set of
         transactions that meet the criteria specified.
         <br><br>
-        In physical check payment context you can get a list of the checks you
-        have created, only you need to include the filter <strong>q[type_eq]=check<strong>
+        If your account is set up to create both electronic transactions and
+        checks, you will likely find the filter <strong>q[type_eq]</strong>
+        useful.
       operationId: getAllTransactions
       parameters:
         - in: query
@@ -1312,7 +1310,8 @@ paths:
         - in: query
           name: q[type_eq]
           required: false
-          description: Returns those transactions made by different payment method that can be `check` or `electronic`
+          description: Returns transactions made by a specific payment method.
+            The value sent has to be either `check` or `electronic`
           schema:
             type: string
         - in: query
@@ -1392,10 +1391,11 @@ paths:
     patch:
       tags:
         - xPay
-      summary: Updates an on_hold transaction
+      summary: Updates an on_hold electronic transaction
       description: |
-        This endpoint allows you to update the amount of an on_hold transaction
-        and/or change its status to `initialized`, so that it can be processed.
+        This endpoint allows you to update the amount of an `on_hold` electronic
+        transaction and/or change its status to `initialized`, so that it can be
+        processed.
       operationId: patchTransaction
       parameters:
         - in: path
@@ -1444,9 +1444,9 @@ paths:
         processing transaction, then you would get an __unprocessable_entity__
         HTTP response.
         <br><br>
-        In the case of physical check payment, the response will contain the
-        transaction details, with a canceling status (already explained on xpay
-        canceling status).
+        In the case of checks, the response will contain the transaction's
+        details with a `canceling` status. We remind you that you have a window
+        of about 5 minutes to cancel a recently created check.
       operationId: getTransactions
       parameters:
         - in: path
@@ -1462,6 +1462,126 @@ paths:
             application/vnd.regalii.v3.2+json:
               schema:
                 $ref: '#/components/schemas/Transaction'
+
+  /addresses:
+    post:
+      tags:
+        - xPay
+      summary: Adds a new address to be used in a check
+      operationId: postAddresses
+      description: |
+        This endpoint allows you to save a new address to be used as a Sender or
+        Receiver on a check.
+      requestBody:
+        description: |
+          The required parameters to create a new check address are the
+          following:
+            - `name` of the sender/receiver
+            - `address_line1` which should include street and number
+            - `address_city`
+            - `address_state`
+            - `address_zip`
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/check_address'
+            example:
+              name: Roberto Carlos
+              company: Real Estate Holdings
+              email: roberto@reh.com
+              phone: 23234264506,
+              address_line1: 400 7th Ave.
+              address_line2: Suite 1007
+              address_city: New York
+              address_state: NY
+              address_zip: 10001
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/check_address'
+              example:
+                id: 6ad73184-9241-4545-b3df-cf53dc85d585
+                name: Roberto Carlos
+                company: Real Estate Holdings
+                email: roberto@reh.com
+                phone: 23234264506,
+                address_line1: 400 7th Ave.
+                address_line2: Suite 1007
+                address_city: New York
+                address_state: NY
+                address_zip: 10001
+
+    get:
+      tags:
+        - xPay
+      summary: Returns your check payment addresses
+      operationId: getAddresses
+      description: >-
+        This endpoint returns the addresses that have been created to be used as
+        Sender or Receiver on your check transactions.
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                type: object
+                properties:
+                  addresses:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/check_address'
+
+  /addresses/{id}:
+    get:
+      tags:
+        - xPay
+      summary: Returns the details of a specific address
+      description: |
+        This endpoint returns the details of a specific saved address.
+      operationId: getAddressesId
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID of the address you wish to obtain
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/check_address'
+
+    delete:
+      tags:
+        - xPay
+      summary: Deletes a specific address
+      description: |
+        This endpoint deletes the address that corresponds to the `id` sent.
+        <br/>
+        NOTE: only addresses that haven't been used in checks can be deleted
+      operationId: deleteAddress
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID of the address to be deleted
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/check_address'
 
   /migrations:
     post:
@@ -1691,106 +1811,6 @@ paths:
       responses:
         204:
           description: successful response
-
-  /addresses:
-    post:
-      tags:
-        - xPay
-      summary: Adds new check payment addresses.
-      operationId: postAddresses
-      description: >-
-        In the case that you need to send a payment via physical check, this endpoint saves
-        a new addresses used for Sender / Receiver on Arcus, which includes the name of titular
-        of the address, the name of the company, an email, its phone number, and the address
-        including address_line1, address_line2 complementing the first one  in the case of a
-        very long addres line, also includes the city, state and zip code.
-        <br/><br/>
-      requestBody:
-        description: The required paameters to create a new check payment address is the following.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/check_address'
-      responses:
-        200:
-          description: successful response
-          content:
-            application/vnd.regalii.v3.2+json:
-              schema:
-                type: object
-                properties:
-                  billers:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/check_address'
-
-    get:
-      tags:
-        - xPay
-      summary: Returns your check payment addresses.
-      operationId: getAddresses
-      description: >-
-        In the case that you need to send a payment via physical check, this endpoint returns
-        your Arcus saved addresses to be used as a sender or receiver adddresses in your physical
-        check payments.
-      responses:
-        200:
-          description: successful response
-          content:
-            application/vnd.regalii.v3.2+json:
-              schema:
-                type: object
-                properties:
-                  billers:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/check_address'
-
-  /addresses/{id}:
-    get:
-      tags:
-        - xPay
-      summary: Returns the details of a specific address
-      description: |
-        This endpoint returns the details of a specific saved address.
-      operationId: getAddressesId
-      parameters:
-        - in: path
-          name: id
-          required: true
-          description: ID of the address you wish to obtain
-          schema:
-            type: string
-      responses:
-        200:
-          description: successful response
-          content:
-            application/vnd.regalii.v3.2+json:
-              schema:
-                $ref: '#/components/schemas/check_address'
-
-    delete:
-      tags:
-        - xPay
-      summary: Deletes a specific address
-      description: |
-        This endpoint deletes the address that corresponds to the `id` sent.
-      operationId: deleteAddress
-      parameters:
-        - in: path
-          name: id
-          required: true
-          description: ID of the address to be deleted
-          schema:
-            type: string
-      responses:
-        200:
-          description: successful response
-          content:
-            application/vnd.regalii.v3.2+json:
-              schema:
-                $ref: '#/components/schemas/check_address'
 
 components:
   securitySchemes:
@@ -2145,14 +2165,11 @@ components:
         status:
           description: Transaction's status
           type: string
-        bill_id:
-          description: ID of the bill related to the transaction
-          type: string
         account_number:
-          description: Account number related to the transaction
+          description: Account number where the payment is directed to
           type: string
         amount:
-          description: Transaction's amount
+          description: Amount to pay
           type: number
         currency:
           description: Amount's currency
@@ -2164,8 +2181,8 @@ components:
           description: Timestamp of when the transaction was last updated
           type: string
         client_number:
-          description: This attribute is meant to help our customers link our
-            transactions to their own records.
+          description: End user's client number. This attribute is meant to help
+            our customers link our transactions to their own records.
           type: string
       example:
         id: be42c413-fcce-4857-b6fa-374228e33912
@@ -2180,6 +2197,73 @@ components:
         error_message: null
         client_number: "805-612-0442"
 
+    ElectronicTransaction:
+      type: object
+      required:
+        - account_number
+        - amount
+        - currency
+        - rpps_biller_id
+        - phone_number
+        - payer_born_on
+        - first_name
+        - last_name
+        - address
+      properties:
+        rpps_biller_id:
+          type: string
+          description: xPay biller's UUID
+          example: "692b45ea-7369-4232-bdd6-2bd662fe1ebd"
+        phone_number:
+          type: string
+          description: End user's phone number
+          example: "(714) 202-5081"
+        client_number:
+          type: string
+          description: End user's client number. This attribute is meant
+            to help our customers link our transactions to their own
+            records.
+          example: "805-612-0442"
+        payer_born_on:
+          type: string
+          format: date
+          description: End user's date of birth
+          example: "1983-09-03"
+        first_name:
+          type: string
+          description: End user's first name
+          example: "John"
+        last_name:
+          type: string
+          description: End user's last name
+          example: "Doe"
+        address:
+          type: object
+          description: End user's address
+          required:
+            - city
+            - state
+          properties:
+            street:
+              type: string
+              example: "351 W 14th St Apt L"
+            zip_code:
+              type: string
+              example: "10014"
+            city:
+              type: string
+              example: "New York"
+            state:
+              type: string
+              example: "NY"
+        status:
+          type: string
+          description: Only needed when you want to create a transaction that is
+            to be processed at a later date. For this purpose, the value needs
+            to be `on_hold`; if any other value is sent, the transaction will be
+            created with the `initialized` status.
+          example: "on_hold"
+
     check:
       type: object
       required:
@@ -2190,25 +2274,22 @@ components:
       properties:
         amount:
           type: number
-          description: The payment asmount
+          description: The payment amount
           example: "10.0"
         memo:
           type: string
-          description: memo about payment
+          description: Payment'm description
           example: "Rent Payment"
         sender_address:
-          type: string
-          description: UUID of saved address
-          example: "930e49a9-4b64-4dc1-b2fd-c6b21dbd98cc"
+          $ref: '#/components/schemas/check_address'
         receiver_address:
-          type: string
-          description: UUID of saved address
-          example: "930e49a9-4b64-4dc1-b2fd-c6b21dbd98cc"
+          $ref: '#/components/schemas/check_address'
 
     check_address:
       type: object
-      description: Payment Addressee
+      description: Details of a check's sender or receiver
       required:
+        - id
         - name
         - company
         - email
@@ -2217,6 +2298,10 @@ components:
         - address_city
         - address_zip
       properties:
+        id:
+          type: string
+          description: UUID of saved address
+          example: "930e49a9-4b64-4dc1-b2fd-c6b21dbd98cc"
         name:
           type: string
           example: John Doe
@@ -2225,7 +2310,7 @@ components:
           example: Arcus
         email:
           type: string
-          example: mail_owner@arcusfi.com
+          example: mail_owner@Arcusfi.com
         phone:
           type: string
           example: 455283940
