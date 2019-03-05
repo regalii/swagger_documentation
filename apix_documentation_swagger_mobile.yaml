@@ -468,8 +468,6 @@ paths:
         content:
           application/json:
             schema:
-              allOf:
-                - $ref: '#/components/schemas/Basic_Credentials'
               type: object
               properties:
                 public_key:
