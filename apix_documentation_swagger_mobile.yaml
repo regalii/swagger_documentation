@@ -539,8 +539,7 @@ paths:
                 example:
                   billers:
                     - type: biller
-                      id: 6510
-                      uuid: 3bc572a9-cb55-4aea-80aa-40b058d26673
+                      id: 3bc572a9-cb55-4aea-80aa-40b058d26673
                       name: Con Edison
                       country: US
                       currency: USD
@@ -662,10 +661,8 @@ paths:
                 example:
                   bills:
                     - type: bill
-                      id: 674124
-                      uuid: c5482bbe-0f46-4e30-b660-3b1bb0ea773f
-                      biller_id: 6510
-                      biller_uuid: b44f5c1c-a6b7-4688-8311-080512ca4f1e
+                      id: c5482bbe-0f46-4e30-b660-3b1bb0ea773f
+                      biller_id: b44f5c1c-a6b7-4688-8311-080512ca4f1e
                       account_number: 87249256
                       name_on_account: Rita Sporer
                       due_date: '2017-01-29T05:00:00Z'
@@ -678,10 +675,8 @@ paths:
                       migrated_at: null
                       mfa_challenges: []
                     - type: bill
-                      id: 674125
-                      uuid: c5482bbe-0f46-4e30-b660-3b1bb0ea773f
-                      biller_id: 1
-                      biller_uuid: b44f5c1c-a6b7-4688-8311-080512ca4f1e
+                      id: c5482bbe-0f46-4e30-b660-3b1bb0ea773f
+                      biller_id: b44f5c1c-a6b7-4688-8311-080512ca4f1e
                       account_number: 1234567
                       name_on_account: Jose Bautista
                       due_date: null
@@ -1102,15 +1097,9 @@ components:
           type: string
           description: bill
         id:
-          type: integer
-          description: Bill's ID [deprecated]
-        uuid:
           type: string
           description: Bill's UUID
         biller_id:
-          type: integer
-          description: Biller's ID [deprecated]
-        biller_uuid:
           type: string
           description: Biller's UUID
         account_number:
@@ -1152,10 +1141,8 @@ components:
               - $ref: '#/components/schemas/MFA_Challenge_Choices'
       example:
         type: bill
-        id: 674117
-        uuid: c5482bbe-0f46-4e30-b660-3b1bb0ea773f
-        biller_id: 6535
-        biller_uuid: ce56e8a6-6162-423f-8dc6-e0ccab5ef70b
+        id: c5482bbe-0f46-4e30-b660-3b1bb0ea773f
+        biller_id: ce56e8a6-6162-423f-8dc6-e0ccab5ef70b
         account_number: 4222422244
         name_on_account: Jose Bautista
         due_date: '2016-11-30'
@@ -1174,9 +1161,6 @@ components:
           type: string
           description: A fixed value of 'biller'
         id:
-          type: integer
-          description: ID of the biller [deprecated]
-        uuid:
           type: string
           description: Unique identifier (UUID) of the biller
         name:
@@ -1264,16 +1248,12 @@ components:
       required:
         - type
         - id
-        - uuid
         - expires_at
       properties:
         type:
           type: string
           description: Challenge's type (question, code, image, image_choice)
         id:
-          type: integer
-          description: Challenge's ID [deprecated]
-        uuid:
           type: string
           description: Challenge's UUID
         expires_at:
@@ -1396,7 +1376,7 @@ components:
       properties:
         id:
           type: string
-          description: ID or UUID of the challenge that is being answered
+          description: UUID of the challenge that is being answered
         type:
           type: string
           description: Type of challenge (question, code, image, image_choice)
