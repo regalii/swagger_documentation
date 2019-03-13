@@ -2324,10 +2324,6 @@ components:
           type: number
           description: Check number associated to the payment
           example: '1003'
-        amount:
-          type: number
-          description: The payment amount
-          example: '10.0'
         memo:
           type: string
           description: Payment'm description
