@@ -1245,7 +1245,7 @@ paths:
             schema:
               oneOf:
               - $ref: '#/components/schemas/ElectronicTransaction'
-              - $ref: '#/components/schemas/check'
+              - $ref: '#/components/schemas/CheckTransaction'
             example:
              -  account_number: "1234-56"
                 amount: "2000.0"
@@ -1388,6 +1388,30 @@ paths:
             application/vnd.regalii.v3.2+json:
               schema:
                 $ref: '#/components/schemas/Transaction'
+
+  /transactions/{id}/check:
+    get:
+      tags:
+        - xPay
+      summary: Returns the details of a specific check transaction
+      description: |
+        This endpoint returns the details of a specific check transaction.
+      operationId: getTransactionsCheck
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID of the transaction you wish to obtain
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/CheckTransactionSerialized'
+
     patch:
       tags:
         - xPay
@@ -1447,7 +1471,7 @@ paths:
         In the case of checks, the response will contain the transaction's
         details with a `canceling` status. We remind you that you have a window
         of about 5 minutes to cancel a recently created check.
-      operationId: getTransactions
+      operationId: deleteTransactions
       parameters:
         - in: path
           name: id
@@ -1485,7 +1509,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/check_address'
+              $ref: '#/components/schemas/CheckAddress'
             example:
               name: Roberto Carlos
               company: Real Estate Holdings
@@ -1502,7 +1526,7 @@ paths:
           content:
             application/vnd.regalii.v3.2+json:
               schema:
-                $ref: '#/components/schemas/check_address'
+                $ref: '#/components/schemas/CheckAddress'
               example:
                 id: 6ad73184-9241-4545-b3df-cf53dc85d585
                 name: Roberto Carlos
@@ -1534,7 +1558,7 @@ paths:
                   addresses:
                     type: array
                     items:
-                      $ref: '#/components/schemas/check_address'
+                      $ref: '#/components/schemas/CheckAddress'
 
   /addresses/{id}:
     get:
@@ -1557,7 +1581,7 @@ paths:
           content:
             application/vnd.regalii.v3.2+json:
               schema:
-                $ref: '#/components/schemas/check_address'
+                $ref: '#/components/schemas/CheckAddress'
 
     delete:
       tags:
@@ -1581,7 +1605,7 @@ paths:
           content:
             application/vnd.regalii.v3.2+json:
               schema:
-                $ref: '#/components/schemas/check_address'
+                $ref: '#/components/schemas/CheckAddress'
 
   /migrations:
     post:
@@ -2264,7 +2288,7 @@ components:
             created with the `initialized` status.
           example: "on_hold"
 
-    check:
+    CheckTransaction:
       type: object
       required:
         - amount
@@ -2281,11 +2305,75 @@ components:
           description: Payment'm description
           example: "Rent Payment"
         sender_address:
-          $ref: '#/components/schemas/check_address'
+          $ref: '#/components/schemas/CheckAddress'
         receiver_address:
-          $ref: '#/components/schemas/check_address'
+          $ref: '#/components/schemas/CheckAddress'
 
-    check_address:
+    CheckTransactionSerialized:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The check payment id
+          example: '6883cdb3-b2af-4d0c-8faf-9dfbc28dd396'
+        status:
+          type: string
+          description: The payment status
+          example: 'pending'
+        check_number:
+          type: number
+          description: Check number associated to the payment
+          example: '1003'
+        amount:
+          type: number
+          description: The payment amount
+          example: '10.0'
+        memo:
+          type: string
+          description: Payment'm description
+          example: "Rent Payment"
+        sender_address:
+          type: string
+          description: The check's sender address id
+          example: '6883cdb3-b2af-4d0c-8faf-9dfbc28dd396'
+        receiver_address:
+          type: string
+          description: The check's receiver address id
+          example: '6883cdb3-b2af-4d0c-8faf-9dfbc28dd396'
+        send_date:
+          type: string
+          description: The send date
+          example: '2019-03-07T15:08:02.856Z'
+        carrier:
+          type: string
+          description: The name of the carrier
+          example: 'USPS'
+        tracking_number:
+          type: string
+          description: Tracking number for carrier
+          example: '6252625242527281'
+        expected_delivery_date:
+          type: string
+          description: Expected delivery date for the check
+          example: '2019-12-14'
+        mail_type:
+          type: string
+          description: Mail type for check delivery
+          example: 'usps_first_class'
+        error_code:
+          type: string
+          description: Error code in case to have one, otherwise will be null
+          example: '500'
+        error_message:
+          type: string
+          description: Error message in case to have one, otherwise will be null
+          example: 'internal error'
+        created_at:
+          type: string
+          description: Date of check creation
+          example: '2019-03-07T15:03:01.976Z'
+
+    CheckAddress:
       type: object
       description: Details of a check's sender or receiver
       required:
