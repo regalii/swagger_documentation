@@ -1389,29 +1389,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Transaction'
 
-  /transactions/{id}/check:
-    get:
-      tags:
-        - xPay
-      summary: Returns the details of a specific check transaction
-      description: |
-        This endpoint returns the details of a specific check transaction.
-      operationId: getTransactionsCheck
-      parameters:
-        - in: path
-          name: id
-          required: true
-          description: ID of the transaction you wish to obtain
-          schema:
-            type: string
-      responses:
-        200:
-          description: successful response
-          content:
-            application/vnd.regalii.v3.2+json:
-              schema:
-                $ref: '#/components/schemas/CheckTransactionSerialized'
-
     patch:
       tags:
         - xPay
@@ -1486,6 +1463,29 @@ paths:
             application/vnd.regalii.v3.2+json:
               schema:
                 $ref: '#/components/schemas/Transaction'
+
+  /transactions/{id}/check:
+    get:
+      tags:
+        - xPay
+      summary: Returns the details of a specific check transaction
+      description: |
+        This endpoint returns the details of a specific check transaction.
+      operationId: getTransactionsCheck
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID of the transaction you wish to obtain
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/CheckTransactionSerialized'
 
   /addresses:
     post:
