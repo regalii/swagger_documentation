@@ -273,8 +273,8 @@ info:
 
     * ## Transactions' Webhooks
 
-    A webhook will be triggered whenever a transaction changes to the following
-    statuses: `pending`, `confirmed`, and `rejected`
+      A webhook will be triggered whenever a transaction changes to the
+      following statuses: `pending`, `confirmed`, and `rejected`
 
     # Errors
 
@@ -1213,6 +1213,7 @@ paths:
       requestBody:
         description: |
           <h2>Electronic transaction</h2>
+
           The information required to create an electronic transaction is the
           following:
           - `rpps_biller_id`
@@ -1226,19 +1227,26 @@ paths:
           - `address` object, for which `city` and `state` are required
 
           <h2>Check</h2>
-          To create a check you will need to provide the following information:
-          - `amount` in USD
-          - `memo`
-          - `sender_address`
-          - `receiver_address`
-          You can either provide all the information of the sender and receiver
-          or you can re-use a previously created address by providing its ID
-          (see addresses endpoints for more information).
 
-          NOTE: The example shown below includes the payload for both electronic
-                and check transactions, however only one of them has to be used
-                at a time. Please refer to the schemas to better understand each
-                transaction's requirements.
+          To create a check you will need to provide the following information:
+
+          {
+            "amount": "2000.00,",
+            "memo": "Rent payment,",
+            "sender_address": "5dc7c0c0-1733-4bcc-a9ea-d791ca671f70",
+            "receiver_address":  "930e49a9-4b64-4dc1-b2fd-c6b21dbd98cc"
+          }
+          <br/><br/>
+
+          Both `sender_address` and `receiver_address` require that an address
+          be previously created. See addresses endpoints for more information.
+
+          <br/>
+          <b>NOTE:</b> You can copy and paste the previous JSON for testing the
+          creation of checks, as the example shown below includes the payload
+          required for electronic transactions. Please refer to the schemas to
+          better understand each transaction's requirements.
+
         required: true
         content:
           application/json:
@@ -1247,35 +1255,21 @@ paths:
               - $ref: '#/components/schemas/ElectronicTransaction'
               - $ref: '#/components/schemas/CheckTransaction'
             example:
-             -  account_number: "1234-56"
-                amount: "2000.0"
-                currency: "USD"
-                rpps_biller_id: "692b45ea-7369-4232-bdd6-2bd662fe1ebd"
-                phone_number: "(714) 202-5081"
-                client_number: "805-612-0442"
-                payer_born_on: "1983-09-03"
-                first_name: "John"
-                last_name: "Doe"
-                address:
-                  street: "351 W 14th St Apt L"
-                  zip_code: "10014"
-                  city: "New York"
-                  state: "NY"
-                status: "on_hold"
-             -  amount: 2000.00,
-                memo: Rent payment,
-                sender_address:
-                  name: Roberto Carlos,
-                  company: own,
-                  email: mail_owner@gmail.com,
-                  phone: 23234264506,
-                  address_line1: residential highrise,
-                  address_line2: Suite 1007,
-                  address_city: New York,
-                  address_state: NY,
-                  address_zip: 10001
-                receiver_address:
-                  id: "930e49a9-4b64-4dc1-b2fd-c6b21dbd98cc"
+              account_number: "1234-56"
+              amount: "2000.0"
+              currency: "USD"
+              rpps_biller_id: "692b45ea-7369-4232-bdd6-2bd662fe1ebd"
+              phone_number: "(714) 202-5081"
+              client_number: "805-612-0442"
+              payer_born_on: "1983-09-03"
+              first_name: "John"
+              last_name: "Doe"
+              address:
+                street: "351 W 14th St Apt L"
+                zip_code: "10014"
+                city: "New York"
+                state: "NY"
+              status: "on_hold"
 
       responses:
         202:
@@ -2325,9 +2319,13 @@ components:
           description: Payment'm description
           example: "Rent Payment"
         sender_address:
-          $ref: '#/components/schemas/CheckAddress'
+          type: string
+          description: UUID of the previously created sender's address
+          example: "5dc7c0c0-1733-4bcc-a9ea-d791ca671f70"
         receiver_address:
-          $ref: '#/components/schemas/CheckAddress'
+          type: string
+          description: UUID of the previously created sender's address
+          example: "5dc7c0c0-1733-4bcc-a9ea-d791ca671f70"
 
     CheckTransactionSerialized:
       type: object
