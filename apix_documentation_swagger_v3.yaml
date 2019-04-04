@@ -2316,7 +2316,7 @@ components:
           example: "10.0"
         memo:
           type: string
-          description: Payment'm description
+          description: Payment's description
           example: "Rent Payment"
         sender_address:
           type: string
