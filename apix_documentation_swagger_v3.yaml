@@ -1081,6 +1081,27 @@ paths:
                   address:
                     description: xPay biller's address
                     type: array
+                    items:
+                      type: object
+                      properties:
+                        city:
+                          type: string
+                        state:
+                          type: string
+                        country:
+                          type: string
+                        address1:
+                          type: string
+                        address2:
+                          type: string
+                        eff_date:
+                          type: string
+                        external_id:
+                          type: string
+                        postal_code:
+                          type: string
+                        address_type:
+                          type: string
                   masks:
                     description: This array of objects describes the different
                       formats that an account_number of this biller can have
@@ -1101,6 +1122,8 @@ paths:
                           type: string
                         descriptions:
                           type: array
+                          items:
+                            type: object
                 example:
                   rpps_billers:
                     - id: 692b45ea-7369-4232-bdd6-2bd662fe1ebd
@@ -1158,6 +1181,14 @@ paths:
                           external_id: 343038
                           mask_format: ###-###@
                           descriptions: []
+
+        401:
+          description: unauthorized response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+
   /transactions:
     post:
       tags:
@@ -1278,7 +1309,18 @@ paths:
             application/vnd.regalii.v3.2+json:
               schema:
                 $ref: '#/components/schemas/Transaction'
-
+        401:
+          description: unauthorized response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        422:
+          description: unprocessable entity response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntity'
     get:
       tags:
         - xPay
@@ -1360,6 +1402,14 @@ paths:
                       updated_at: '2018-04-06T14:49:12.830Z'
                       error_code: null
                       error_message: null
+
+        401:
+          description: unauthorized response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+
   /transactions/{id}:
     get:
       tags:
@@ -1382,6 +1432,18 @@ paths:
             application/vnd.regalii.v3.2+json:
               schema:
                 $ref: '#/components/schemas/Transaction'
+        401:
+          description: unauthorized response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        404:
+          description: not found response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
 
     patch:
       tags:
@@ -1426,6 +1488,29 @@ paths:
             application/vnd.regalii.v3.2+json:
               schema:
                 $ref: '#/components/schemas/Transaction'
+        401:
+          description: unauthorized response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        404:
+          description: not found response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        422:
+          description: unprocessable entity response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                example:
+                  message: 'Only on_hold transactions can be updated!'
 
     delete:
       tags:
@@ -1457,6 +1542,18 @@ paths:
             application/vnd.regalii.v3.2+json:
               schema:
                 $ref: '#/components/schemas/Transaction'
+        401:
+          description: unauthorized response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        404:
+          description: not found response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
 
   /transactions/{id}/check:
     get:
@@ -1480,6 +1577,18 @@ paths:
             application/vnd.regalii.v3.2+json:
               schema:
                 $ref: '#/components/schemas/CheckTransactionSerialized'
+        401:
+          description: unauthorized response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        404:
+          description: not found response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
 
   /transactions/{id}/check.pdf:
     get:
@@ -1499,7 +1608,18 @@ paths:
       responses:
         200:
           description: OK
-
+        401:
+          description: unauthorized response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        404:
+          description: not found response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
 
   /addresses:
     post:
@@ -1552,6 +1672,12 @@ paths:
                 address_city: New York
                 address_state: NY
                 address_zip: 10001
+        401:
+          description: unauthorized response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
 
     get:
       tags:
@@ -1573,6 +1699,12 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/CheckAddress'
+        401:
+          description: unauthorized response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
 
   /addresses/{id}:
     get:
@@ -1596,6 +1728,18 @@ paths:
             application/vnd.regalii.v3.2+json:
               schema:
                 $ref: '#/components/schemas/CheckAddress'
+        401:
+          description: unauthorized response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        404:
+          description: not found response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
 
     delete:
       tags:
@@ -1620,6 +1764,18 @@ paths:
             application/vnd.regalii.v3.2+json:
               schema:
                 $ref: '#/components/schemas/CheckAddress'
+        401:
+          description: unauthorized response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        404:
+          description: not found response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
 
   /migrations:
     post:
@@ -2425,3 +2581,28 @@ components:
         address_zip:
           type: string
           example: 10001
+
+    Unauthorized:
+      type: object
+      properties:
+        message:
+          type: string
+      example:
+        message: Unauthorized
+
+    NotFound:
+      type: object
+      properties:
+        message:
+          type: string
+      example:
+        message: Not found
+
+    UnprocessableEntity:
+      type: object
+      properties:
+        message:
+          type: string
+      example:
+        message: 'param is missing or the value is empty: amount'
+        
