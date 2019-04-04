@@ -1315,7 +1315,12 @@ paths:
             application/vnd.regalii.v3.2+json:
               schema:
                 $ref: '#/components/schemas/Unauthorized'
-
+        422:
+          description: unprocessable entity response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntity'
     get:
       tags:
         - xPay
@@ -1495,6 +1500,17 @@ paths:
             application/vnd.regalii.v3.2+json:
               schema:
                 $ref: '#/components/schemas/NotFound'
+        422:
+          description: unprocessable entity response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                example:
+                  message: 'Only on_hold transactions can be updated!'
 
     delete:
       tags:
@@ -2581,3 +2597,12 @@ components:
           type: string
       example:
         message: Not found
+
+    UnprocessableEntity:
+      type: object
+      properties:
+        message:
+          type: string
+      example:
+        message: 'param is missing or the value is empty: amount'
+        
