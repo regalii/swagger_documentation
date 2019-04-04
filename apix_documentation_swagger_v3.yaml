@@ -1433,6 +1433,12 @@ paths:
             application/vnd.regalii.v3.2+json:
               schema:
                 $ref: '#/components/schemas/Unauthorized'
+        404:
+          description: not found response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
 
     patch:
       tags:
@@ -1483,6 +1489,12 @@ paths:
             application/vnd.regalii.v3.2+json:
               schema:
                 $ref: '#/components/schemas/Unauthorized'
+        404:
+          description: not found response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
 
     delete:
       tags:
@@ -1520,6 +1532,12 @@ paths:
             application/vnd.regalii.v3.2+json:
               schema:
                 $ref: '#/components/schemas/Unauthorized'
+        404:
+          description: not found response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
 
   /transactions/{id}/check:
     get:
@@ -1549,6 +1567,12 @@ paths:
             application/vnd.regalii.v3.2+json:
               schema:
                 $ref: '#/components/schemas/Unauthorized'
+        404:
+          description: not found response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
 
   /transactions/{id}/check.pdf:
     get:
@@ -1574,7 +1598,12 @@ paths:
             application/vnd.regalii.v3.2+json:
               schema:
                 $ref: '#/components/schemas/Unauthorized'
-
+        404:
+          description: not found response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
 
   /addresses:
     post:
@@ -1689,6 +1718,12 @@ paths:
             application/vnd.regalii.v3.2+json:
               schema:
                 $ref: '#/components/schemas/Unauthorized'
+        404:
+          description: not found response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
 
     delete:
       tags:
@@ -1719,6 +1754,12 @@ paths:
             application/vnd.regalii.v3.2+json:
               schema:
                 $ref: '#/components/schemas/Unauthorized'
+        404:
+          description: not found response
+          content:
+            application/vnd.regalii.v3.2+json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
 
   /migrations:
     post:
@@ -2532,4 +2573,11 @@ components:
           type: string
       example:
         message: Unauthorized
-    
+
+    NotFound:
+      type: object
+      properties:
+        message:
+          type: string
+      example:
+        message: Not found
