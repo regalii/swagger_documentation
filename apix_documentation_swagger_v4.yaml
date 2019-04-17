@@ -1667,6 +1667,14 @@ components:
               description: "Available merchant's logos"
               items:
                 $ref: '#/components/schemas/Logo'
+            login_category:
+              type: string
+              description: Login category for every biller
+            inputs:
+              type: array
+              description: "Available merchant's inputs<"
+              items:
+                type: string
             created_at:
               type: string
               format: date-time
