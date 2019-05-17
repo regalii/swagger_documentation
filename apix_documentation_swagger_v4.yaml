@@ -26,9 +26,9 @@ info:
 
     * __xChange__ Push card-on-file updates to merchants
     * __xData__ Pull real-time data from merchants (available on
-      [v3.2](https://docx.regalii.com/))
+      [v3.2](https://docx.arcusapi.com/))
     * __xPay__ Push payments (via ACH) to merchants (available on
-      [v3.2](https://docx.regalii.com/))
+      [v3.2](https://docx.arcusapi.com/))
 
     ---
 
@@ -724,7 +724,7 @@ paths:
                   example: 6ab564f9-4e9d-4b03-96d6-dd9f2c39ec53
                 login:
                   type: string
-                  description: User name 
+                  description: User name
                   example: email@exaple.com
                 password:
                   type: string
@@ -842,7 +842,7 @@ paths:
                       - $ref: '#/components/schemas/Bill'
                 example:
                   data:
-                    -               
+                    -
                       id: 7da26c9d-cfd0-4af3-a348-fed5dcbfa5d5
                       type: bill
                       attributes:
@@ -877,7 +877,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Bill'
                 example:
-                  data:              
+                  data:
                     id: 7da26c9d-cfd0-4af3-a348-fed5dcbfa5d5
                     type: bill
                     attributes:
@@ -914,7 +914,7 @@ paths:
       summary: Retrieves the challenges associated with a specific bill
       operationId: get specify challenge bill
       description: |
-        This endpoint retrieves a specific bill's challenges 
+        This endpoint retrieves a specific bill's challenges
       parameters:
         - name: id
           in: path
@@ -931,7 +931,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Bill'
                 example:
-                  data:              
+                  data:
                     id: ee032897-9b3a-4f0e-a122-fe79c2164e00
                     type: bill
                     attributes:
@@ -940,10 +940,10 @@ paths:
                       expires_at: null
                       prompt: "What is the secret word? (question)"
                     relationships: {}
-                  meta: 
+                  meta:
                     total: 1
                     total-pages: 1
-                  links: 
+                  links:
                     self: "https://apix.staging.arcusapi.com/bills/3c95647b-0df8-4cd0-9b26-43164af13525/challenges?page=1"
                     next: null
                     prev: null
@@ -965,11 +965,11 @@ paths:
               type: object
               required:
                 - id
-              properties: 
+              properties:
                 id:
                   type: string
                   description: Biller's ID.
-                  example: f83b26db-67de-49a1-b735-b8d574e6a1d0            
+                  example: f83b26db-67de-49a1-b735-b8d574e6a1d0
       responses:
         200:
           description: successful response
@@ -978,7 +978,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Bill'
                 example:
-                  data:              
+                  data:
                     id: 7da26c9d-cfd0-4af3-a348-fed5dcbfa5d5
                     type: bill
                     attributes:
@@ -1303,7 +1303,7 @@ paths:
               type: object
               required:
                 - id
-              properties: 
+              properties:
                 id:
                   type: string
                   description: ID of the bill whose migration information you wish to obtain
@@ -1439,7 +1439,7 @@ paths:
                 type: object
                 required:
                   - migration_id
-                properties: 
+                properties:
                   migration_id:
                     type: string
                     description: ID of the migration whose challenges you wish to obtain
@@ -1994,7 +1994,7 @@ components:
         id:
           type: string
           description: Unique identifier (UUID) of the entity
-        status: 
+        status:
           type: string
           enum:
             - initialized
@@ -2003,17 +2003,17 @@ components:
             - waiting,
             - successful
             - failed
-        requested_at: 
+        requested_at:
           type: string
           format: date-time
           description: It can be null.
-        retrieved_at: 
+        retrieved_at:
           type: string
           format: date-time
           description: It can be null.
-        xdata: 
+        xdata:
           type: string
           description: It can be null.
-        error: 
+        error:
           type: string
-          description: It can be null. 
+          description: It can be null.

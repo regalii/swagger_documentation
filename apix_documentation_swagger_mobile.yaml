@@ -112,7 +112,7 @@ info:
               - __Note:__ The ‘Endpoint’ is simply the URL you are sending the
               request to, excluding the server and including the parameters. For
               instance, if you want to obtain a bill's data by requesting a get
-              to `https://apix.casiregalii.com/bills/1`, your checksum string
+              to `https://apix.staging.arcusapi.com/bills/1`, your checksum string
               should look like this:
               `application/json,,/bills/1,Wed, 10 Jan 2017 16:53:15 GMT`
               - __Note:__ Please notice the timestamp format. In UNIX-based
@@ -777,7 +777,7 @@ paths:
       tags:
         - xData
       servers:
-        - url: https://apix.casiregalii.com
+        - url: https://apix.staging.arcusapi.com
       summary: Deletes a specific bill
       description: This endpoint deletes a specific bill
       operationId: deleteBill
