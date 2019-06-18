@@ -5,30 +5,28 @@ info:
   description: |
     # Introduction
 
-    This documentation provides Merchants the protocol to be implemented in
-    order to receive an xChange request.
+    This documentation provides an overview of the protocol that Merchants can
+    use to create an integration with Arcus in order to receive an account
+    update from Arcus.
 
-    After implementation, Merchants will be able to receive updated card
+    After integration, Merchants will be able to receive updated card
     information from Arcus Issuer partners, which will reduce the possibility of
-    a false positive occurring from outdated payment information.
+    a false positive occurring from outdated payment information and decrease
+    account updating costs for the Merchant.
 
-    The actual update occurs in the following steps:
-    1. Merchant system receives a request from Arcus infrastructure in real-time.
-    2. Merchant updates the payment card information in their infrastructure,
-    using the payload previously delivered by Arcus
-    3. Merchant provides a response code to Arcus infrastructure, which Arcus
-    will forward to our Issuer partner.
+    ---
 
-    ## Types of Integrations With Arcus
+    # Types of Integrations With Arcus
 
-    * __Merchant Integrates with Arcus__: Merchant can use this documentation to
+    __Merchant Integrates with Arcus:__ Merchant can use this documentation to
     create an API integration with the Arcus infrastructure.
-    * __Arcus Integrates with Merchant__: Arcus is able to integrate with
-    existing Merchant API infrastructure in order to eliminate level of effort
-    required to go live with Arcus xChange. To accomplish this, Arcus works with
-    the Merchant to map our data to existing API endpoints for card information.
-      * If interested in discussing further, please contact your Arcus
-        representative to learn more.
+
+    __Arcus Integrates with Merchant:__ Arcus is able to integrate with existing
+    Merchant API infrastructure in order to eliminate level of effort required
+    to go live with Arcus xChange. To accomplish this, Arcus works with the
+    Merchant to map our data to existing API endpoints for card information.
+    * If interested in discussing further, please contact your Arcus
+    representative to learn more.
 
     ---
 
@@ -37,47 +35,196 @@ info:
     Arcus will provide Merchants with separate API keys for our two existing
     environments:
 
-    * __Sandbox__: Arcus maintains a Sandbox which allows developers to test the
-    API using mock data. We recommend keeping the following information in mind:
-        * The data is always fake
-        * Do not send any real information in the Sandbox
-        * To make requests to the sandbox environment, use the following URL: https://apix.staging.arcusapi.com
-    * __Production__: Once you have completed all of the necessary tests in the
-    sandbox, contact us to receive your production keys.
-        * To make requests to the production environment, use the following URL: https://apix.arcusapi.com
-    * __NOTE__: For security reasons, it's not possible to make production
-    requests through our dynamic documentation.
+    __Sandbox:__ Arcus maintains a Sandbox which allows developers to test the
+    API using mock data. We recommend keeping the following guidelines in mind:
+    * The data is always going to be fake. Due to PCI requirements, testing
+      environments cannot use live PCI.
+    * DO NOT send any real information in the Sandbox.
+    * To make requests to the sandbox environment, use the following URL:
+      https://apix.staging.arcusapi.com
 
+    __Production:__ Once you have completed all of the necessary tests in the
+    sandbox, contact us to receive your production keys.
+    * To make requests to the production environment, use the following URL:
+      https://apix.arcusapi.com
+
+    __NOTE:__ For security reasons, it's not possible to make production
+    requests through our dynamic documentation.
 
     ---
 
-    # Security
+    # HTTPS Endpoint Requirement
 
-    To make requests to our endpoints, you must use the `https` protocol,
-    regardless of the environment you're using.
+    The Arcus Integration Protocol requires Merchant to create a component that
+    allows a bridge to be created between Arcus and the Merchant.
 
-    __Note:__ For security reasons, our API doesn't support TLS V1.0;
-    we ask that you use minimum TLS v1.2.
+    The bridge is simple, and consists of exposing an HTTPS endpoint listener
+    that updates the card on file with the information sent from the Arcus API.
 
-    ## Authentication
+    ---
+
+    # Security Overview
+
+    To make requests to our endpoints, you must use the https protocol,
+    regardless of the environment you are using.
+
+    __Note:__ For security reasons, our API doesn't support TLS V1.0; we ask that
+    you use at minimum TLS v1.2.
+
+    ---
+
+    # Authentication Overview
 
     Arcus supports multiple methods of authentication, including:
+
     * Mutual SSL
     * Authorization Token
     * OAuth
 
+    __Note:__ Arcus is able to adapt to any authorization methodology that our
+    clients require.
+
     ---
 
-    # Order of Operations:
+    # Data Element Overview
 
-    * Arcus facilitates the transfer of new PCI and PII from Issuer environment,
-    to Merchant environment.
-    * The Merchant receives the payload, and is responsible for enriching
-    appropriate Merchant infrastructure endpoints in real time.
-    * The Merchant is then expected to return a status to Arcus in order to
-    allow Arcus to notify customer of update success.
+    Below is a list of the data elements that we receive from the Issuer, and
+    their corresponding uses:
 
-    ___
+    * __Migration ID:__ Migration Attempt Identifier
+    * __Old PAN:__ Customer Identifier
+    * __Name on Card:__ Place CoF at Merchant
+    * __Card Brand:__ Place CoF at Merchant
+    * __New PAN:__ Place CoF at Merchant
+    * __Card Security Code:__ Place CoF at Merchant
+    * __Exp Date:__ Place CoF at Merchant
+    * __Address on File for Account:__ Place CoF at Merchant
+    * __Zip Code on File for Account:__ Place CoF at Merchant
+
+    ---
+
+    # Order of Operations
+
+    Arcus facilitates the transfer of new PCI from Issuer environment to
+    Merchant environment.
+
+    __Below is an overview of the Order of Operations that Arcus employs in
+    order to establish a payment card in the default position for your
+    service.__
+
+    __Accompanying the Order of Operations is a Data Flow Chart.__
+
+    __Step 1:__ Arcus receives data file for account update from Issuer.
+
+    __Step 2:__ Arcus Sends Old PAN to Merchant in order to verify that Merchant
+    has the card on file currently (Data Payload Example Below)
+
+    ```
+    {
+      "id": "6ab564f9-4e9d-4b03-96d6-dd9f2c39ec53",
+      "version": 1,
+      "payload": {
+        "type": "PAN",
+        "old_pan": "5186822726831300",
+       }
+      }
+    }
+    ```
+    __Step 3:__ Merchant responds with a confirmation or rejection of the
+    provided PAN
+
+    * If PAN is rejected, Arcus notifies Issuer that the card cannot be updated.
+
+    * If PAN is confirmed, Arcus moves to Step 4
+
+    __Step 4:__ Arcus sends Merchant data payload including all PCI and PII
+    necessary to update card payment method on file (Data Payload Example Below)
+
+    ```
+    {
+      "id": "6ab564f9-4e9d-4b03-96d6-dd9f2c39ec53",
+      "version": 1,
+      "payload": {
+        "name_on_card": "John Smith",
+        "card_brand": "Mastercard",
+        "card_number": "0123456789012345",
+        "card_security": "123",
+        "card_expiration": {
+          "month": 04,
+          "year": 2022
+        },
+        "card_address": {
+          "street": "214W 29th St. Suite 1007 ",
+          "city": "New York",
+          "state": "NY",
+          "zipcode": "10001",
+          "country": "US"
+        }
+      }
+    }
+    ```
+
+    __Step 5:__ Merchant updates card payment method on file.
+
+    __Step 6:__ Merchant alerts Arcus as to card update status
+
+    __Step 7:__ Arcus alerts Issuer of account update status
+
+    <img src="https://github.com/regalii/swagger_documentation/blob/master/order_of_operations.png" />
+
+    ---
+
+    # Testing with Arcus
+
+    In order to test with Arcus, Merchants must go through the following steps:
+
+    1. Set up the HTTPS Endpoint
+    2. Alert Arcus of the Endpoint
+    3. Provide Arcus with dummy data in order to test against
+    4. Arrange a time in which Arcus will be sending test migrations to Merchant
+       in order to test the ability for the Merchant to receive the migration
+       files and respond with the appropriate response codes.
+       a. This process is separate from setting up the appropriate Authorization
+          and Encryption requirements
+
+    ---
+
+    # Kill Switch
+
+    ## Inability to Access Merchant System
+
+    Arcus has a kill switch built into the system in order to account for a
+    situation in which Merchant system is unavailable for any reason.
+
+    If Arcus attempts xxxx number of xChange Migration Requests with Merchant,
+    and is unsuccessful in all migration requests, Arcus system will trigger the
+    kill switch in order to prevent any further attempts.
+
+    At that point, an Arcus representative will contact Merchant in order to
+    immediately trouble-shoot the issue so that the integration may come back
+    online as quickly as possible.
+
+    __Required Remediation Timeline:__ 12 hours
+
+    ---
+
+    # Timeout
+
+    ## Arcus system is not returning the expected payload
+
+    Arcus has a timeout built into the system in order to account for the
+    situation in which Arcus is not returning the expected payload response to
+    Merchant.
+
+    If Arcus attempts xxxx number of xChange Migration Requests with Merchant,
+    and is unsuccessful in all migration requests, Arcus system will trigger the
+    timeout in order to prevent any further attempts.
+
+    At that point, an Arcus representative will contact Merchant in order to
+    immediately trouble-shoot the issue so that the integration may come back
+    online as quickly as possible.
+
+    __Required Remediation Timeline:__ 12 hours
 
 tags:
   - name: xChange
