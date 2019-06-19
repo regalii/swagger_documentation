@@ -166,9 +166,9 @@ info:
 
     __Step 5:__ Merchant updates card payment method on file.
 
-    __Step 6:__ Merchant alerts Arcus as to card update status
+    __Step 6:__ Merchant shares with Arcus the status of the card update
 
-    __Step 7:__ Arcus alerts Issuer of account update status
+    __Step 7:__ Arcus shares with Issuer the status of account update
 
     <img src="https://docx.arcusapi.com/order_of_operations.png" />
 
@@ -179,7 +179,7 @@ info:
     In order to test with Arcus, Merchants must go through the following steps:
 
     1. Set up the HTTPS Endpoint
-    2. Alert Arcus of the Endpoint
+    2. Share Endpoint with Arcus
     3. Provide Arcus with dummy data in order to test against
     4. Arrange a time in which Arcus will be sending test migrations to Merchant
        in order to test the ability for the Merchant to receive the migration
