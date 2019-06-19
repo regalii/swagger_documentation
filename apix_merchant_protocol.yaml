@@ -238,12 +238,6 @@ paths:
       description: |
         This endpoint allows Arcus to push an old PAN to the Merchant infrastructure, the merchant will authenticate and return a token allowing Arcus to continue the process.
 
-        __Identity Authentication Methods:__
-        * Customer identity authentication method depends on Merchant
-        tokenization method.
-        * __PAN__: Arcus sends Old Card Information as identifier
-        * __Credentials__: Arcus sends customer account credentials as identifier
-
       requestBody:
         required: true
         content:
@@ -390,8 +384,8 @@ paths:
                   type: object
                   description: The paylaod containing all the Migration information
                   properties:
-                    type:
-                      token: string
+                    token:
+                      type: string
                       description: >-
                         The token provided by the merchant allowing to reconciliate the old PAN pre-approved.
                       example: "SGVsbG8gV29ybGQh"
@@ -530,3 +524,6 @@ paths:
       operationId: getHealthCheck
       description: |
         This endpoint allows Arcus to check if the merchant endpoint is currently available. If the HTTP code from the answer is different from 200 to 299. Arcus considers the merchant is not avaialble and will trigger the kill switch.
+      responses:
+        '200':
+          description: The service is available
