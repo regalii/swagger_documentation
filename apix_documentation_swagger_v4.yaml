@@ -1701,7 +1701,7 @@ components:
           description: URL where the image is located
         monochromic:
           type: bool
-          description: Image's brand in white
+          description: Image's brand in one color
     MetaData:
       type: object
       required:
