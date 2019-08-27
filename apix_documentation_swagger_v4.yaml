@@ -600,6 +600,8 @@ paths:
                         signup_url: null
                         password_url: null
                         color: null
+                        inputs: []
+                        login_category: null
                         logos: []
                         created_at: "2018-07-02 22:06:14 UTC"
                         updated_at: "2018-07-02 22:06:14 UTC"
