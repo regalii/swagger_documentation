@@ -569,19 +569,23 @@ paths:
                         signup_url: "https://www.amazon.com/ap/register"
                         password_url: "https://www.amazon.com/ap/forgotpassword"
                         support_phone_number: "+12062662992"
+                        inputs:
+                          - "login"
+                          - "password"
+                        login_category: "email"
                         color: "#FF9900"
                         logos:
                           - mime_type: image/png
-                            url: "https://static.staging.arcusapi.com/vector/amazon-prime.svg"
+                            url: "https://static.staging.arcusapi.com/amazon-prime.png"
                             monochromic: true
                           - mime_type: image/png
-                            url: "https://static.staging.arcusapi.com/90x34/amazon-prime.png"
+                            url: "https://static.staging.arcusapi.com/amazon-prime.png"
                             monochromic: false
                           - mime_type: image/svg+xml
-                            url: "https://static.staging.arcusapi.com/135x51/amazon-prime.png"
+                            url: "https://static.staging.arcusapi.com/amazon-prime.svg"
                             monochromic: true
                           - mime_type: image/svg+xml
-                            url: "https://static.staging.arcusapi.com/180x68/amazon-prime.png"
+                            url: "https://static.staging.arcusapi.com/amazon-prime.svg"
                             monochromic: false
                         created_at: "2016-06-08 21:36:33 UTC"
                         updated_at: "2018-08-03 18:50:56 UTC"
