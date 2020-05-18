@@ -25,7 +25,7 @@ info:
     # Our products
 
     * __xData__ Pull real-time data from billers
-    * __xPay__ Push payments to billers, via ACH or check
+    * __xPay__ Push payments to billers, via ACH
     * __xChange__ Push card-on-file updates to billers
 
     ---
@@ -39,7 +39,6 @@ info:
       of bills) transactions in batches.
     * __api-key__ It allows Arcus to uniquely identify the client making any
       requests to the APIx.
-    * __Check__ A written order directing a bank to pay money as instructed.
     * __Bill__ Expenses owed by an end user to a biller which need to be paid on
       a recurring basis.
     * __Biller__ Any merchant that offers an end user a service (e.g.: Verizon,
@@ -53,15 +52,11 @@ info:
       choose from, or different choices which only the end user would know the
       answer to.
     * __Migration__ It is the act of changing a bill's credit card number.
-    * __Receiver__ Data of a person or entity that will receive payment through
-      a physical check.
     * __secret-key__ You will be given this key to generate a unique signature
       (checksum) to your requests, thus guaranteeing their authenticity. Make
       sure never to share it.
-    * __Sender__ Data of the person or entity that is requesting the sending of
-      a physical check to pay for a service.
     * __Transaction__ Details of an exchange of funds, be it through ACH or via
-      a physical check.
+      a physical.
     * __Webhook__ HTTP callback that notifies in real-time about an object's
       change of state
 
@@ -219,26 +214,6 @@ info:
       - __rejected__ There was a problem with the payment; you can get more
         information by checking the __error_code__ and __error_message__ in
         the transaction’s response.
-
-    ### Checks
-
-      - __initialized__: check just created
-      - __linked__:  physical check is ready. The check's PDF can be consulted
-        through a URL
-      - __pending__: check in transit
-      - __rerouted__: this status appears when a check's delivery route has
-        changed
-      - __confirmed__: check arrived to its destination
-      - __cashed__: the receiver has cashed the check (only available under
-        certain circumstances)
-      - __rejected__: check was returned to the sender
-      - __canceling__: immediate status response received after requesting a
-        check’s cancellation (deletion). If the transaction is deleted
-        successfully, it won’t be found anymore; otherwise, the transaction’s
-        status will return to the value it had before the cancellation attempt.
-        NOTE: Only checks with initialized statuses can be cancelled, i.e., you
-        will have approximately a 5 minute window to cancel a check, before it
-        changes to a linked status
 
     ## xChange
 
@@ -1195,8 +1170,7 @@ paths:
         - xPay
       summary: Creates a new transaction
       description: |
-        With this endpoint you can create a new transaction. Currently we allow
-        2 payment methods: electronic and check.
+        With this endpoint you can create a new transaction.
 
         <h2>Electronic transactions</h2>
         Once a transaction is created in Arcus’ system, it takes 2-3 business
@@ -1209,36 +1183,6 @@ paths:
         NOTE: It is possible to create an on_hold transaction, i.e., a
         transaction that is not to be processed yet. To do this, it is necessary
         to send the attribute `status` with a value of `on_hold`
-
-        <h2>Checks</h2>
-        We also provide the option to send payments via `physical checks`. In
-        order to use this service you will need to provide Arcus the details of
-        a US bank account; it will take up to 3 business days for the account to
-        be validated (for sandbox environment, Arcus will provide you a fake
-        bank account). The information required is the following:
-          <ul>
-            <li>
-              Account Number
-            </li>
-            <li>
-              Routing Number
-            </li>
-            <li>
-              Bank Name
-            </li>
-            <li>
-              Account Type (ex. Company / Individual)
-            </li>
-            <li>
-              Signatory (ex. John Doe)
-            </li>
-          </ul>
-
-        Once this information is received by Arcus, we will send two
-        microdeposits (between 0.1 and 0.99 dollars) to the bank account
-        provided. Once these deposits have been reflected on your account, you
-        must provide us with these amounts to finalize the validation of your
-        bank account.
 
       operationId: postTransactions
       requestBody:
@@ -1257,34 +1201,12 @@ paths:
           - `last_name`
           - `address` object, for which `city` and `state` are required
 
-          <h2>Check</h2>
-
-          To create a check you will need to provide the following information:
-
-          {
-            "amount": "2000.00,",
-            "memo": "Rent payment,",
-            "sender_address": "5dc7c0c0-1733-4bcc-a9ea-d791ca671f70",
-            "receiver_address":  "930e49a9-4b64-4dc1-b2fd-c6b21dbd98cc"
-          }
-          <br/><br/>
-
-          Both `sender_address` and `receiver_address` require that an address
-          be previously created. See addresses endpoints for more information.
-
-          <br/>
-          <b>NOTE:</b> You can copy and paste the previous JSON for testing the
-          creation of checks, as the example shown below includes the payload
-          required for electronic transactions. Please refer to the schemas to
-          better understand each transaction's requirements.
-
         required: true
         content:
           application/json:
             schema:
               oneOf:
               - $ref: '#/components/schemas/ElectronicTransaction'
-              - $ref: '#/components/schemas/CheckTransaction'
             example:
               account_number: "1234-56"
               amount: "2000.0"
@@ -1329,10 +1251,6 @@ paths:
         This endpoint returns the list of transactions that Arcus has processed
         for you. If you send any of the q[] parameters, it will return a set of
         transactions that meet the criteria specified.
-        <br><br>
-        If your account is set up to create both electronic transactions and
-        checks, you will likely find the filter <strong>q[type_eq]</strong>
-        useful.
       operationId: getAllTransactions
       parameters:
         - in: query
@@ -1343,13 +1261,6 @@ paths:
           schema:
             type: string
             format: date-time
-        - in: query
-          name: q[type_eq]
-          required: false
-          description: Returns transactions made by a specific payment method.
-            The value sent has to be either `check` or `electronic`
-          schema:
-            type: string
         - in: query
           name: q[created_at_lteq]
           required: false
@@ -1523,10 +1434,6 @@ paths:
         __initialized__ state. If you make a request to delete an already
         processing transaction, then you would get an __unprocessable_entity__
         HTTP response.
-        <br><br>
-        In the case of checks, the response will contain the transaction's
-        details with a `canceling` status. We remind you that you have a window
-        of about 5 minutes to cancel a recently created check.
       operationId: deleteTransactions
       parameters:
         - in: path
@@ -1542,228 +1449,6 @@ paths:
             application/vnd.regalii.v3.2+json:
               schema:
                 $ref: '#/components/schemas/Transaction'
-        401:
-          description: unauthorized response
-          content:
-            application/vnd.regalii.v3.2+json:
-              schema:
-                $ref: '#/components/schemas/Unauthorized'
-        404:
-          description: not found response
-          content:
-            application/vnd.regalii.v3.2+json:
-              schema:
-                $ref: '#/components/schemas/NotFound'
-
-  /transactions/{id}/check:
-    get:
-      tags:
-        - xPay
-      summary: Returns the details of a specific check transaction
-      description: |
-        This endpoint returns the details of a specific check transaction.
-      operationId: getTransactionsCheck
-      parameters:
-        - in: path
-          name: id
-          required: true
-          description: ID of the transaction you wish to obtain
-          schema:
-            type: string
-      responses:
-        200:
-          description: successful response
-          content:
-            application/vnd.regalii.v3.2+json:
-              schema:
-                $ref: '#/components/schemas/CheckTransactionSerialized'
-        401:
-          description: unauthorized response
-          content:
-            application/vnd.regalii.v3.2+json:
-              schema:
-                $ref: '#/components/schemas/Unauthorized'
-        404:
-          description: not found response
-          content:
-            application/vnd.regalii.v3.2+json:
-              schema:
-                $ref: '#/components/schemas/NotFound'
-
-  /transactions/{id}/check.pdf:
-    get:
-      tags:
-        - xPay
-      summary: Downloads the PDF file of a specific check transaction
-      description: |
-        This endpoint generates the PDF file of a specific check transaction
-      operationId: getTransactionsCheckPDF
-      parameters:
-        - in: path
-          name: id
-          required: true
-          description: ID of the transaction you wish to obtain
-          schema:
-            type: string
-      responses:
-        200:
-          description: OK
-        401:
-          description: unauthorized response
-          content:
-            application/vnd.regalii.v3.2+json:
-              schema:
-                $ref: '#/components/schemas/Unauthorized'
-        404:
-          description: not found response
-          content:
-            application/vnd.regalii.v3.2+json:
-              schema:
-                $ref: '#/components/schemas/NotFound'
-
-  /addresses:
-    post:
-      tags:
-        - xPay
-      summary: Adds a new address to be used in a check
-      operationId: postAddresses
-      description: |
-        This endpoint allows you to save a new address to be used as a Sender or
-        Receiver on a check.
-      requestBody:
-        description: |
-          The required parameters to create a new check address are the
-          following:
-            - `name` of the sender/receiver
-            - `address_line1` which should include street and number
-            - `address_city`
-            - `address_state`
-            - `address_zip`
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CheckAddress'
-            example:
-              name: Roberto Carlos
-              company: Real Estate Holdings
-              email: roberto@reh.com
-              phone: 23234264506,
-              address_line1: 400 7th Ave.
-              address_line2: Suite 1007
-              address_city: New York
-              address_state: NY
-              address_zip: 10001
-      responses:
-        200:
-          description: successful response
-          content:
-            application/vnd.regalii.v3.2+json:
-              schema:
-                $ref: '#/components/schemas/CheckAddress'
-              example:
-                id: 6ad73184-9241-4545-b3df-cf53dc85d585
-                name: Roberto Carlos
-                company: Real Estate Holdings
-                email: roberto@reh.com
-                phone: 23234264506,
-                address_line1: 400 7th Ave.
-                address_line2: Suite 1007
-                address_city: New York
-                address_state: NY
-                address_zip: 10001
-        401:
-          description: unauthorized response
-          content:
-            application/vnd.regalii.v3.2+json:
-              schema:
-                $ref: '#/components/schemas/Unauthorized'
-
-    get:
-      tags:
-        - xPay
-      summary: Returns your check payment addresses
-      operationId: getAddresses
-      description: >-
-        This endpoint returns the addresses that have been created to be used as
-        Sender or Receiver on your check transactions.
-      responses:
-        200:
-          description: successful response
-          content:
-            application/vnd.regalii.v3.2+json:
-              schema:
-                type: object
-                properties:
-                  addresses:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/CheckAddress'
-        401:
-          description: unauthorized response
-          content:
-            application/vnd.regalii.v3.2+json:
-              schema:
-                $ref: '#/components/schemas/Unauthorized'
-
-  /addresses/{id}:
-    get:
-      tags:
-        - xPay
-      summary: Returns the details of a specific address
-      description: |
-        This endpoint returns the details of a specific saved address.
-      operationId: getAddressesId
-      parameters:
-        - in: path
-          name: id
-          required: true
-          description: ID of the address you wish to obtain
-          schema:
-            type: string
-      responses:
-        200:
-          description: successful response
-          content:
-            application/vnd.regalii.v3.2+json:
-              schema:
-                $ref: '#/components/schemas/CheckAddress'
-        401:
-          description: unauthorized response
-          content:
-            application/vnd.regalii.v3.2+json:
-              schema:
-                $ref: '#/components/schemas/Unauthorized'
-        404:
-          description: not found response
-          content:
-            application/vnd.regalii.v3.2+json:
-              schema:
-                $ref: '#/components/schemas/NotFound'
-
-    delete:
-      tags:
-        - xPay
-      summary: Deletes a specific address
-      description: |
-        This endpoint deletes the address that corresponds to the `id` sent.
-        <br/>
-        NOTE: only addresses that haven't been used in checks can be deleted
-      operationId: deleteAddress
-      parameters:
-        - in: path
-          name: id
-          required: true
-          description: ID of the address to be deleted
-          schema:
-            type: string
-      responses:
-        200:
-          description: successful response
-          content:
-            application/vnd.regalii.v3.2+json:
-              schema:
-                $ref: '#/components/schemas/CheckAddress'
         401:
           description: unauthorized response
           content:
@@ -2457,130 +2142,6 @@ components:
             to be `on_hold`; if any other value is sent, the transaction will be
             created with the `initialized` status.
           example: "on_hold"
-
-    CheckTransaction:
-      type: object
-      required:
-        - amount
-        - memo
-        - sender_address
-        - receiver_address
-      properties:
-        amount:
-          type: number
-          description: The payment amount
-          example: "10.0"
-        memo:
-          type: string
-          description: Payment's description
-          example: "Rent Payment"
-        sender_address:
-          type: string
-          description: UUID of the previously created sender's address
-          example: "5dc7c0c0-1733-4bcc-a9ea-d791ca671f70"
-        receiver_address:
-          type: string
-          description: UUID of the previously created sender's address
-          example: "5dc7c0c0-1733-4bcc-a9ea-d791ca671f70"
-
-    CheckTransactionSerialized:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The check payment id
-          example: '6883cdb3-b2af-4d0c-8faf-9dfbc28dd396'
-        status:
-          type: string
-          description: The payment status
-          example: 'pending'
-        check_number:
-          type: number
-          description: Check number associated to the payment
-          example: '1003'
-        memo:
-          type: string
-          description: Payment'm description
-          example: "Rent Payment"
-        sender_address:
-          type: string
-          description: The check's sender address id
-          example: '6883cdb3-b2af-4d0c-8faf-9dfbc28dd396'
-        receiver_address:
-          type: string
-          description: The check's receiver address id
-          example: '6883cdb3-b2af-4d0c-8faf-9dfbc28dd396'
-        send_date:
-          type: string
-          description: The send date
-          example: '2019-03-07T15:08:02.856Z'
-        carrier:
-          type: string
-          description: The name of the carrier
-          example: 'USPS'
-        tracking_number:
-          type: string
-          description: Tracking number for carrier
-          example: '6252625242527281'
-        expected_delivery_date:
-          type: string
-          description: Expected delivery date for the check
-          example: '2019-12-14'
-        mail_type:
-          type: string
-          description: Mail type for check delivery
-          example: 'usps_first_class'
-        error_code:
-          type: string
-          description: Error code in case to have one, otherwise will be null
-          example: '500'
-        error_message:
-          type: string
-          description: Error message in case to have one, otherwise will be null
-          example: 'internal error'
-        created_at:
-          type: string
-          description: Date of check creation
-          example: '2019-03-07T15:03:01.976Z'
-
-    CheckAddress:
-      type: object
-      description: Details of a check's sender or receiver
-      required:
-        - id
-        - name
-        - company
-        - email
-        - phone
-        - address_line1
-        - address_city
-        - address_zip
-      properties:
-        id:
-          type: string
-          description: UUID of saved address
-          example: "930e49a9-4b64-4dc1-b2fd-c6b21dbd98cc"
-        name:
-          type: string
-          example: John Doe
-        company:
-          type: string
-          example: Arcus
-        email:
-          type: string
-          example: mail_owner@Arcusfi.com
-        phone:
-          type: string
-          example: 455283940
-        address_line1:
-          type: string
-          example: residential highrise
-        address_city:
-          type: string
-          example: New York
-        address_zip:
-          type: string
-          example: 10001
 
     Unauthorized:
       type: object
