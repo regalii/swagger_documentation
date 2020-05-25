@@ -642,6 +642,8 @@ paths:
                       can_migrate: false
                       charge_user: true
                       has_xdata: false
+                      maintenance_status: false
+                      login_category: username
 
   /bills:
     post:
@@ -1848,6 +1850,14 @@ components:
           description: Determines whether you can use xData with this
             biller
           type: boolean
+        login_category:
+          description: Determines the type of login of the integration wheter is
+            with the username, phone or email
+          type: string
+        maintenance_status:
+          description: Determines whether the integration is in maintenance if it's true
+            the integration is under maintainnance and all the bills or migrations are not going to pass
+          type: boolean
 
     Error_Info:
       type: object
@@ -2167,4 +2177,3 @@ components:
           type: string
       example:
         message: 'param is missing or the value is empty: amount'
-
