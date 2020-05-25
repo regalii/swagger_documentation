@@ -134,7 +134,7 @@ info:
         Base64 SHA1 HMAC string encoded using your secret-key.
 
         3. For testing, verify that if you pass
-        `GET,application/json,,/account,Mon, 02 Jul 2018 00:35:24 GMT` to your
+        `GET,application/json,,/account,Mon, 02 Jul 2020 00:35:24 GMT` to your
         checksum function and use `verify-secret` as secret key, it should
         return `Rp0ZzsD2PODJHuaWoUGalIiTcrM=`.
 
@@ -159,7 +159,8 @@ info:
 
       Aside from the Authorization header, you will also have to make sure that
       your requests include the following headers:
-        * __Content-MD5__ It can be blank or a hash of digest base64.
+        * __Content-MD5__ It can be blank or a hash of digest base64,
+          the header is required to be added.
 
           `-H 'Content-MD5: 1B2M2Y8AsgTpgAmY7PhCfg=='`
         * __Date__ It requires the same format used in the generation of the
@@ -605,6 +606,7 @@ paths:
                         logos: []
                         created_at: "2018-07-02 22:06:14 UTC"
                         updated_at: "2018-07-02 22:06:14 UTC"
+                        maintenance_status: false
                   meta:
                     total: 2
                     total-pages: 1
@@ -687,6 +689,7 @@ paths:
                           url: "https://static.staging.arcusapi.com/180x68/amazon-prime.png"
                       created_at: "2016-06-08 21:36:33 UTC"
                       updated_at: "2018-08-03 18:50:56 UTC"
+                      maintenance_status: false
         404:
           description: resource not found
           content:
@@ -1743,6 +1746,10 @@ components:
               format: date-time
               description: Timestamp of when this merchant was last updated in
                 arcus' system
+            maintenance_status:
+              type: boolean
+              description: Determines whether the integration is in maintenance if it's true
+                the integration is under maintainnance and all the bills or migrations are not going to pass
 
     Logo:
       type: object
