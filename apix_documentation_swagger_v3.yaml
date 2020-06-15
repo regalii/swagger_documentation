@@ -1197,6 +1197,8 @@ paths:
           - `rpps_biller_id`
           - `account_number`. You have to make sure that it matches one of the
             masks' `mask_format` of the xPay Biller.
+            - `#` is a number
+            - `@` is a character
           - `amount`
           - `currency`
           - `payer_born_on`
