@@ -562,10 +562,10 @@ paths:
     get:
       tags:
         - Common
-      summary: Provides the current list of billers
+      summary: Provides the list of xData billers
       operationId: getBillersCredentials
       description: |
-        This endpoint provides the current list of billers and their associated
+        This endpoint provides the list of xData billers and their associated
         properties.
         To ensure that your end users are able to leverage the enhancements that
         we make over time, you are required to cache the full list of billers
@@ -965,7 +965,7 @@ paths:
                     type: string
                 example:
                   message: Refresh in progress for 3 bills
-  /billers_directory:
+  /biller_directory:
     get:
       tags:
         - xPay
@@ -1079,7 +1079,7 @@ paths:
               </tr>
             </table>
   
-      operationId: getBillersDirectory
+      operationId: getBillerDirectory
       parameters:
         - in: query
           name: page
