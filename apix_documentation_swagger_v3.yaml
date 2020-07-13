@@ -558,7 +558,7 @@ paths:
                   balance: 7000.00
                   minimum_balance: 5000.00
                   currency: USD
-  /billers:
+  /data_billers:
     get:
       tags:
         - Common
@@ -965,7 +965,7 @@ paths:
                     type: string
                 example:
                   message: Refresh in progress for 3 bills
-  /rpps_billers:
+  /billers_directory:
     get:
       tags:
         - xPay
@@ -1079,7 +1079,7 @@ paths:
               </tr>
             </table>
   
-      operationId: getRppsBillers
+      operationId: getBillersDirectory
       parameters:
         - in: query
           name: page
